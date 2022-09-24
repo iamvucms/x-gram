@@ -1,0 +1,15 @@
+export const PageName = {
+  HomeTab: 'HomeTab',
+  HomeScreen: 'HomeScreen',
+  MenuScreen: 'MenuScreen',
+  AccountScreen: 'AccountScreen',
+  InAppUpdateScreen: 'InAppUpdateScreen',
+  HomeStack: 'HomeStack',
+  MenuStack: 'MenuStack',
+  SplashScreen: 'SplashScreen',
+  PreAuthStack: 'PreAuthStack',
+  AuthStack: 'AuthStack',
+  LoginScreen: 'LoginScreen',
+  RegisterScreen: 'RegisterScreen',
+  OnboardingScreen: 'OnboardingScreen',
+}
