@@ -6,9 +6,11 @@ import { useAppTheme } from '@/Hooks'
 import { PageName } from '@/Config'
 import BottomTab from './BottomTab'
 import {
+  AuthPassCodeScreen,
   InAppUpdateScreen,
   LoginScreen,
   OnboardingScreen,
+  PreAuthScreen,
   RegisterScreen,
 } from '@/Screens'
 const Stack = createNativeStackNavigator()
@@ -29,6 +31,7 @@ const Application = () => {
           component={InAppUpdateScreen}
         />
         <Stack.Screen name={PageName.PreAuthStack} component={PreAuthStack} />
+        <Stack.Screen name={PageName.AuthStack} component={AuthStack} />
       </Stack.Navigator>
     </NavigationContainer>
   )
@@ -38,8 +41,13 @@ export default Application
 const PreAuthStack = () => {
   return (
     <Stack.Navigator screenOptions={screenOptions}>
+      <Stack.Screen name={PageName.PreAuthScreen} component={PreAuthScreen} />
       <Stack.Screen name={PageName.LoginScreen} component={LoginScreen} />
       <Stack.Screen name={PageName.RegisterScreen} component={RegisterScreen} />
+      <Stack.Screen
+        name={PageName.AuthPassCodeScreen}
+        component={AuthPassCodeScreen}
+      />
     </Stack.Navigator>
   )
 }

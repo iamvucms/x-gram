@@ -69,7 +69,7 @@ const AppButton = ({
       alignItems: 'center',
       justifyContent: center ? 'center' : 'flex-start',
       paddingHorizontal: 16,
-      paddingVertical: 8,
+      height: 44,
       borderRadius: radius,
       backgroundColor: disabled ? disabledBackgroundColor : backgroundColor,
       overflow: 'hidden',

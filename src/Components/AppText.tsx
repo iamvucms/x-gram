@@ -29,7 +29,7 @@ const AppText = ({
   lineHeight,
   style,
   align = 'left',
-  useDefaultFont = true, // update this line after linked fonts
+  useDefaultFont = false,
   ...restProps
 }: AppTextProps) => {
   const size = typeof fontSize === 'string' ? FontSizes[fontSize] : fontSize

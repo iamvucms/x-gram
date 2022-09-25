@@ -2,23 +2,30 @@ import React, { useEffect, useState } from 'react'
 import './Translations/i18n'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { Application } from './Navigators'
-import { diaLogStore, rehydrateStore } from './Stores'
+import { appStore, diaLogStore, rehydrateStore } from './Stores'
 import { SplashScreen } from './Screens'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Layout } from './Theme'
 import Animated, { FadeIn } from 'react-native-reanimated'
 import AppDiaLog from './Components/AppDiaLog'
 import { PortalProvider } from '@gorhom/portal'
-import { Obx } from './Components'
+import { LanguageSheet, Obx } from './Components'
+import i18n from './Translations/i18n'
 const App = () => {
   const [isReady, setIsReady] = useState(false)
   useEffect(() => {
     rehydrateStore()
-      .then(() => setTimeout(() => setIsReady(true), 1000))
+      .then(() => {
+        // setTimeout(() => {
+        i18n.changeLanguage(appStore.currentLanguage.code)
+        setIsReady(true)
+        // }, 1000),
+      })
       .catch(err => {
         console.log(err)
       })
   }, [])
+
   return (
     <GestureHandlerRootView style={Layout.fill}>
       <SafeAreaProvider>
@@ -57,6 +64,7 @@ const App = () => {
               )
             }
           </Obx>
+          <LanguageSheet />
         </PortalProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

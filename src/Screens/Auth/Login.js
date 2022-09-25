@@ -1,14 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { AppText, Container } from '@/Components'
+import { XStyleSheet } from '@/Theme'
 import React from 'react'
 
 const LoginScreen = () => {
   return (
-    <View>
-      <Text>LoginScreen</Text>
-    </View>
+    <Container>
+      <AppText color="red">aaa</AppText>
+    </Container>
   )
 }
 
 export default LoginScreen
 
-const styles = StyleSheet.create({})
+const styles = XStyleSheet.create({})

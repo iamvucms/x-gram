@@ -1,9 +1,6 @@
-import { AppText, Container } from '@/Components'
-import { PageName } from '@/Config'
-import { navigate } from '@/Navigators'
+import { Container } from '@/Components'
 import { XStyleSheet } from '@/Theme'
 import React from 'react'
-import { TouchableOpacity } from 'react-native'
 
 const HomeScreen = () => {
   return <Container style={styles.rootView}></Container>

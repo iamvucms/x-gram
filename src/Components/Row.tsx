@@ -18,7 +18,7 @@ interface RowProps {
 const Row = ({
   children,
   reverse,
-  align,
+  align = 'center',
   justify,
   style,
   ...restProps

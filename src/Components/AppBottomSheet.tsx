@@ -35,6 +35,7 @@ const AppBottomSheet = forwardRef(
           {...restProps}
           index={isNaN(restProps.index) ? -1 : restProps.index}
           snapPoints={snapPoints}
+          enablePanDownToClose
           ref={sheetRef}
         >
           {children}

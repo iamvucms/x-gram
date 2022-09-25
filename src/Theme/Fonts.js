@@ -14,14 +14,11 @@ export const FontSizes = {
   h1: 34,
 }
 export const AppFonts = {
-  900: 'XXXX-Black',
-  800: 'XXXX-ExtraBold',
-  700: 'XXXX-Bold',
-  600: 'XXXX-SemiBold',
-  500: 'XXXX-Medium',
-  400: 'XXXX-Regular',
-  300: 'XXXX-Light',
-  200: 'XXXX-ExtraLight',
+  900: 'Lato-Black',
+  700: 'Lato-Bold',
+  400: 'Lato-Regular',
+  300: 'Lato-Light',
+  200: 'Lato-Thin',
 }
 
 export const AppSubFonts = {
