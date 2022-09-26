@@ -1,4 +1,4 @@
-import { ResponsiveWidth } from '@/Theme'
+import { moderateScale, ResponsiveWidth } from '@/Theme'
 
 export const randomRgb = () => {
   const o = Math.round,
@@ -19,3 +19,10 @@ export const caculatePageWidthForPagination = (
         sliderWidth +
         ResponsiveWidth(marginHorizontal) * 2) /
       (itemLength - 1)
+
+export const getHitSlop = (size = 20) => ({
+  top: moderateScale(size),
+  bottom: moderateScale(size),
+  left: moderateScale(size),
+  right: moderateScale(size),
+})

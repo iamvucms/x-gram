@@ -16,5 +16,8 @@ export default {
   auth: {
     signIn: 'Sign In',
     register: 'Register',
+    login_title: 'Sign In to XGram',
+    email_placeholder: 'Enter Email',
+    password_placeholder: 'Enter Password',
   },
 }

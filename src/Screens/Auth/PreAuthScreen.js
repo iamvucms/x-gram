@@ -1,11 +1,11 @@
-import { ChevronDownSvg, ChevronRightSvg } from '@/Assets/Svg'
+import { ChevronDownSvg } from '@/Assets/Svg'
 import { AppButton, AppText, Container, Obx, Padding, Row } from '@/Components'
 import { PageName } from '@/Config'
 import { useAppTheme } from '@/Hooks'
 import { navigate } from '@/Navigators'
 import { appStore } from '@/Stores'
-import { Colors, screenWidth, XStyleSheet } from '@/Theme'
-import { BlurView } from '@react-native-community/blur'
+import { Colors, ResponsiveWidth, screenWidth, XStyleSheet } from '@/Theme'
+import { isAndroid } from '@/Utils'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Image, StatusBar, TouchableOpacity, View } from 'react-native'
@@ -13,7 +13,6 @@ import { Image, StatusBar, TouchableOpacity, View } from 'react-native'
 const PreAuthScreen = () => {
   const { Images } = useAppTheme()
   const { t } = useTranslation()
-  console.log(appStore.currentLanguage)
   return (
     <Container
       disableBottom
@@ -23,29 +22,31 @@ const PreAuthScreen = () => {
       }}
       style={styles.rootView}
     >
-      <TouchableOpacity style={styles.languagePicker}>
+      <TouchableOpacity
+        onPress={() => appStore.setShowLanguageSheet(true)}
+        style={styles.languagePicker}
+      >
         <Row>
           <Obx>
             {() =>
               appStore.currentLanguage && (
-                <AppText color={Colors.black}>
-                  {appStore.currentLanguage.name}
+                <AppText fontWeight={700} lineHeight={14} color={Colors.black}>
+                  {appStore.currentLanguage.name}{' '}
                 </AppText>
               )
             }
           </Obx>
-          <ChevronDownSvg />
+          <ChevronDownSvg size={12} />
         </Row>
       </TouchableOpacity>
       <Image source={Images.jumpMan} style={styles.bgImg} />
-      {/* <BlurView blurType="light" style={styles.blurView}>
-        <Image source={Images.blueBlur} style={styles.blueBlur} />
-      </BlurView> */}
+      <Image source={Images.blueBlur} style={styles.blueBlur} />
       <View style={styles.bottomView}>
         <Row justify="center">
           <AppButton
             onPress={() => navigate(PageName.LoginScreen)}
             textProps={{ fontWeight: 700 }}
+            style={{ width: ResponsiveWidth(120) }}
             radius={99}
             text={t('auth.signIn')}
           />
@@ -54,25 +55,12 @@ const PreAuthScreen = () => {
             onPress={() => navigate(PageName.RegisterScreen)}
             textProps={{ fontWeight: 700 }}
             radius={99}
+            style={{ width: ResponsiveWidth(120) }}
             backgroundColor={Colors.white}
             textColor={Colors.primary}
             text={t('auth.register')}
           />
         </Row>
-        <TouchableOpacity>
-          <Padding top={30} />
-          <Row justify="center">
-            <AppText
-              fontSize={14}
-              fontWeight={700}
-              lineHeight={14}
-              color={Colors.primary}
-            >
-              {t('skip')}
-            </AppText>
-            <ChevronRightSvg size={14} color={Colors.primary} />
-          </Row>
-        </TouchableOpacity>
       </View>
     </Container>
   )
@@ -105,7 +93,7 @@ const styles = XStyleSheet.create({
   bottomView: {
     position: 'absolute',
     zIndex: 10,
-    bottom: 86,
+    bottom: 100,
     left: 0,
     right: 0,
   },
@@ -113,6 +101,6 @@ const styles = XStyleSheet.create({
     position: 'absolute',
     zIndex: 99,
     right: 12,
-    top: StatusBar.currentHeight,
+    top: StatusBar.currentHeight + (isAndroid ? 10 : 0),
   },
 })

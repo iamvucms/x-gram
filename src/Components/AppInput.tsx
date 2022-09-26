@@ -31,7 +31,7 @@ const AppInput = forwardRef(
       lineHeight,
       style,
       align = 'left',
-      useDefaultFont = true, //set to false after update fonts
+      useDefaultFont = false,
       ...restProps
     }: AppInputProps,
     ref: React.LegacyRef<TextInput>,

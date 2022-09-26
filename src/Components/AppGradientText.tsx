@@ -21,7 +21,6 @@ const AppGradientText = ({
 }: AppGradientTextProps) => {
   return (
     <MaskedView
-      style={{ alignSelf: 'flex-start' }}
       androidRenderingMode="software"
       maskElement={
         <AppText

@@ -26,14 +26,14 @@ export default class AppStore {
     makePersistExcept(this, 'AppStore', ['showLanguageSheet'])
   }
 
-  setLanguage = code => {
+  setLanguage(code) {
     i18n.changeLanguage(code)
     this.languagues.forEach(lang => {
       lang.isSelected = lang.code === code
     })
   }
 
-  setShowLanguageSheet = value => {
+  setShowLanguageSheet(value) {
     this.showLanguageSheet = value
   }
 

@@ -9,7 +9,7 @@ import {
 } from '@/Components'
 import { PageName } from '@/Config'
 import { useAppTheme } from '@/Hooks'
-import { navigateAndReset } from '@/Navigators'
+import { navigate, navigateAndReset } from '@/Navigators'
 import { appStore } from '@/Stores'
 import {
   Colors,
@@ -136,7 +136,14 @@ const OnboardingScreen = () => {
               {t('choose_language')}
             </AppText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.skipBtn}>
+          <TouchableOpacity
+            onPress={() =>
+              navigate(PageName.PreAuthStack, {
+                screen: PageName.PreAuthScreen,
+              })
+            }
+            style={styles.skipBtn}
+          >
             <AppText color={Colors.white} lineHeight={14} fontSize={14}>
               {t('skip')}
             </AppText>
