@@ -9,24 +9,31 @@ import {
   AppGradientText,
   AppInput,
   AppText,
+  Box,
   Container,
   Obx,
   Padding,
   Row,
 } from '@/Components'
+import { PageName } from '@/Config'
 import { useAppTheme } from '@/Hooks'
+import { navigate } from '@/Navigators'
 import { appStore } from '@/Stores'
-import { Colors, XStyleSheet } from '@/Theme'
-import { isAndroid, getHitSlop } from '@/Utils'
+import { Colors, Layout, XStyleSheet } from '@/Theme'
+import { getHitSlop, isAndroid } from '@/Utils'
 import { useLocalObservable } from 'mobx-react-lite'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Image, StatusBar, TouchableOpacity, View } from 'react-native'
+import {
+  Image,
+  Pressable,
+  StatusBar,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import Animated, {
   FadeInLeft,
   FadeInRight,
-  SlideInLeft,
-  SlideInRight,
   ZoomIn,
 } from 'react-native-reanimated'
 
@@ -67,7 +74,7 @@ const LoginScreen = () => {
           <ChevronDownSvg size={12} />
         </Row>
       </TouchableOpacity>
-      <Padding top={158} horizontal={35}>
+      <Padding top={158} horizontal={26}>
         <AppGradientText
           colors={[Colors.kFF7A51, Colors.kFFDB5C]}
           fontSize={32}
@@ -98,6 +105,7 @@ const LoginScreen = () => {
           <Obx>
             {() => (
               <AppInput
+                keyboardType="email-address"
                 value={state.email}
                 onChangeText={email => state.setEmail(email)}
                 style={styles.input}
@@ -139,6 +147,16 @@ const LoginScreen = () => {
             </Obx>
           </TouchableOpacity>
         </View>
+        <TouchableOpacity
+          onPress={() => navigate(PageName.RecoveryPasswordScreen)}
+          style={styles.recoveryBtn}
+          hitSlop={getHitSlop(10)}
+        >
+          <AppText color={Colors.placeholder}>
+            {t('auth.recover_password')}
+          </AppText>
+        </TouchableOpacity>
+        <Padding bottom={30} />
         <AppButton
           radius={10}
           text={t('auth.signIn')}
@@ -148,7 +166,33 @@ const LoginScreen = () => {
           }}
           style={styles.loginBtn}
         />
+        <Box row center paddingTop={30}>
+          <Box height={1} width={80} backgroundColor={Colors.kDFDFDF} />
+          <Padding horizontal={17}>
+            <AppText lineHeight={14} color={Colors.placeholder}>
+              {t('auth.or_continue_with')}
+            </AppText>
+          </Padding>
+          <Box height={1} width={80} backgroundColor={Colors.kDFDFDF} />
+        </Box>
+        <Padding top={30} />
+        <TouchableOpacity activeOpacity={0.8} style={styles.googleBtn}>
+          <AppText fontWeight={700} color={Colors.placeholder}>
+            Login with Google Account
+          </AppText>
+          <Image style={styles.icGoogle} source={Images.icGoogle} />
+        </TouchableOpacity>
       </Padding>
+      <Box row center fill>
+        <AppText color={Colors.placeholder}>
+          {t('auth.dont_have_account')}{' '}
+        </AppText>
+        <TouchableOpacity onPress={() => navigate(PageName.RegisterScreen)}>
+          <AppText fontWeight={700} color={Colors.primary}>
+            {t('auth.register_here')}
+          </AppText>
+        </TouchableOpacity>
+      </Box>
       <Image source={Images.blueBlur} style={styles.blueBlur} />
     </Container>
   )
@@ -159,11 +203,12 @@ export default LoginScreen
 const styles = XStyleSheet.create({
   rootView: {
     backgroundColor: Colors.background,
+    flex: 1,
   },
   languagePicker: {
     position: 'absolute',
     zIndex: 99,
-    right: 12,
+    right: 26,
     top: StatusBar.currentHeight + (isAndroid ? 10 : 0),
   },
   blurView: {
@@ -198,5 +243,28 @@ const styles = XStyleSheet.create({
     width: 6,
     borderRadius: 99,
     backgroundColor: Colors.kFF7A51,
+  },
+  recoveryBtn: {
+    alignSelf: 'flex-end',
+  },
+  blueBlur: {
+    position: 'absolute',
+    zIndex: -1,
+    bottom: 0,
+    right: 0,
+  },
+  googleBtn: {
+    height: 60,
+    backgroundColor: Colors.white,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  icGoogle: {
+    width: 24,
+    height: 24,
+    position: 'absolute',
+    right: 20,
   },
 })

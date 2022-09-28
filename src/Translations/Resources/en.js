@@ -19,5 +19,9 @@ export default {
     login_title: 'Sign In to XGram',
     email_placeholder: 'Enter Email',
     password_placeholder: 'Enter Password',
+    recover_password: 'Recover Password?',
+    or_continue_with: 'Or continue with',
+    dont_have_account: "Don't have an account?",
+    register_here: 'Register here!',
   },
 }

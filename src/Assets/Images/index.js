@@ -19,6 +19,7 @@ export const getImages = () => ({
   //Auth
   jumpMan: require('./Auth/jump-man.png'),
   blueBlur: require('./Auth/blue-blur.png'),
+  icGoogle: require('./Auth/ic-google.png'),
 })
 
 export const getDarkImages = () => ({

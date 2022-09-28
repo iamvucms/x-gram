@@ -11,8 +11,7 @@ export const PageName = {
   AuthStack: 'AuthStack',
   LoginScreen: 'LoginScreen',
   RegisterScreen: 'RegisterScreen',
-  PreAuthScreen: 'PreAuthScreen',
   AuthPassCodeScreen: 'AuthPassCodeScreen',
-  ForgotPasswordScreen: 'ForgotPasswordScreen',
+  RecoveryPasswordScreen: 'RecoveryPasswordScreen',
   OnboardingScreen: 'OnboardingScreen',
 }

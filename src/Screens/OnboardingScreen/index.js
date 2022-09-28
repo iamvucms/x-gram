@@ -139,7 +139,7 @@ const OnboardingScreen = () => {
           <TouchableOpacity
             onPress={() =>
               navigate(PageName.PreAuthStack, {
-                screen: PageName.PreAuthScreen,
+                screen: PageName.LoginScreen,
               })
             }
             style={styles.skipBtn}

@@ -10,7 +10,7 @@ import {
   InAppUpdateScreen,
   LoginScreen,
   OnboardingScreen,
-  PreAuthScreen,
+  RecoveryPasswordScreen,
   RegisterScreen,
 } from '@/Screens'
 const Stack = createNativeStackNavigator()
@@ -41,12 +41,15 @@ export default Application
 const PreAuthStack = () => {
   return (
     <Stack.Navigator screenOptions={screenOptions}>
-      <Stack.Screen name={PageName.PreAuthScreen} component={PreAuthScreen} />
       <Stack.Screen name={PageName.LoginScreen} component={LoginScreen} />
       <Stack.Screen name={PageName.RegisterScreen} component={RegisterScreen} />
       <Stack.Screen
         name={PageName.AuthPassCodeScreen}
         component={AuthPassCodeScreen}
+      />
+      <Stack.Screen
+        name={PageName.RecoveryPasswordScreen}
+        component={RecoveryPasswordScreen}
       />
     </Stack.Navigator>
   )
