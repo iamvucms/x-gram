@@ -18,11 +18,12 @@ import {
 import { PageName } from '@/Config'
 import { useAppTheme } from '@/Hooks'
 import { navigate } from '@/Navigators'
-import { appStore } from '@/Stores'
+import { appStore, userStore } from '@/Stores'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
 import { getHitSlop, isAndroid } from '@/Utils'
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import { useLocalObservable } from 'mobx-react-lite'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Image,
@@ -48,6 +49,29 @@ const LoginScreen = () => {
     setPassword: value => (state.password = value),
     setEmail: value => (state.email = value),
   }))
+
+  const onLoginWithGooglePress = useCallback(async () => {
+    try {
+      if (isAndroid) {
+        // GoogleSignin.configure()
+        GoogleSignin.configure({
+          webClientId:
+            '98937963622-616idfg559mc0u0r7rgoqh3ha6h00e5r.apps.googleusercontent.com',
+          scopes: ['profile', 'email'],
+        })
+      }
+      const response = await GoogleSignin.signIn()
+      const token = await GoogleSignin.getTokens()
+      const user = {
+        ...response.user,
+        token: token.accessToken,
+      }
+      console.log(user)
+    } catch (e) {
+      console.log(JSON.stringify(e))
+    }
+  }, [])
+
   return (
     <Container
       disableTop
@@ -176,7 +200,11 @@ const LoginScreen = () => {
           <Box height={1} width={80} backgroundColor={Colors.kDFDFDF} />
         </Box>
         <Padding top={30} />
-        <TouchableOpacity activeOpacity={0.8} style={styles.googleBtn}>
+        <TouchableOpacity
+          onPress={onLoginWithGooglePress}
+          activeOpacity={0.8}
+          style={styles.googleBtn}
+        >
           <AppText fontWeight={700} color={Colors.placeholder}>
             Login with Google Account
           </AppText>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "98937963622",
+    "project_id": "xgram-4d5c9",
+    "storage_bucket": "xgram-4d5c9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:98937963622:android:cad1efdb919307b10ad9a7",
+        "android_client_info": {
+          "package_name": "com.xgram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "98937963622-616idfg559mc0u0r7rgoqh3ha6h00e5r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsRMtQatGkm3SMVm1yt5ycTGqgAYPxwL4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "98937963622-616idfg559mc0u0r7rgoqh3ha6h00e5r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

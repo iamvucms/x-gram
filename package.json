@@ -10,7 +10,7 @@
     "android": "react-native run-android",
     "android:release": "react-native run-android --variant=release",
     "ios": "react-native run-ios",
-    "start": "NODE_OPTIONS=--openssl-legacy-provider react-native start --reset-cache",
+    "start": "react-native start --reset-cache",
     "test": "jest",
     "lint": "eslint .",
     "clean:android": "cd android && ./gradlew clean && cd ../",

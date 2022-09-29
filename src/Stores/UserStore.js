@@ -8,8 +8,13 @@ export default class UserStore {
     makeAutoObservable(this)
     makePersistExcept(this, 'UserStore', [])
   }
-  setUserInfo(userInfo) {
+  setUserInfo(userInfo, isLogged = true) {
     this.userInfo = userInfo
+    this.isLogged = isLogged
+  }
+  logout() {
+    this.userInfo = {}
+    this.isLogged = false
   }
   // check for hydration (required)
   get isHydrated() {
