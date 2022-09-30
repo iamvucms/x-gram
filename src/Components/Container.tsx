@@ -26,7 +26,7 @@ const Container = ({
   children,
   disableTop,
   disableBottom = true,
-  statusBarProps,
+  statusBarProps = { translucent: true, barStyle: 'dark-content' },
   safeAreaColor,
   useFading = false,
   style,

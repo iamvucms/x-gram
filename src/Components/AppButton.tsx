@@ -65,7 +65,7 @@ const AppButton = ({
 }: AppButtonProps) => {
   const styles = XStyleSheet.create({
     baseBtn: {
-      flexDirection: iconDirection === 'right' ? 'row' : 'column-reverse',
+      flexDirection: iconDirection === 'right' ? 'row' : 'row-reverse',
       alignItems: 'center',
       justifyContent: center ? 'center' : 'flex-start',
       paddingHorizontal: 16,

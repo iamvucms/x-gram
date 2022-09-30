@@ -81,7 +81,7 @@ export function validateUserPhone(value) {
 export function validateEmail(value) {
   const regExp = /^[+._\-\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
   if (!regExp.test(value)) {
-    return translation('authPage.errorIncorrectEmail')
+    return translation('auth.email_error')
   }
   return ''
 }

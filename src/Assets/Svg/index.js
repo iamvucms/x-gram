@@ -9,6 +9,7 @@ export { default as CheckSvg } from './Common/CheckSvg'
 export { default as CircleCloseSvg } from './Common/CircleCloseSvg'
 export { default as EyeOnSvg } from './Common/EyeOnSvg'
 export { default as EyeOffSvg } from './Common/EyeOffSvg'
+export { default as CameraSvg } from './Common/CameraSvg'
 //Onboarding
 export { default as BallSvg } from './Onboarding/BallSvg'
 //Home

@@ -18,20 +18,14 @@ import {
 import { PageName } from '@/Config'
 import { useAppTheme } from '@/Hooks'
 import { navigate } from '@/Navigators'
-import { appStore, userStore } from '@/Stores'
-import { Colors, Layout, XStyleSheet } from '@/Theme'
+import { appStore } from '@/Stores'
+import { Colors, XStyleSheet } from '@/Theme'
 import { getHitSlop, isAndroid } from '@/Utils'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  Image,
-  Pressable,
-  StatusBar,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Image, StatusBar, TouchableOpacity, View } from 'react-native'
 import Animated, {
   FadeInLeft,
   FadeInRight,
@@ -55,8 +49,6 @@ const LoginScreen = () => {
       if (isAndroid) {
         // GoogleSignin.configure()
         GoogleSignin.configure({
-          webClientId:
-            '98937963622-616idfg559mc0u0r7rgoqh3ha6h00e5r.apps.googleusercontent.com',
           scopes: ['profile', 'email'],
         })
       }
@@ -78,6 +70,7 @@ const LoginScreen = () => {
       disableBottom
       statusBarProps={{
         barStyle: 'dark-content',
+        translucent: true,
       }}
       style={styles.rootView}
     >
@@ -206,7 +199,7 @@ const LoginScreen = () => {
           style={styles.googleBtn}
         >
           <AppText fontWeight={700} color={Colors.placeholder}>
-            Login with Google Account
+            {t('auth.login_with_google')}
           </AppText>
           <Image style={styles.icGoogle} source={Images.icGoogle} />
         </TouchableOpacity>
