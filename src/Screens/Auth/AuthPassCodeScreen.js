@@ -1,14 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Container } from '@/Components'
+import { XStyleSheet } from '@/Theme'
 import React from 'react'
+import { Text, View } from 'react-native'
 
 const AuthPassCodeScreen = () => {
-  return (
-    <View>
-      <Text>AuthPassCodeScreen</Text>
-    </View>
-  )
+  return <Container></Container>
 }
 
 export default AuthPassCodeScreen
 
-const styles = StyleSheet.create({})
+const styles = XStyleSheet.create({})

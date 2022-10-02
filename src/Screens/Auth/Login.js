@@ -1,4 +1,5 @@
 import {
+  CheckSvg,
   ChevronDownSvg,
   CircleCloseSvg,
   EyeOffSvg,
@@ -11,6 +12,7 @@ import {
   AppText,
   Box,
   Container,
+  ErrorLabel,
   Obx,
   Padding,
   Row,
@@ -20,7 +22,7 @@ import { useAppTheme } from '@/Hooks'
 import { navigate } from '@/Navigators'
 import { appStore } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
-import { getHitSlop, isAndroid } from '@/Utils'
+import { getHitSlop, isAndroid, validateEmail, validatePassword } from '@/Utils'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
@@ -39,15 +41,37 @@ const LoginScreen = () => {
     showPassword: false,
     password: '',
     email: '',
+    saveLogin: false,
+    errorPassword: '',
+    errorEmail: '',
     setShowPassword: value => (state.showPassword = value),
     setPassword: value => (state.password = value),
     setEmail: value => (state.email = value),
+    setSaveLogin: value => (state.saveLogin = value),
+    setErrorPassword: value => (state.errorPassword = value),
+    setErrorEmail: value => (state.errorEmail = value),
+    get isValid() {
+      return (
+        !this.errorEmail && !this.errorPassword && this.email && this.password
+      )
+    },
   }))
+
+  const onEmailChange = useCallback(value => {
+    state.setEmail(value)
+    state.setErrorEmail(validateEmail(value))
+  }, [])
+
+  const onPasswordChange = useCallback(value => {
+    state.setPassword(value)
+    state.setErrorPassword(validatePassword(value))
+  }, [])
+
+  const onLoginPress = useCallback(() => {}, [])
 
   const onLoginWithGooglePress = useCallback(async () => {
     try {
       if (isAndroid) {
-        // GoogleSignin.configure()
         GoogleSignin.configure({
           scopes: ['profile', 'email'],
         })
@@ -124,7 +148,7 @@ const LoginScreen = () => {
               <AppInput
                 keyboardType="email-address"
                 value={state.email}
-                onChangeText={email => state.setEmail(email)}
+                onChangeText={onEmailChange}
                 style={styles.input}
                 placeholderTextColor={Colors.placeholder}
                 placeholder={t('auth.email_placeholder')}
@@ -133,11 +157,15 @@ const LoginScreen = () => {
           </Obx>
           <TouchableOpacity
             hitSlop={getHitSlop(20)}
-            onPress={() => state.setEmail('')}
+            onPress={() => onEmailChange('')}
           >
             <CircleCloseSvg size={18} />
           </TouchableOpacity>
         </View>
+        <Obx>
+          {() => state.errorEmail && <ErrorLabel text={state.errorEmail} />}
+        </Obx>
+        <Padding bottom={20} />
         <View style={styles.textField}>
           <Obx>
             {() => (
@@ -146,6 +174,8 @@ const LoginScreen = () => {
                 style={styles.input}
                 placeholderTextColor={Colors.placeholder}
                 placeholder={t('auth.password_placeholder')}
+                value={state.password}
+                onChangeText={onPasswordChange}
               />
             )}
           </Obx>
@@ -164,6 +194,12 @@ const LoginScreen = () => {
             </Obx>
           </TouchableOpacity>
         </View>
+        <Obx>
+          {() =>
+            state.errorPassword && <ErrorLabel text={state.errorPassword} />
+          }
+        </Obx>
+        <Padding bottom={20} />
         <TouchableOpacity
           onPress={() => navigate(PageName.RecoveryPasswordScreen)}
           style={styles.recoveryBtn}
@@ -174,15 +210,46 @@ const LoginScreen = () => {
           </AppText>
         </TouchableOpacity>
         <Padding bottom={30} />
-        <AppButton
-          radius={10}
-          text={t('auth.signIn')}
-          textProps={{
-            fontWeight: 700,
-            fontSize: 19,
-          }}
-          style={styles.loginBtn}
-        />
+        <Obx>
+          {() => (
+            <AppButton
+              disabled={!state.isValid}
+              disabledBackgroundColor={Colors.disabled}
+              radius={10}
+              text={t('auth.signIn')}
+              textProps={{
+                fontWeight: 700,
+                fontSize: 19,
+              }}
+              onPress={onLoginPress}
+              style={styles.loginBtn}
+            />
+          )}
+        </Obx>
+        <Obx>
+          {() => (
+            <TouchableOpacity
+              onPress={() => state.setSaveLogin(!state.saveLogin)}
+              style={styles.saveLoginBtn}
+            >
+              <Box
+                radius={8}
+                backgroundColor={state.saveLogin ? Colors.primary : Colors.gray}
+                size={20}
+                marginRight={10}
+                center
+              >
+                <CheckSvg color={Colors.white} size={12} />
+              </Box>
+              <AppText
+                color={state.saveLogin ? Colors.black : Colors.black50}
+                lineHeight={14}
+              >
+                {t('auth.save_login')}
+              </AppText>
+            </TouchableOpacity>
+          )}
+        </Obx>
         <Box row center paddingTop={30}>
           <Box height={1} width={80} backgroundColor={Colors.kDFDFDF} />
           <Padding horizontal={17}>
@@ -243,7 +310,6 @@ const styles = XStyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderRadius: 10,
-    marginBottom: 20,
     paddingHorizontal: 20,
   },
   input: {
@@ -287,5 +353,10 @@ const styles = XStyleSheet.create({
     height: 24,
     position: 'absolute',
     right: 20,
+  },
+  saveLoginBtn: {
+    marginTop: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 })

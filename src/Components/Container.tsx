@@ -24,7 +24,7 @@ interface ContainerProps {
 
 const Container = ({
   children,
-  disableTop,
+  disableTop = true,
   disableBottom = true,
   statusBarProps = { translucent: true, barStyle: 'dark-content' },
   safeAreaColor,

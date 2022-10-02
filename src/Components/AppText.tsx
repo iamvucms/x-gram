@@ -42,9 +42,9 @@ const AppText = ({
     color,
     fontSize: ResponsiveFont(size),
     ...(lineHeightRatio && {
-      lineHeight: ResponsiveHeight(size * lineHeightRatio),
+      lineHeight: ResponsiveFont(size * lineHeightRatio),
     }),
-    ...(lineHeight && { lineHeight: ResponsiveHeight(lineHeight) }),
+    ...(lineHeight && { lineHeight: ResponsiveFont(lineHeight) }),
     textAlign: align,
   }
   return (

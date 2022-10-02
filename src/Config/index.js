@@ -49,5 +49,3 @@ export const Config = {
   ...(APP_ENV === EnvType.STG && StgConfig),
   ...(APP_ENV === EnvType.PROD && ProdConfig),
 }
-
-export const GameConfig = {}

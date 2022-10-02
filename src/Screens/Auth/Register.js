@@ -22,7 +22,13 @@ import { useAppTheme } from '@/Hooks'
 import { navigate } from '@/Navigators'
 import { appStore } from '@/Stores'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
-import { getHitSlop, isAndroid, validateEmail } from '@/Utils'
+import {
+  getHitSlop,
+  isAndroid,
+  validateEmail,
+  validateFullName,
+  validatePassword,
+} from '@/Utils'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -71,29 +77,17 @@ const RegisterScreen = () => {
 
   const onEmailChange = useCallback(value => {
     state.setEmail(value)
-    if (value.trim().length === 0) {
-      return state.setErrorEmail(t('auth.email_empty'))
-    } else {
-      state.setErrorEmail(validateEmail(value))
-    }
+    state.setErrorEmail(validateEmail(value))
   }, [])
 
   const onPasswordChange = useCallback(value => {
     state.setPassword(value)
-    if (value.trim().length === 0) {
-      return state.setErrorPassword(t('auth.password_empty'))
-    } else {
-      state.setErrorPassword('')
-    }
+    state.setErrorPassword(validatePassword(value))
   }, [])
 
   const onFullnameChange = useCallback(value => {
     state.setFullname(value)
-    if (value.trim().length === 0) {
-      return state.setErrorFullname(t('auth.fullname_empty'))
-    } else {
-      state.setErrorFullname('')
-    }
+    state.setErrorFullname(validateFullName(value))
   }, [])
 
   const onAvatarPress = useCallback(async () => {
@@ -104,6 +98,8 @@ const RegisterScreen = () => {
       state.setAvatar(response.assets[0])
     }
   }, [])
+
+  const onRegisterPress = useCallback(() => {}, [])
 
   return (
     <Container
@@ -165,7 +161,7 @@ const RegisterScreen = () => {
           </Row>
           <Padding top={30} />
           <TouchableOpacity onPress={onAvatarPress} style={styles.avatarField}>
-            <CameraSvg color={Colors.white} />
+            <CameraSvg color={Colors.primary} />
             <Obx>
               {() =>
                 state.avatar && (
@@ -193,7 +189,7 @@ const RegisterScreen = () => {
             </Obx>
             <TouchableOpacity
               hitSlop={getHitSlop(20)}
-              onPress={() => state.setFullname('')}
+              onPress={() => onFullnameChange('')}
             >
               <CircleCloseSvg size={18} />
             </TouchableOpacity>
@@ -219,7 +215,7 @@ const RegisterScreen = () => {
             </Obx>
             <TouchableOpacity
               hitSlop={getHitSlop(20)}
-              onPress={() => state.setEmail('')}
+              onPress={() => onEmailChange('')}
             >
               <CircleCloseSvg size={18} />
             </TouchableOpacity>
@@ -236,12 +232,14 @@ const RegisterScreen = () => {
                   style={styles.input}
                   placeholderTextColor={Colors.placeholder}
                   placeholder={t('auth.password_placeholder')}
+                  value={state.password}
+                  onChangeText={onPasswordChange}
                 />
               )}
             </Obx>
             <TouchableOpacity
               hitSlop={getHitSlop(20)}
-              onPress={onPasswordChange}
+              onPress={() => state.setShowPassword(!state.showPassword)}
             >
               <Obx>
                 {() =>
@@ -267,20 +265,27 @@ const RegisterScreen = () => {
                 disabledBackgroundColor={Colors.disabled}
                 radius={10}
                 text={t('auth.signIn')}
+                onPress={onRegisterPress}
                 textProps={{
                   fontWeight: 700,
                   fontSize: 19,
                 }}
-                style={styles.loginBtn}
+                style={styles.registerBtn}
               />
             )}
           </Obx>
+          <Padding top={20}>
+            <AppText color={Colors.placeholder}>
+              {t('auth.register_note')}
+            </AppText>
+          </Padding>
         </Padding>
-        <Box row center paddingVertical={60}>
+
+        <Box row center paddingVertical={40}>
           <AppText color={Colors.placeholder}>
             {t('auth.already_have_account')}{' '}
           </AppText>
-          <TouchableOpacity onPress={() => navigate(PageName.RegisterScreen)}>
+          <TouchableOpacity onPress={() => navigate(PageName.LoginScreen)}>
             <AppText fontWeight={700} color={Colors.primary}>
               {t('auth.login_here')}
             </AppText>
@@ -323,7 +328,7 @@ const styles = XStyleSheet.create({
     paddingRight: 10,
     fontSize: 16,
   },
-  loginBtn: {
+  registerBtn: {
     height: 60,
   },
   separatorLine: {
@@ -352,7 +357,7 @@ const styles = XStyleSheet.create({
     borderRadius: 999,
     alignSelf: 'center',
     marginBottom: 30,
-    borderColor: Colors.white,
+    borderColor: Colors.primary,
     borderWidth: 1,
     overflow: 'hidden',
   },

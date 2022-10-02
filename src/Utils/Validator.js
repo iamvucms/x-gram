@@ -18,25 +18,15 @@ export function validateUserName(value) {
   }
 }
 
-export function validateUserPass(value) {
+export function validatePassword(value) {
   const regexSpecialString =
-    /^(?=.*\d)(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*()+=-?;,./{}|":<>[\]\\'-~_]{8,}$/
+    /^(?=.*\d)(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*()+=-?;,./{}|":<>[\]\\'-~_]{6,}$/
   if (value.trim().length === 0) {
-    return translation('authPage.errorRequirePass')
-  } else if (value.trim().length < 8) {
-    return translation('authPage.errorRequireUserPassMin8')
-  } else if (!regexSpecialString.test(value.trim())) {
-    return translation('authPage.errorRequireUppercaseAndNumber')
-  } else {
-    return ''
-  }
-}
-
-export function validateUserPassSimple(value) {
-  if (value.trim().length === 0) {
-    return translation('authPage.errorRequirePass')
+    return translation('auth.password_empty')
   } else if (value.trim().length < 6) {
-    return translation('authPage.errorRequireUserPassMin6')
+    return translation('auth.password_length_error')
+  } else if (!regexSpecialString.test(value.trim())) {
+    return translation('auth.password_format_error')
   } else {
     return ''
   }
@@ -79,6 +69,9 @@ export function validateUserPhone(value) {
 }
 
 export function validateEmail(value) {
+  if (value.length === 0) {
+    return translation('auth.email_empty')
+  }
   const regExp = /^[+._\-\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
   if (!regExp.test(value)) {
     return translation('auth.email_error')
@@ -90,11 +83,11 @@ export function validateFullName(value) {
   const regexDisplayString =
     /[ !@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]+/
   if (value.trim().length === 0) {
-    return translation('account.requireDisplayName')
+    return translation('auth.fullname_empty')
   } else if (value.trim().length < 6) {
-    return translation('account.requireLengthDisplayName')
+    return translation('auth.fullname_length_error')
   } else if (regexDisplayString.test(value.trim())) {
-    return translation('account.errorRequireNameNotContainSpecial')
+    return translation('auth.fullname_format_error')
   } else {
     return ''
   }
