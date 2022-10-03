@@ -39,5 +39,8 @@ export default {
     fullname_length_error: 'Fullname must be at least 6 characters',
     fullname_empty: 'Fullname is required',
     register_note: 'By registering, you agree to our Terms and Privacy Policy',
+    passlock_title: 'Enter your passcode',
+    passlock_description: 'Enter your passcode to unlock your account',
+    passcode_error: 'Passcode is not correct',
   },
 }

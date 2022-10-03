@@ -1,12 +1,5 @@
-import { ArrowRightSvg, BallSvg, CheckSvg, ChevronRightSvg } from '@/Assets/Svg'
-import {
-  AppBottomSheet,
-  AppText,
-  Container,
-  Obx,
-  Padding,
-  Row,
-} from '@/Components'
+import { ArrowRightSvg, BallSvg, ChevronRightSvg } from '@/Assets/Svg'
+import { AppText, Container } from '@/Components'
 import { PageName } from '@/Config'
 import { useAppTheme } from '@/Hooks'
 import { navigate, navigateAndReset } from '@/Navigators'
@@ -20,7 +13,6 @@ import {
   XStyleSheet,
 } from '@/Theme'
 import { isAndroid } from '@/Utils'
-import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { memo, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -121,7 +113,6 @@ const OnboardingScreen = () => {
       }
     }
   }
-
   return (
     <Container statusBarProps={{ barStyle: 'light-content' }} disableTop>
       <Animated.View style={[Layout.fill, backgroundStlye]}>

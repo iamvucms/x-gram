@@ -63,8 +63,7 @@
     "react-native-screens": "^3.15.0",
     "react-native-spinkit": "^1.5.1",
     "react-native-svg": "^12.4.1",
-    "react-native-video": "^5.2.1",
-    "react-native-vision-camera": "^2.14.1"
+    "react-native-video": "^5.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

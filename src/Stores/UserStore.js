@@ -4,6 +4,8 @@ import { makePersistExcept } from './StoreUtils'
 export default class UserStore {
   isLogged = false
   userInfo = {}
+  passcode = '123456'
+  passcodeEnabled = true
   constructor() {
     makeAutoObservable(this)
     makePersistExcept(this, 'UserStore', [])
@@ -15,6 +17,13 @@ export default class UserStore {
   logout() {
     this.userInfo = {}
     this.isLogged = false
+  }
+  setPasscode(passcode) {
+    this.passcode = passcode
+    this.passcodeEnabled = true
+  }
+  disablePasscode() {
+    this.passcodeEnabled = false
   }
   // check for hydration (required)
   get isHydrated() {

@@ -14,3 +14,7 @@ export { default as CameraSvg } from './Common/CameraSvg'
 export { default as BallSvg } from './Onboarding/BallSvg'
 //Home
 export { default as ExampleSvg } from './Home/Example'
+//Auth
+export { default as LockSvg } from './Auth/LockSvg'
+export { default as FingerPrintSvg } from './Auth/FingerPrintSvg'
+export { default as BackSpaceSvg } from './Auth/BackSpaceSvg'
