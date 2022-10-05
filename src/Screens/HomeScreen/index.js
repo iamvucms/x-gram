@@ -1,20 +1,25 @@
-import { AppButton, Container } from '@/Components'
-import { PageName } from '@/Config'
-import { navigate } from '@/Navigators'
-import { Layout } from '@/Theme'
+import { Container } from '@/Components'
+import { Colors, XStyleSheet } from '@/Theme'
 import React from 'react'
-import Config from 'react-native-config'
+import { StoryBar } from './HomeScreenComponents'
 
 const HomeScreen = () => {
-  console.log(Config)
   return (
-    <Container style={Layout.center}>
-      <AppButton
-        onPress={() => navigate(PageName.ExampleScreen)}
-        text="Example"
-      />
+    <Container
+      safeAreaColor={Colors.k222222}
+      disableTop={false}
+      style={styles.rootView}
+      statusBarProps={{ barStyle: 'light-content' }}
+    >
+      <StoryBar />
     </Container>
   )
 }
 
 export default HomeScreen
+const styles = XStyleSheet.create({
+  rootView: {
+    flex: 1,
+    backgroundColor: Colors.white,
+  },
+})

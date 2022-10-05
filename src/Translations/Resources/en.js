@@ -43,4 +43,7 @@ export default {
     passlock_description: 'Enter your passcode to unlock your account',
     passcode_error: 'Passcode is not correct',
   },
+  home: {
+    create_story: 'Create Story',
+  },
 }

@@ -1,6 +1,7 @@
 export const Colors = {
   primary: '#0084ff',
   primaryLight: '#4da1ff',
+  secondary: '#B2A4FF',
   typography: '#000',
   black: '#000',
   black75: 'rgba(0,0,0,0.75)',
@@ -8,6 +9,7 @@ export const Colors = {
   white: '#fff',
   white75: 'rgba(255,255,255,0.75)',
   white50: 'rgba(255,255,255,0.5)',
+  white006: 'rgba(255,255,255,0.06)',
   gray: '#ccc',
   placeholder: '#4F555A',
   disabled: '#E5E5E5',
@@ -23,6 +25,9 @@ export const Colors = {
   kFFDB5C: '#FFDB5C',
   kDDA82A0A: '#DDA82A0A',
   kDFDFDF: '#DFDFDF',
+  k8E8E8E: '#8E8E8E',
+  kB8FF8D: '#B8FF8D',
+  kC2C2C2: '#C2C2C2',
 }
 
 export const DarkColors = {

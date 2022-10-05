@@ -69,7 +69,7 @@ const AppImage = ({
         onLoadEnd={() => {
           fadingAnim.value = withTiming(0)
         }}
-        style={style}
+        style={[styles.image, style]}
         resizeMode={resizeMode}
         source={source}
       />
@@ -83,5 +83,9 @@ const styles = XStyleSheet.create({
   blurhashView: {
     ...XStyleSheet.absoluteFillObject,
     zIndex: 10,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
 })

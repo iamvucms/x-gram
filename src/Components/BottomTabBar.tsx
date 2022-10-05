@@ -1,12 +1,11 @@
-import { BarsSvg, HomeSvg } from '@/Assets/Svg'
+import { HeartSvg, HomeSvg, PlusCircleSvg, SearchSvg } from '@/Assets/Svg'
 import { PageName } from '@/Config'
 import { navigate } from '@/Navigators'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
+import { BlurView } from '@react-native-community/blur'
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import React, { useCallback, useMemo } from 'react'
 import { Pressable, View } from 'react-native'
-import AppText from './AppText'
-import Padding from './Padding'
 
 const BottomTabBar = ({ state }: BottomTabBarProps) => {
   const tabBars = useMemo(
@@ -18,16 +17,32 @@ const BottomTabBar = ({ state }: BottomTabBarProps) => {
         active: state.index === 0,
       },
       {
-        name: 'Menu',
-        icon: BarsSvg,
-        routeName: PageName.MenuStack,
+        name: 'Search',
+        icon: SearchSvg,
+        routeName: PageName.SearchScreen,
         active: state.index === 1,
+      },
+      {
+        name: 'Create',
+        icon: PlusCircleSvg,
+      },
+      {
+        name: 'Notification',
+        icon: HeartSvg,
+        routeName: PageName.NotificationScreen,
+        active: state.index === 2,
+      },
+      {
+        name: 'Profile',
+        icon: HomeSvg,
+        routeName: PageName.ProfileScreen,
+        active: state.index === 3,
       },
     ],
     [state.index],
   )
   const renderTabItem = useCallback(tab => {
-    return (
+    return tab.name !== 'Create' ? (
       <Pressable
         key={tab.name}
         style={[Layout.fill, Layout.center]}
@@ -35,25 +50,45 @@ const BottomTabBar = ({ state }: BottomTabBarProps) => {
       >
         <tab.icon
           size={24}
-          color={tab.active ? Colors.primary : Colors.white}
+          color={tab.active ? Colors.secondary : Colors.kC2C2C2}
         />
-        <Padding top={5} />
-        <AppText color={tab.active ? Colors.primary : Colors.white}>
-          {tab.name}
-        </AppText>
+      </Pressable>
+    ) : (
+      <Pressable style={styles.createBtn}>
+        <tab.icon size={75} />
       </Pressable>
     )
   }, [])
-  return <View style={styles.tabBarView}>{tabBars.map(renderTabItem)}</View>
+  return (
+    <View style={styles.rootView}>
+      <View style={styles.tabBarView}>{tabBars.map(renderTabItem)}</View>
+    </View>
+  )
 }
 
 export default BottomTabBar
 
 const styles = XStyleSheet.create({
+  rootView: {
+    position: 'absolute',
+    bottom: 0,
+    left: -1,
+    right: -1,
+    backgroundColor: Colors.white50,
+    zIndex: 99,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    borderColor: Colors.border,
+  },
   tabBarView: {
     flexDirection: 'row',
     height: 80,
     alignItems: 'center',
     justifyContent: 'space-around',
+  },
+  createBtn: {
+    marginBottom: 50,
   },
 })

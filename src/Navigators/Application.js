@@ -57,7 +57,7 @@ const PreAuthStack = () => {
 
 const AuthStack = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen name={PageName.HomeTab} component={BottomTab} />
     </Stack.Navigator>
   )
