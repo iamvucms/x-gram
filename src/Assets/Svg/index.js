@@ -24,6 +24,8 @@ export { default as SendSvg } from './Home/SendSvg'
 export { default as PlusCircleSvg } from './Home/PlusCircleSvg'
 export { default as CommentSvg } from './Home/CommentSvg'
 export { default as SearchSvg } from './Home/SearchSvg'
+export { default as BookMarkedSvg } from './Home/BookMarkedSvg'
+export { default as BookMarkSvg } from './Home/BookMarkSvg'
 //Auth
 export { default as LockSvg } from './Auth/LockSvg'
 export { default as FingerPrintSvg } from './Auth/FingerPrintSvg'

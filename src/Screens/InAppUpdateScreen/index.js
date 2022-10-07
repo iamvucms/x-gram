@@ -21,7 +21,9 @@ const InAppUpdateScreen = () => {
     currentSize: 0,
     setCurrentSize: payload => (state.currentSize = payload),
   }))
+
   const { t } = useTranslation()
+
   const codePushStatusDidChange = syncStatus => {
     switch (syncStatus) {
       case CodePush.SyncStatus.CHECKING_FOR_UPDATE:
@@ -48,11 +50,13 @@ const InAppUpdateScreen = () => {
         break
     }
   }
+
   const codePushDownloadDidProgress = progress => {
     state.setType(DownloadType.Download)
     state.setTotalSize(progress.totalBytes)
     state.setCurrentSize(progress.receivedBytes)
   }
+
   const immediateUpdate = () => {
     CodePush.sync(
       {

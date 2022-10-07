@@ -9,31 +9,39 @@ import {
   ViewStyle,
 } from 'react-native'
 import { Blurhash } from 'react-native-blurhash'
-import FastImage, { FastImageProps } from 'react-native-fast-image'
+import FastImage, { FastImageProps, Source } from 'react-native-fast-image'
+import {
+  PinchGestureHandler,
+  PinchGestureHandlerGestureEvent,
+} from 'react-native-gesture-handler'
 import Animated, {
+  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
 import { Obx } from '.'
 interface AppImageProps {
-  source: ImageURISource & ImageRequireSource
+  source: Source | ImageRequireSource
   style?: FastImageProps['style']
   resizeMode?: 'cover' | 'contain' | 'stretch' | 'center'
   blurHashEnabled?: boolean
-  containerStyle: StyleProp<ViewStyle>
+  containerStyle?: StyleProp<ViewStyle>
   disabled?: boolean
+  enablePinch?: boolean
   onPress?: () => void
 }
 const AppImage = ({
   source,
   blurHashEnabled = true,
+  enablePinch,
   resizeMode = 'cover',
   style,
   containerStyle,
   disabled,
   onPress,
 }: AppImageProps) => {
+  const scale = useSharedValue(1)
   const fadingAnim = useSharedValue(1)
   const state = useLocalObservable(() => ({
     hash: 'L9AB*A%LPqys8_H=yDR5nMMeVXR5',
@@ -41,14 +49,34 @@ const AppImage = ({
   }))
 
   useEffect(() => {
-    if (source.uri) {
-      Blurhash.encode(source.uri, 4, 3).then(hash => {
+    if (source['uri']) {
+      Blurhash.encode(source['uri'], 4, 3).then(hash => {
         state.setHash(hash)
       })
     }
   }, [source])
+
   const blurStyle = useAnimatedStyle(() => ({
     opacity: fadingAnim.value,
+  }))
+
+  const gestureHandler =
+    useAnimatedGestureHandler<PinchGestureHandlerGestureEvent>({
+      onActive: event => {
+        if (event.scale > 1 && enablePinch) {
+          scale.value = event.scale
+        }
+      },
+      onEnd: () => {
+        scale.value = withTiming(1)
+      },
+    })
+  const imageContainerStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scale: scale.value,
+      },
+    ],
   }))
   return (
     <Pressable disabled={disabled} onPress={onPress} style={containerStyle}>
@@ -65,14 +93,18 @@ const AppImage = ({
           </Obx>
         </Animated.View>
       )}
-      <FastImage
-        onLoadEnd={() => {
-          fadingAnim.value = withTiming(0)
-        }}
-        style={[styles.image, style]}
-        resizeMode={resizeMode}
-        source={source}
-      />
+      <PinchGestureHandler onGestureEvent={gestureHandler}>
+        <Animated.View style={imageContainerStyle}>
+          <FastImage
+            onLoadEnd={() => {
+              fadingAnim.value = withTiming(0)
+            }}
+            style={[styles.image, style]}
+            resizeMode={resizeMode}
+            source={source}
+          />
+        </Animated.View>
+      </PinchGestureHandler>
     </Pressable>
   )
 }

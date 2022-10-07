@@ -2,7 +2,6 @@ import { HeartSvg, HomeSvg, PlusCircleSvg, SearchSvg } from '@/Assets/Svg'
 import { PageName } from '@/Config'
 import { navigate } from '@/Navigators'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
-import { BlurView } from '@react-native-community/blur'
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import React, { useCallback, useMemo } from 'react'
 import { Pressable, View } from 'react-native'
@@ -72,15 +71,12 @@ const styles = XStyleSheet.create({
   rootView: {
     position: 'absolute',
     bottom: 0,
-    left: -1,
-    right: -1,
-    backgroundColor: Colors.white50,
+    left: 0,
+    right: 0,
+    backgroundColor: Colors.white95,
     zIndex: 99,
-    borderWidth: 1,
-    borderBottomWidth: 0,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    borderColor: Colors.border,
   },
   tabBarView: {
     flexDirection: 'row',

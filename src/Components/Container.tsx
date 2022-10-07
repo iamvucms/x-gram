@@ -10,6 +10,7 @@ import {
 import React, { memo } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Animated, { FadeIn } from 'react-native-reanimated'
+import { ResponsiveHeight } from '@/Theme'
 
 interface ContainerProps {
   children: React.ReactNode
@@ -20,6 +21,7 @@ interface ContainerProps {
   useFading?: boolean
   containerStyle?: ViewStyle
   safeAreaColor?: string
+  bottomPadding?: number
 }
 
 const Container = ({
@@ -31,6 +33,7 @@ const Container = ({
   useFading = false,
   style,
   containerStyle,
+  bottomPadding = 0,
 }: ContainerProps) => {
   const { bottom, top } = useSafeAreaInsets()
   return (
@@ -64,7 +67,11 @@ const Container = ({
           style={[
             styles.bar,
             {
-              height: bottom > 0 ? bottom : 0,
+              height: bottomPadding
+                ? ResponsiveHeight(bottomPadding)
+                : bottom > 0
+                ? bottom
+                : 0,
               backgroundColor:
                 safeAreaColor ||
                 style?.backgroundColor ||
