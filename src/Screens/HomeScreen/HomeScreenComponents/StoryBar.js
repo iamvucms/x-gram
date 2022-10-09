@@ -1,13 +1,6 @@
-import {
-  BellSvg,
-  CreateStorySvg,
-  MenuSvg,
-  MessageSvg,
-  StoryGradientBorderSvg,
-} from '@/Assets/Svg'
-import { AppImage, AppText, Box, Padding } from '@/Components'
+import { CreateStorySvg, StoryGradientBorderSvg } from '@/Assets/Svg'
+import { AppImage, AppText, Padding } from '@/Components'
 import { Colors, XStyleSheet } from '@/Theme'
-import { isAndroid } from '@/Utils'
 import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FlatList, Pressable, TouchableOpacity, View } from 'react-native'

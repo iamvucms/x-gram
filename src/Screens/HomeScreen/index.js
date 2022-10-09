@@ -1,15 +1,40 @@
-import { Container, Padding, PostItem } from '@/Components'
+import {
+  CommentBottomSheet,
+  Container,
+  Obx,
+  Padding,
+  PostItem,
+  ShareBottomSheet,
+} from '@/Components'
+import { ShareType } from '@/Models'
 import { Colors, XStyleSheet } from '@/Theme'
-import React, { useCallback } from 'react'
+import { useLocalObservable } from 'mobx-react-lite'
+import React, { useCallback, useRef } from 'react'
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated'
 import { HomeMenu, StoryBar } from './HomeScreenComponents'
 
-const HomeScreen = () => {
-  const scrollY = useSharedValue(0)
+const SheetType = {
+  COMMENT: 'COMMENT',
+  SHARE: 'SHARE',
+}
 
+const HomeScreen = () => {
+  const commentSheetRef = useRef()
+  const shareSheetRef = useRef()
+  const scrollY = useSharedValue(0)
+  const state = useLocalObservable(() => ({
+    selectedPost: null,
+    sheetType: null,
+    setType(type) {
+      this.sheetType = type
+    },
+    setSelectedPost(post) {
+      this.selectedPost = post
+    },
+  }))
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
       scrollY.value = event.contentOffset.y
@@ -17,7 +42,21 @@ const HomeScreen = () => {
   })
 
   const renderPostItem = useCallback(({ item }) => {
-    return <PostItem post={item} />
+    const onCommentPress = () => {
+      state.setSelectedPost(item)
+      state.setType(SheetType.COMMENT)
+    }
+    const onSharePress = () => {
+      state.setSelectedPost(item)
+      state.setType(SheetType.SHARE)
+    }
+    return (
+      <PostItem
+        onSharePress={onSharePress}
+        onCommentPress={onCommentPress}
+        post={item}
+      />
+    )
   }, [])
 
   return (
@@ -38,6 +77,27 @@ const HomeScreen = () => {
         ListFooterComponent={<Padding bottom={110} />}
         showsVerticalScrollIndicator={false}
       />
+      <Obx>
+        {() =>
+          state.sheetType === SheetType.COMMENT && (
+            <CommentBottomSheet
+              onClose={() => state.setType(null)}
+              ref={commentSheetRef}
+            />
+          )
+        }
+      </Obx>
+      <Obx>
+        {() =>
+          state.sheetType === SheetType.SHARE && (
+            <ShareBottomSheet
+              type={ShareType.Post}
+              onClose={() => state.setType(null)}
+              ref={shareSheetRef}
+            />
+          )
+        }
+      </Obx>
     </Container>
   )
 }

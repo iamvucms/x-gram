@@ -1,4 +1,4 @@
-import { StyleProp, View, ViewProps } from 'react-native'
+import { StyleProp, View, ViewProps, ViewStyle } from 'react-native'
 import React, { memo } from 'react'
 import { moderateScale, ResponsiveHeight, ResponsiveWidth } from '@/Theme'
 interface PaddingProps {
@@ -9,7 +9,7 @@ interface PaddingProps {
   padding?: number
   horizontal?: number
   vertical?: number
-  style?: StyleProp<ViewProps>
+  style?: StyleProp<ViewStyle>
   children?: React.ReactNode
 }
 const Padding = ({

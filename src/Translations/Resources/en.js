@@ -8,6 +8,9 @@ export default {
   select: 'Select',
   choose_language: 'Choose Language',
   skip: 'Skip',
+  send: 'Send',
+  sent: 'Sent',
+  message_placeholder: 'Type a message',
   onboarding: {
     description: 'Sharing your moments with your friends and family',
     description1: 'XGram is a social network for sharing photos and videos',
@@ -45,5 +48,10 @@ export default {
   },
   home: {
     create_story: 'Create Story',
+    comment_placeholder: 'Add a comment...',
+    share_to: 'Share to',
+    copy_link: 'Copy Link',
+    we_chat: 'WeChat',
+    sms: 'SMS',
   },
 }

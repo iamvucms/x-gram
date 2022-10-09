@@ -14,7 +14,7 @@ interface LoadingIndicatorProps {
 }
 const LoadingIndicator = ({
   type = 'default',
-  color = Colors.black,
+  color = Colors.primary,
   size = 20,
   overlay,
   overlayColor = Colors.black50,

@@ -10,6 +10,11 @@ export { default as CircleCloseSvg } from './Common/CircleCloseSvg'
 export { default as EyeOnSvg } from './Common/EyeOnSvg'
 export { default as EyeOffSvg } from './Common/EyeOffSvg'
 export { default as CameraSvg } from './Common/CameraSvg'
+export { default as PhotoSvg } from './Common/PhotoSvg'
+export { default as LinkSvg } from './Common/LinkSvg'
+export { default as SmsSvg } from './Common/SmsSvg'
+export { default as ShareSvg } from './Common/ShareSvg'
+export { default as WeChatSvg } from './Common/WeChatSvg'
 //Onboarding
 export { default as BallSvg } from './Onboarding/BallSvg'
 //Home

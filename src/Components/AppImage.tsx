@@ -28,13 +28,13 @@ interface AppImageProps {
   blurHashEnabled?: boolean
   containerStyle?: StyleProp<ViewStyle>
   disabled?: boolean
-  enablePinch?: boolean
+  enablePinchZoom?: boolean
   onPress?: () => void
 }
 const AppImage = ({
   source,
   blurHashEnabled = true,
-  enablePinch,
+  enablePinchZoom,
   resizeMode = 'cover',
   style,
   containerStyle,
@@ -63,7 +63,7 @@ const AppImage = ({
   const gestureHandler =
     useAnimatedGestureHandler<PinchGestureHandlerGestureEvent>({
       onActive: event => {
-        if (event.scale > 1 && enablePinch) {
+        if (event.scale > 1 && enablePinchZoom) {
           scale.value = event.scale
         }
       },

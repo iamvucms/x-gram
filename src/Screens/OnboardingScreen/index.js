@@ -113,7 +113,9 @@ const OnboardingScreen = () => {
       }
     }
   }
-  navigate(PageName.AuthStack)
+  setTimeout(() => {
+    navigate(PageName.AuthStack)
+  }, 1000)
   return (
     <Container statusBarProps={{ barStyle: 'light-content' }} disableTop>
       <Animated.View style={[Layout.fill, backgroundStlye]}>

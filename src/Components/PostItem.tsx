@@ -7,30 +7,36 @@ import {
 } from '@/Assets/Svg'
 import {
   Colors,
+  moderateScale,
   ResponsiveHeight,
   ResponsiveWidth,
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
-import { BlurView } from '@react-native-community/blur'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { memo, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { TouchableOpacity, View } from 'react-native'
 import Animated, {
-  FadeIn,
   interpolate,
   SharedValue,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  withTiming,
 } from 'react-native-reanimated'
-import { Obx } from '.'
+import { Expanded, Obx } from '.'
 import AppImage from './AppImage'
 import AppText from './AppText'
 import Box from './Box'
 import Padding from './Padding'
-const PostItem = () => {
+interface PostItemProps {
+  onCommentPress?: () => void
+  onSharePress?: () => void
+  post: any
+}
+const PostItem = ({ post, onCommentPress, onSharePress }: PostItemProps) => {
   const pageAnim = useSharedValue(0)
+  const { t } = useTranslation()
   const state = useLocalObservable(() => ({
     imageIndex: 0,
     setImageIndex: (index: number) => (state.imageIndex = index),
@@ -45,10 +51,10 @@ const PostItem = () => {
   const onImagePress = useCallback(() => {
     if (state.imageIndex < images.length - 1) {
       state.setImageIndex(state.imageIndex + 1)
-      pageAnim.value = withSpring(state.imageIndex)
+      pageAnim.value = withTiming(state.imageIndex)
     } else {
       state.setImageIndex(0)
-      pageAnim.value = withSpring(0)
+      pageAnim.value = withTiming(0)
     }
   }, [])
 
@@ -56,72 +62,88 @@ const PostItem = () => {
     return <IndicatorItem pageAnim={pageAnim} key={index} index={index} />
   }, [])
   return (
-    <View style={styles.rootView}>
-      <Obx>
-        {() => (
-          <AppImage
-            onPress={onImagePress}
-            source={{
-              uri: images[state.imageIndex],
-            }}
-            containerStyle={styles.imageContainer}
-          />
-        )}
-      </Obx>
-      <View style={styles.indicatorView}>
-        {images.map(renderIndicatorItem)}
-      </View>
-      <Box padding={16} row align="center" justify="space-between">
-        <Box row align="center">
-          <View style={styles.avatarView}>
-            <StoryGradientBorderSvg size={66} />
+    <Box marginHorizontal={16} marginTop={16}>
+      <View style={styles.rootView}>
+        <Obx>
+          {() => (
             <AppImage
-              containerStyle={styles.avatarImg}
+              enablePinchZoom
+              onPress={onImagePress}
               source={{
-                uri: 'https://picsum.photos/500/500',
+                uri: images[state.imageIndex],
               }}
+              containerStyle={styles.imageContainer}
             />
+          )}
+        </Obx>
+        {images.length > 1 && (
+          <View style={styles.indicatorView}>
+            {images.map(renderIndicatorItem)}
           </View>
-          <Padding left={16} />
-          <View>
-            <AppText
-              color={Colors.white}
-              fontSize={16}
-              lineHeight={23}
-              fontWeight={400}
-            >
-              Eric Ray
-            </AppText>
-            <Padding top={3} />
-            <AppText fontSize={12} color={Colors.white75}>
-              1 hour ago
-            </AppText>
-          </View>
+        )}
+        <Box padding={16} row align="center" justify="space-between">
+          <Box row align="center">
+            <View style={styles.avatarView}>
+              <StoryGradientBorderSvg size={66} />
+              <AppImage
+                containerStyle={styles.avatarImg}
+                source={{
+                  uri: 'https://picsum.photos/500/500',
+                }}
+              />
+            </View>
+            <Padding left={16} />
+            <View>
+              <AppText
+                color={Colors.white}
+                fontSize={16}
+                lineHeight={23}
+                fontWeight={400}
+              >
+                Eric Ray
+              </AppText>
+              <Padding top={3} />
+              <AppText fontSize={12} color={Colors.white75}>
+                1 hour ago
+              </AppText>
+            </View>
+          </Box>
+          <TouchableOpacity style={styles.bookMarkBtn}>
+            <BookMarkSvg color={Colors.white} />
+          </TouchableOpacity>
         </Box>
-        <TouchableOpacity style={styles.bookMarkBtn}>
-          <BookMarkSvg color={Colors.white} />
-        </TouchableOpacity>
-      </Box>
-      <View style={styles.sideBarView}>
-        <TouchableOpacity style={styles.sideBarBtn}>
-          <SendSvg color={Colors.white} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.sideBarBtn}>
-          <CommentSvg color={Colors.white} />
-          <Padding top={4} />
-          <AppText fontWeight={700} color={Colors.white}>
-            2.5k
-          </AppText>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.sideBarBtn, styles.reactBtn]}>
-          <HeartSvg color={Colors.white} />
-          <Padding top={4} />
-          <AppText fontWeight={700} color={Colors.white}>
-            2.9k
-          </AppText>
-        </TouchableOpacity>
+        <View style={styles.sideBarView}>
+          <TouchableOpacity onPress={onSharePress} style={styles.sideBarBtn}>
+            <SendSvg color={Colors.white} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onCommentPress} style={styles.sideBarBtn}>
+            <CommentSvg color={Colors.white} />
+            <Padding top={4} />
+            <AppText fontWeight={700} color={Colors.white}>
+              2.5k
+            </AppText>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.sideBarBtn, styles.reactBtn]}>
+            <HeartSvg color={Colors.white} />
+            <Padding top={4} />
+            <AppText fontWeight={700} color={Colors.white}>
+              2.9k
+            </AppText>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+      <TouchableOpacity onPress={onCommentPress} style={styles.commentBar}>
+        <AppImage
+          source={{
+            uri: 'https://picsum.photos/500/500',
+          }}
+          containerStyle={styles.profileImg}
+        />
+        <AppText>{t('home.comment_placeholder')}</AppText>
+        <Expanded />
+        <AppText fontWeight={700}>(2.5k Comments)</AppText>
+      </TouchableOpacity>
+    </Box>
   )
 }
 
@@ -151,9 +173,7 @@ const styles = XStyleSheet.create({
   rootView: {
     width: screenWidth - ResponsiveWidth(32),
     minHeight: screenWidth - ResponsiveWidth(32),
-    marginHorizontal: ResponsiveWidth(16),
     skipResponsive: true,
-    marginTop: ResponsiveHeight(16),
   },
   imageContainer: {
     position: 'absolute',
@@ -217,5 +237,23 @@ const styles = XStyleSheet.create({
     height: 6,
     marginHorizontal: 4,
     borderRadius: 10,
+  },
+  profileImg: {
+    height: 27,
+    width: 27,
+    borderRadius: 11,
+    overflow: 'hidden',
+    marginRight: 16,
+  },
+  commentBar: {
+    height: ResponsiveHeight(50),
+    width: screenWidth - ResponsiveWidth(32),
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: ResponsiveWidth(16),
+    skipResponsive: true,
+    backgroundColor: Colors.kF8F8F8,
+    marginTop: ResponsiveHeight(10),
+    borderRadius: moderateScale(16),
   },
 })

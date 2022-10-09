@@ -4,7 +4,7 @@ import { navigate } from '@/Navigators'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import React, { useCallback, useMemo } from 'react'
-import { Pressable, View } from 'react-native'
+import { Pressable, TouchableOpacity, View } from 'react-native'
 
 const BottomTabBar = ({ state }: BottomTabBarProps) => {
   const tabBars = useMemo(
@@ -42,7 +42,8 @@ const BottomTabBar = ({ state }: BottomTabBarProps) => {
   )
   const renderTabItem = useCallback(tab => {
     return tab.name !== 'Create' ? (
-      <Pressable
+      <TouchableOpacity
+        activeOpacity={0.8}
         key={tab.name}
         style={[Layout.fill, Layout.center]}
         onPress={() => navigate(tab.routeName)}
@@ -51,11 +52,11 @@ const BottomTabBar = ({ state }: BottomTabBarProps) => {
           size={24}
           color={tab.active ? Colors.secondary : Colors.kC2C2C2}
         />
-      </Pressable>
+      </TouchableOpacity>
     ) : (
-      <Pressable style={styles.createBtn}>
+      <TouchableOpacity activeOpacity={0.8} style={styles.createBtn}>
         <tab.icon size={75} />
-      </Pressable>
+      </TouchableOpacity>
     )
   }, [])
   return (

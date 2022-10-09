@@ -5,7 +5,7 @@ import {
   ResponsiveWidth,
 } from '@/Theme'
 import React, { forwardRef, memo } from 'react'
-import { StyleProp, View, ViewProps } from 'react-native'
+import { StyleProp, View, ViewStyle } from 'react-native'
 
 interface BoxProps {
   children?: React.ReactNode
@@ -56,7 +56,7 @@ interface BoxProps {
   bottomLeftRadius?: number
   bottomRightRadius?: number
   overflow?: 'visible' | 'hidden' | 'scroll'
-  style?: StyleProp<ViewProps>
+  style?: StyleProp<ViewStyle>
 }
 
 const Box = forwardRef(
