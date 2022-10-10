@@ -1,5 +1,6 @@
 import { CreateStorySvg, StoryGradientBorderSvg } from '@/Assets/Svg'
 import { AppImage, AppText, Padding } from '@/Components'
+import { mockStories } from '@/Models'
 import { Colors, XStyleSheet } from '@/Theme'
 import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,7 +17,7 @@ const StoryBar = ({ stories = [], scrollY }) => {
   const { t } = useTranslation()
 
   const renderStoryItem = useCallback(({ item, index }) => {
-    return <StoryItem item={item} index={index} scrollY={scrollY} />
+    return <StoryItem story={item} index={index} scrollY={scrollY} />
   }, [])
 
   const containerStyle = useAnimatedStyle(() => ({
@@ -70,8 +71,8 @@ const StoryBar = ({ stories = [], scrollY }) => {
   return (
     <Animated.View style={[styles.rootView, containerStyle]}>
       <FlatList
-        data={new Array(10).fill(0)}
-        keyExtractor={item => `${item.storyId}`}
+        data={mockStories}
+        keyExtractor={item => `${item.story_id}`}
         ListHeaderComponent={CreateButton}
         horizontal
         renderItem={renderStoryItem}

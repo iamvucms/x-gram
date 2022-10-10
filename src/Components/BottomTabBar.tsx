@@ -41,22 +41,25 @@ const BottomTabBar = ({ state }: BottomTabBarProps) => {
     [state.index],
   )
   const renderTabItem = useCallback(tab => {
-    return tab.name !== 'Create' ? (
-      <TouchableOpacity
-        activeOpacity={0.8}
-        key={tab.name}
-        style={[Layout.fill, Layout.center]}
-        onPress={() => navigate(tab.routeName)}
-      >
-        <tab.icon
-          size={24}
-          color={tab.active ? Colors.secondary : Colors.kC2C2C2}
-        />
-      </TouchableOpacity>
-    ) : (
-      <TouchableOpacity activeOpacity={0.8} style={styles.createBtn}>
-        <tab.icon size={75} />
-      </TouchableOpacity>
+    return (
+      <React.Fragment key={tab.name}>
+        {tab.name !== 'Create' ? (
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={[Layout.fill, Layout.center]}
+            onPress={() => navigate(tab.routeName)}
+          >
+            <tab.icon
+              size={24}
+              color={tab.active ? Colors.secondary : Colors.kC2C2C2}
+            />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity activeOpacity={0.8} style={styles.createBtn}>
+            <tab.icon size={75} />
+          </TouchableOpacity>
+        )}
+      </React.Fragment>
     )
   }, [])
   return (

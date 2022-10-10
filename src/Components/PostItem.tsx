@@ -5,6 +5,8 @@ import {
   SendSvg,
   StoryGradientBorderSvg,
 } from '@/Assets/Svg'
+import { PageName } from '@/Config'
+import { navigate, navigateToProfile } from '@/Navigators'
 import {
   Colors,
   moderateScale,
@@ -13,6 +15,7 @@ import {
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
+import { formatAmount } from '@/Utils'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -41,15 +44,9 @@ const PostItem = ({ post, onCommentPress, onSharePress }: PostItemProps) => {
     imageIndex: 0,
     setImageIndex: (index: number) => (state.imageIndex = index),
   }))
-  const images = [
-    'https://picsum.photos/1000/1000',
-    'https://picsum.photos/900/900',
-    'https://picsum.photos/800/800',
-    'https://picsum.photos/700/700',
-  ]
 
   const onImagePress = useCallback(() => {
-    if (state.imageIndex < images.length - 1) {
+    if (state.imageIndex < post.medias.length - 1) {
       state.setImageIndex(state.imageIndex + 1)
       pageAnim.value = withTiming(state.imageIndex)
     } else {
@@ -61,6 +58,9 @@ const PostItem = ({ post, onCommentPress, onSharePress }: PostItemProps) => {
   const renderIndicatorItem = useCallback((_, index) => {
     return <IndicatorItem pageAnim={pageAnim} key={index} index={index} />
   }, [])
+  const onMentionPress = useCallback(user_id => {
+    navigateToProfile(user_id)
+  }, [])
   return (
     <Box marginHorizontal={16} marginTop={16}>
       <View style={styles.rootView}>
@@ -70,15 +70,15 @@ const PostItem = ({ post, onCommentPress, onSharePress }: PostItemProps) => {
               enablePinchZoom
               onPress={onImagePress}
               source={{
-                uri: images[state.imageIndex],
+                uri: post.medias[state.imageIndex].url,
               }}
               containerStyle={styles.imageContainer}
             />
           )}
         </Obx>
-        {images.length > 1 && (
+        {post.medias.length > 1 && (
           <View style={styles.indicatorView}>
-            {images.map(renderIndicatorItem)}
+            {post.medias.map(renderIndicatorItem)}
           </View>
         )}
         <Box padding={16} row align="center" justify="space-between">
@@ -119,19 +119,51 @@ const PostItem = ({ post, onCommentPress, onSharePress }: PostItemProps) => {
           <TouchableOpacity onPress={onCommentPress} style={styles.sideBarBtn}>
             <CommentSvg color={Colors.white} />
             <Padding top={4} />
-            <AppText fontWeight={700} color={Colors.white}>
-              2.5k
-            </AppText>
+            <Obx>
+              {() => (
+                <AppText fontWeight={700} color={Colors.white}>
+                  {formatAmount(post.comments.length)}
+                </AppText>
+              )}
+            </Obx>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.sideBarBtn, styles.reactBtn]}>
             <HeartSvg color={Colors.white} />
             <Padding top={4} />
-            <AppText fontWeight={700} color={Colors.white}>
-              2.9k
-            </AppText>
+            <Obx>
+              {() => (
+                <AppText fontWeight={700} color={Colors.white}>
+                  {formatAmount(post.reactions.length)}
+                </AppText>
+              )}
+            </Obx>
           </TouchableOpacity>
         </View>
       </View>
+      <Box marginTop={14}>
+        <AppText lineHeight={18}>
+          <AppText lineHeight={18} fontWeight={700}>
+            {post.posted_by.user_id}
+          </AppText>{' '}
+          {post.message}
+        </AppText>
+        <Padding top={8} />
+        {post.comments.length > 0 &&
+          post.comments.slice(-2).map(comment => (
+            <AppText
+              key={comment.comment_id}
+              regexMetion
+              onMentionPress={onMentionPress}
+              numberOfLines={1}
+              lineHeight={18}
+            >
+              <AppText numberOfLines={1} lineHeight={18} fontWeight={700}>
+                {comment.commented_by.user_id}
+              </AppText>{' '}
+              {comment.comment}
+            </AppText>
+          ))}
+      </Box>
       <TouchableOpacity onPress={onCommentPress} style={styles.commentBar}>
         <AppImage
           source={{
@@ -141,7 +173,13 @@ const PostItem = ({ post, onCommentPress, onSharePress }: PostItemProps) => {
         />
         <AppText>{t('home.comment_placeholder')}</AppText>
         <Expanded />
-        <AppText fontWeight={700}>(2.5k Comments)</AppText>
+        <Obx>
+          {() => (
+            <AppText fontWeight={700}>
+              ({formatAmount(post.comments.length)} Comments)
+            </AppText>
+          )}
+        </Obx>
       </TouchableOpacity>
     </Box>
   )
@@ -251,9 +289,9 @@ const styles = XStyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: ResponsiveWidth(16),
-    skipResponsive: true,
     backgroundColor: Colors.kF8F8F8,
-    marginTop: ResponsiveHeight(10),
+    marginTop: ResponsiveHeight(14),
     borderRadius: moderateScale(16),
+    skipResponsive: true,
   },
 })

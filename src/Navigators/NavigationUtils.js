@@ -1,3 +1,5 @@
+import { PageName } from '@/Config'
+import { profileStore, userStore } from '@/Stores'
 import {
   CommonActions,
   createNavigationContainerRef,
@@ -52,4 +54,14 @@ export const screenOptions = {
   headerShown: false, // default header is making screen flicker on android
   statusBarAnimation: 'slide',
   animation: 'slide_from_right',
+}
+
+export const navigateToProfile = userId => {
+  if (userId === userStore.userInfo.user_id) {
+    navigate(PageName.ProfileScreen)
+  } else {
+    // get profile data from server
+    profileStore.fetchProfile(userId)
+    navigate(PageName.ProfileOther, { userId })
+  }
 }

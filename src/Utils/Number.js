@@ -6,3 +6,13 @@ export const roundNumber = (money, precision = 0, isRoundDown = false) => {
   const roundFunc = isRoundDown ? Math.floor : Math.round
   return roundFunc(money * Math.pow(10, precision)) / Math.pow(10, precision)
 }
+
+export const formatAmount = amount => {
+  if (amount > 999999) {
+    return `${roundNumber(amount / 1000000, 1)}m`
+  }
+  if (amount > 999) {
+    return `${roundNumber(amount / 1000, 1)}k`
+  }
+  return amount
+}

@@ -98,7 +98,7 @@ const ShareBottomSheet = forwardRef(
         <View style={Layout.fill}>
           <View style={styles.messageView}>
             <AppImage
-              source={{ uri: 'https://picsum.photos/200/300' }}
+              source={{ uri: data.medias[0].url }}
               containerStyle={styles.referralImage}
             />
             <Obx>

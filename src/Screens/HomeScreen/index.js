@@ -6,7 +6,7 @@ import {
   PostItem,
   ShareBottomSheet,
 } from '@/Components'
-import { ShareType } from '@/Models'
+import { mockPosts, ShareType } from '@/Models'
 import { Colors, XStyleSheet } from '@/Theme'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback, useRef } from 'react'
@@ -37,6 +37,9 @@ const HomeScreen = () => {
   }))
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
+      if (event.contentOffset.y > 150) {
+        return
+      }
       scrollY.value = event.contentOffset.y
     },
   })
@@ -71,7 +74,7 @@ const HomeScreen = () => {
         ListHeaderComponent={<StoryBar scrollY={scrollY} />}
         scrollEventThrottle={16}
         onScroll={scrollHandler}
-        data={new Array(5).fill(0)}
+        data={mockPosts}
         renderItem={renderPostItem}
         keyExtractor={(_, index) => index.toString()}
         ListFooterComponent={<Padding bottom={110} />}
@@ -83,6 +86,7 @@ const HomeScreen = () => {
             <CommentBottomSheet
               onClose={() => state.setType(null)}
               ref={commentSheetRef}
+              data={state?.selectedPost}
             />
           )
         }
@@ -94,6 +98,7 @@ const HomeScreen = () => {
               type={ShareType.Post}
               onClose={() => state.setType(null)}
               ref={shareSheetRef}
+              data={state?.selectedPost}
             />
           )
         }

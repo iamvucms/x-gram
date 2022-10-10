@@ -1,14 +1,9 @@
-import { StyleProp, StyleSheet, Text, TextProps, TextStyle } from 'react-native'
+import { AppFonts, Colors, FontSizes, ResponsiveFont } from '@/Theme'
 import React, { memo } from 'react'
-import {
-  AppFonts,
-  Colors,
-  FontSizes,
-  ResponsiveFont,
-  ResponsiveHeight,
-} from '@/Theme'
+import { StyleProp, StyleSheet, Text, TextProps, TextStyle } from 'react-native'
+import ParsedText, { ParsedTextProps } from 'react-native-parsed-text'
 
-export interface AppTextProps extends TextProps {
+export interface AppTextProps extends TextProps, ParsedTextProps {
   children: React.ReactNode
   fontWeight?: keyof typeof AppFonts | string
   fontSize?: number | keyof typeof FontSizes
@@ -18,6 +13,8 @@ export interface AppTextProps extends TextProps {
   style?: StyleProp<TextStyle>
   align?: 'left' | 'center' | 'right'
   useDefaultFont?: boolean
+  regexMetion?: boolean
+  onMentionPress?: (username: string) => void
 }
 
 const AppText = ({
@@ -30,6 +27,9 @@ const AppText = ({
   style,
   align = 'left',
   useDefaultFont = false,
+  regexMetion = false,
+  onMentionPress,
+  parse = [],
   ...restProps
 }: AppTextProps) => {
   const size = typeof fontSize === 'string' ? FontSizes[fontSize] : fontSize
@@ -47,10 +47,54 @@ const AppText = ({
     ...(lineHeight && { lineHeight: ResponsiveFont(lineHeight) }),
     textAlign: align,
   }
-  return (
-    <Text style={[styles.base, textStyles, style]} {...restProps}>
-      {children}
+  return Array.isArray(children) ? (
+    <Text {...restProps} style={[styles.base, textStyles, style]}>
+      {children.map(child =>
+        typeof child === 'string' ? (
+          <ParsedText
+            key={child}
+            {...restProps}
+            style={[styles.base, textStyles, style]}
+            parse={[
+              ...(regexMetion
+                ? [
+                    {
+                      pattern: /@\w+/,
+                      style: { color: Colors.primary },
+                      onPress: user_id =>
+                        onMentionPress && onMentionPress(user_id),
+                    },
+                  ]
+                : []),
+              ...parse,
+            ]}
+          >
+            {child}
+          </ParsedText>
+        ) : (
+          child
+        ),
+      )}
     </Text>
+  ) : (
+    <ParsedText
+      {...restProps}
+      style={[styles.base, textStyles, style]}
+      parse={[
+        ...(regexMetion
+          ? [
+              {
+                pattern: /@\w+/,
+                style: { color: Colors.primary },
+                onPress: user_id => onMentionPress && onMentionPress(user_id),
+              },
+            ]
+          : []),
+        ...parse,
+      ]}
+    >
+      {children}
+    </ParsedText>
   )
 }
 

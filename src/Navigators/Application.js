@@ -10,6 +10,7 @@ import {
   InAppUpdateScreen,
   LoginScreen,
   OnboardingScreen,
+  ProfileOther,
   RecoveryPasswordScreen,
   RegisterScreen,
 } from '@/Screens'
@@ -59,6 +60,7 @@ const AuthStack = () => {
   return (
     <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen name={PageName.HomeTab} component={BottomTab} />
+      <Stack.Screen name={PageName.ProfileOther} component={ProfileOther} />
     </Stack.Navigator>
   )
 }

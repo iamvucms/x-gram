@@ -1,8 +1,7 @@
 import { CommentSvg, HeartSvg, PhotoSvg, SendSvg } from '@/Assets/Svg'
-import { mockComments } from '@/Models'
 import { AppFonts, Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
-import { getHitSlop, isAndroid } from '@/Utils'
-import { BottomSheetFlatList, BottomSheetTextInput } from '@gorhom/bottom-sheet'
+import { formatAmount, getHitSlop, isAndroid } from '@/Utils'
+import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { forwardRef, memo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,15 +15,12 @@ import CommentItem from './CommentItem'
 import Padding from './Padding'
 import Row from './Row'
 interface CommentBottomSheetProps {
-  comments: any[]
+  data: any
   postId: string
   onClose: () => void
 }
 const CommentBottomSheet = forwardRef(
-  (
-    { comments = mockComments, postId, onClose }: CommentBottomSheetProps,
-    ref,
-  ) => {
+  ({ data, onClose }: CommentBottomSheetProps, ref) => {
     const { t } = useTranslation()
     const state = useLocalObservable(() => ({
       comment: '',
@@ -78,7 +74,13 @@ const CommentBottomSheet = forwardRef(
             <Row align="center">
               <CommentSvg color={Colors.placeholder} size={18} />
               <Padding left={6} />
-              <AppText fontSize={16}>2.5k</AppText>
+              <Obx>
+                {() => (
+                  <AppText fontSize={16}>
+                    {formatAmount(data.comments.length)}
+                  </AppText>
+                )}
+              </Obx>
             </Row>
             <TouchableOpacity hitSlop={getHitSlop(16)}>
               <HeartSvg color={Colors.kC2C2C2} size={20} />
@@ -91,11 +93,15 @@ const CommentBottomSheet = forwardRef(
                   <LoadingIndicator type="Circle" />
                 </Box>
               ) : (
-                <BottomSheetFlatList
-                  data={comments}
-                  renderItem={renderCommentItem}
-                  keyExtractor={item => item.id}
-                />
+                <Obx>
+                  {() => (
+                    <BottomSheetFlatList
+                      data={data.comments.slice()}
+                      renderItem={renderCommentItem}
+                      keyExtractor={item => item.id}
+                    />
+                  )}
+                </Obx>
               )
             }
           </Obx>

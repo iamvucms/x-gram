@@ -17,4 +17,5 @@ export const PageName = {
   AuthPassCodeScreen: 'AuthPassCodeScreen',
   RecoveryPasswordScreen: 'RecoveryPasswordScreen',
   OnboardingScreen: 'OnboardingScreen',
+  ProfileOther: 'ProfileOther',
 }

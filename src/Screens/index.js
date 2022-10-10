@@ -11,3 +11,4 @@ export { default as RecoveryPasswordScreen } from './Auth/RecoveryPasswordScreen
 export { default as ProfileScreen } from './ProfileScreen'
 export { default as NotificationScreen } from './NotificationScreen'
 export { default as SearchScreen } from './SearchScreen'
+export { default as ProfileOther } from './ProfileOther'
