@@ -49,7 +49,7 @@
     "react-native-blurhash": "^1.1.10",
     "react-native-code-push": "^7.0.5",
     "react-native-collapsible": "^1.6.0",
-    "react-native-config": "^1.4.6",
+    "react-native-config": "1.4.6",
     "react-native-device-info": "^10.0.2",
     "react-native-dropdown-picker": "^5.4.2",
     "react-native-fast-image": "^8.6.1",
@@ -64,12 +64,13 @@
     "react-native-screens": "^3.15.0",
     "react-native-spinkit": "^1.5.1",
     "react-native-svg": "^12.4.1",
-    "react-native-video": "^5.2.1"
+    "react-native-video": "5.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/runtime": "^7.12.5",
     "@react-native-community/eslint-config": "^2.0.0",
+    "@types/react-native": "^0.70.4",
     "babel-jest": "^26.6.3",
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-plugin-transform-remove-console": "^6.9.4",

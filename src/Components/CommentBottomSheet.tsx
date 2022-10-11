@@ -98,7 +98,7 @@ const CommentBottomSheet = forwardRef(
                     <BottomSheetFlatList
                       data={data.comments.slice()}
                       renderItem={renderCommentItem}
-                      keyExtractor={item => item.id}
+                      keyExtractor={item => item.comment_id}
                     />
                   )}
                 </Obx>

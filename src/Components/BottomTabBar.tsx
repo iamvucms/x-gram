@@ -1,10 +1,12 @@
 import { HeartSvg, HomeSvg, PlusCircleSvg, SearchSvg } from '@/Assets/Svg'
 import { PageName } from '@/Config'
 import { navigate } from '@/Navigators'
+import { userStore } from '@/Stores'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import React, { useCallback, useMemo } from 'react'
-import { Pressable, TouchableOpacity, View } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
+import { AppImage, CreateButton } from '.'
 
 const BottomTabBar = ({ state }: BottomTabBarProps) => {
   const tabBars = useMemo(
@@ -13,13 +15,13 @@ const BottomTabBar = ({ state }: BottomTabBarProps) => {
         name: 'Home',
         icon: HomeSvg,
         routeName: PageName.HomeStack,
-        active: state.index === 0,
+        index: 0,
       },
       {
         name: 'Search',
         icon: SearchSvg,
         routeName: PageName.SearchScreen,
-        active: state.index === 1,
+        index: 1,
       },
       {
         name: 'Create',
@@ -29,39 +31,53 @@ const BottomTabBar = ({ state }: BottomTabBarProps) => {
         name: 'Notification',
         icon: HeartSvg,
         routeName: PageName.NotificationScreen,
-        active: state.index === 2,
+        index: 2,
       },
       {
         name: 'Profile',
-        icon: HomeSvg,
+        icon: ({ color, ...restProps }) => (
+          <AppImage
+            {...restProps}
+            containerStyle={[styles.avatar, { borderColor: color }]}
+            source={{
+              uri:
+                userStore?.userInfo?.avatar_url ||
+                'https://picsum.photos/200/300',
+            }}
+          />
+        ),
         routeName: PageName.ProfileScreen,
-        active: state.index === 3,
+        index: 3,
       },
     ],
+    [],
+  )
+  const renderTabItem = useCallback(
+    tab => {
+      return (
+        <React.Fragment key={tab.name}>
+          {tab.name !== 'Create' ? (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={[Layout.fill, Layout.center]}
+              onPress={() => navigate(tab.routeName)}
+            >
+              <tab.icon
+                onPress={() => navigate(tab.routeName)}
+                size={24}
+                color={
+                  tab.index === state.index ? Colors.primary : Colors.kC2C2C2
+                }
+              />
+            </TouchableOpacity>
+          ) : (
+            <CreateButton />
+          )}
+        </React.Fragment>
+      )
+    },
     [state.index],
   )
-  const renderTabItem = useCallback(tab => {
-    return (
-      <React.Fragment key={tab.name}>
-        {tab.name !== 'Create' ? (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={[Layout.fill, Layout.center]}
-            onPress={() => navigate(tab.routeName)}
-          >
-            <tab.icon
-              size={24}
-              color={tab.active ? Colors.secondary : Colors.kC2C2C2}
-            />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity activeOpacity={0.8} style={styles.createBtn}>
-            <tab.icon size={75} />
-          </TouchableOpacity>
-        )}
-      </React.Fragment>
-    )
-  }, [])
   return (
     <View style={styles.rootView}>
       <View style={styles.tabBarView}>{tabBars.map(renderTabItem)}</View>
@@ -90,5 +106,13 @@ const styles = XStyleSheet.create({
   },
   createBtn: {
     marginBottom: 50,
+  },
+  avatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 99,
+    overflow: 'hidden',
+    borderWidth: 1.5,
+    borderColor: Colors.white,
   },
 })

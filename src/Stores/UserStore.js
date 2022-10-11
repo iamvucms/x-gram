@@ -6,6 +6,7 @@ export default class UserStore {
   userInfo = {}
   passcode = '123456'
   passcodeEnabled = true
+  bookmarkPosts = []
   constructor() {
     makeAutoObservable(this)
     makePersistExcept(this, 'UserStore', [])
@@ -24,6 +25,12 @@ export default class UserStore {
   }
   disablePasscode() {
     this.passcodeEnabled = false
+  }
+  addBookmarkPost(post) {
+    this.bookmarkPosts = [...this.bookmarkPosts, post]
+  }
+  removeBookmarkPost(postId) {
+    this.bookmarkPosts = this.bookmarkPosts.filter(post => post.id !== postId)
   }
   // check for hydration (required)
   get isHydrated() {

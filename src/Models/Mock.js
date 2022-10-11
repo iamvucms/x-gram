@@ -22,7 +22,7 @@ export const mockComments = [
       'This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
   {
-    comment_id: '2',
+    comment_id: '3',
     commented_by: {
       user_id: 'username02',
       full_name: 'Jane Doe',
@@ -32,7 +32,7 @@ export const mockComments = [
       '@username03 This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
   {
-    comment_id: '2',
+    comment_id: '4',
     commented_by: {
       user_id: 'username02',
       full_name: 'Jane Doe',
@@ -42,7 +42,7 @@ export const mockComments = [
       'This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
   {
-    comment_id: '2',
+    comment_id: '5',
     commented_by: {
       user_id: 'username02',
       full_name: 'Jane Doe',
@@ -52,7 +52,7 @@ export const mockComments = [
       'This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
   {
-    comment_id: '2',
+    comment_id: '6',
     commented_by: {
       user_id: 'username02',
       full_name: 'Jane Doe',
@@ -62,7 +62,7 @@ export const mockComments = [
       '@username04 This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
   {
-    comment_id: '2',
+    comment_id: '7',
     commented_by: {
       user_id: 'username02',
       full_name: 'Jane Doe',
@@ -72,7 +72,7 @@ export const mockComments = [
       'This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
   {
-    comment_id: '2',
+    comment_id: '8',
     commented_by: {
       user_id: 'username02',
       full_name: 'Jane Doe',

@@ -49,32 +49,33 @@ const AppText = ({
   }
   return Array.isArray(children) ? (
     <Text {...restProps} style={[styles.base, textStyles, style]}>
-      {children.map(child =>
-        typeof child === 'string' ? (
-          <ParsedText
-            key={child}
-            {...restProps}
-            style={[styles.base, textStyles, style]}
-            parse={[
-              ...(regexMetion
-                ? [
-                    {
-                      pattern: /@\w+/,
-                      style: { color: Colors.primary },
-                      onPress: user_id =>
-                        onMentionPress && onMentionPress(user_id),
-                    },
-                  ]
-                : []),
-              ...parse,
-            ]}
-          >
-            {child}
-          </ParsedText>
-        ) : (
-          child
-        ),
-      )}
+      {children.map((child, idx) => (
+        <React.Fragment key={`${child}_${idx}`}>
+          {typeof child === 'string' ? (
+            <ParsedText
+              {...restProps}
+              style={[styles.base, textStyles, style]}
+              parse={[
+                ...(regexMetion
+                  ? [
+                      {
+                        pattern: /@\w+/,
+                        style: { color: Colors.primary },
+                        onPress: user_id =>
+                          onMentionPress && onMentionPress(user_id),
+                      },
+                    ]
+                  : []),
+                ...parse,
+              ]}
+            >
+              {child}
+            </ParsedText>
+          ) : (
+            child
+          )}
+        </React.Fragment>
+      ))}
     </Text>
   ) : (
     <ParsedText
