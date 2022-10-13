@@ -18,6 +18,6 @@ export const PageName = {
   RecoveryPasswordScreen: 'RecoveryPasswordScreen',
   OnboardingScreen: 'OnboardingScreen',
   ProfileOther: 'ProfileOther',
-  PickImageScreen: 'PickImageScreen',
   CaptureScreen: 'CaptureScreen',
+  MediaPicker: 'MediaPicker',
 }

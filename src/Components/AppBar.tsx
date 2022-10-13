@@ -1,37 +1,50 @@
 import { ChevronRightSvg } from '@/Assets/Svg'
 import { goBack } from '@/Navigators'
-import { screenWidth, XStyleSheet } from '@/Theme'
+import { Colors, screenWidth, XStyleSheet } from '@/Theme'
+import { getHitSlop } from '@/Utils'
 import React, { memo } from 'react'
-import { TouchableOpacity, View } from 'react-native'
+import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native'
 import AppText from './AppText'
 interface AppBarProps {
   title: string
+  titleColor?: string
   showBack?: boolean
   onBackPress?: () => void
   onRightPress?: () => void
-  leftComponent?: React.ReactNode
+  leftIcon?: React.ReactNode
   rightComponent?: React.ReactNode
+  headerStyle: StyleProp<ViewStyle>
 }
 const AppBar = ({
   title,
+  titleColor = Colors.black,
   showBack = true,
   onBackPress = () => goBack(),
-  leftComponent,
+  leftIcon,
   onRightPress,
   rightComponent,
+  headerStyle,
 }: AppBarProps) => {
   return (
-    <View style={styles.header}>
-      {showBack && !!leftComponent ? (
-        leftComponent
-      ) : (
-        <TouchableOpacity onPress={onBackPress} style={styles.backBtn}>
-          <ChevronRightSvg />
+    <View style={[styles.header, headerStyle]}>
+      {showBack && (
+        <TouchableOpacity
+          hitSlop={getHitSlop(10)}
+          onPress={onBackPress}
+          style={styles.backBtn}
+        >
+          {leftIcon || <ChevronRightSvg />}
         </TouchableOpacity>
       )}
-      <AppText fontSize={18}>{title}</AppText>
+      <AppText color={titleColor} fontSize={18}>
+        {title}
+      </AppText>
       {!!rightComponent && (
-        <TouchableOpacity onPress={onRightPress} style={styles.rightComponent}>
+        <TouchableOpacity
+          hitSlop={getHitSlop(10)}
+          onPress={onRightPress}
+          style={styles.rightComponent}
+        >
           {rightComponent}
         </TouchableOpacity>
       )}
@@ -45,7 +58,7 @@ const styles = XStyleSheet.create({
   header: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: 44,
+    height: 60,
   },
   backBtn: {
     position: 'absolute',

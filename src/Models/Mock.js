@@ -1,3 +1,4 @@
+import { generateRandomIntegerInRange } from '@/Utils'
 import { Gender } from './Enum'
 
 export const mockComments = [
@@ -184,12 +185,22 @@ export const mockPosts = [
     medias: [
       {
         media_id: '1',
-        url: 'https://picsum.photos/500/500',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
       },
       {
         media_id: '2',
-        url: 'https://picsum.photos/600/600',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
       },
     ],
@@ -214,12 +225,22 @@ export const mockPosts = [
     medias: [
       {
         media_id: '1',
-        url: 'https://picsum.photos/500/500',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
       },
       {
         media_id: '2',
-        url: 'https://picsum.photos/600/600',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
       },
     ],
@@ -244,12 +265,22 @@ export const mockPosts = [
     medias: [
       {
         media_id: '1',
-        url: 'https://picsum.photos/500/500',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
       },
       {
         media_id: '2',
-        url: 'https://picsum.photos/600/600',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
       },
     ],
@@ -275,7 +306,12 @@ export const mockStories = [
     medias: [
       {
         media_id: '1',
-        url: 'https://picsum.photos/500/500',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
         created_at: new Date().getTime(),
         rotation: 0,
@@ -284,7 +320,12 @@ export const mockStories = [
       },
       {
         media_id: '2',
-        url: 'https://picsum.photos/500/500',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
         created_at: new Date().getTime(),
         rotation: 0,
@@ -301,7 +342,12 @@ export const mockStories = [
     medias: [
       {
         media_id: '1',
-        url: 'https://picsum.photos/500/500',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
         created_at: new Date().getTime(),
         rotation: 0,
@@ -310,7 +356,12 @@ export const mockStories = [
       },
       {
         media_id: '2',
-        url: 'https://picsum.photos/500/500',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
         created_at: new Date().getTime(),
         rotation: 0,
@@ -327,7 +378,12 @@ export const mockStories = [
     medias: [
       {
         media_id: '1',
-        url: 'https://picsum.photos/500/500',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
         created_at: new Date().getTime(),
         rotation: 0,
@@ -336,7 +392,12 @@ export const mockStories = [
       },
       {
         media_id: '2',
-        url: 'https://picsum.photos/500/500',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
         created_at: new Date().getTime(),
         rotation: 0,
@@ -353,7 +414,12 @@ export const mockStories = [
     medias: [
       {
         media_id: '1',
-        url: 'https://picsum.photos/500/500',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
         created_at: new Date().getTime(),
         rotation: 0,
@@ -362,7 +428,12 @@ export const mockStories = [
       },
       {
         media_id: '2',
-        url: 'https://picsum.photos/500/500',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
         is_video: false,
         created_at: new Date().getTime(),
         rotation: 0,

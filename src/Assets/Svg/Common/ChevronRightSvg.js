@@ -1,8 +1,8 @@
-import { moderateScale } from '@/Theme'
+import { Colors, moderateScale } from '@/Theme'
 import * as React from 'react'
 import Svg, { Path } from 'react-native-svg'
 
-const ChevronRightSvg = ({ size = 18, color = '#494c4e' }) => (
+const ChevronRightSvg = ({ size = 18, color = Colors.black }) => (
   <Svg
     width={moderateScale(size)}
     height={moderateScale(size)}

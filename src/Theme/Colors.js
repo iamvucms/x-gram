@@ -31,6 +31,8 @@ export const Colors = {
   kB8FF8D: '#B8FF8D',
   kC2C2C2: '#C2C2C2',
   kF8F8F8: '#F8F8F8',
+  kE6EEFA: '#E6EEFA',
+  k6C7A9C: '#6C7A9C',
 }
 
 export const DarkColors = {

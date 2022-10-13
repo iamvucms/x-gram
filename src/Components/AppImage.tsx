@@ -1,6 +1,6 @@
-import { XStyleSheet } from '@/Theme'
+import { Colors, XStyleSheet } from '@/Theme'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
   ImageRequireSource,
   ImageURISource,
@@ -11,6 +11,8 @@ import {
 import { Blurhash } from 'react-native-blurhash'
 import FastImage, { FastImageProps, Source } from 'react-native-fast-image'
 import {
+  PanGestureHandler,
+  PanGestureHandlerGestureEvent,
   PinchGestureHandler,
   PinchGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler'
@@ -41,7 +43,11 @@ const AppImage = ({
   disabled,
   onPress,
 }: AppImageProps) => {
+  const pinchRef = useRef()
+  const panRef = useRef()
   const scale = useSharedValue(1)
+  const translateX = useSharedValue(0)
+  const translateY = useSharedValue(0)
   const fadingAnim = useSharedValue(1)
   const state = useLocalObservable(() => ({
     hash: 'L9AB*A%LPqys8_H=yDR5nMMeVXR5',
@@ -60,7 +66,19 @@ const AppImage = ({
     opacity: fadingAnim.value,
   }))
 
-  const gestureHandler =
+  const panGestureHandler =
+    useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
+      onActive: event => {
+        translateX.value = event.translationX
+        translateY.value = event.translationY
+      },
+      onEnd: () => {
+        translateX.value = withTiming(0)
+        translateY.value = withTiming(0)
+      },
+    })
+
+  const pinchGestureHandler =
     useAnimatedGestureHandler<PinchGestureHandlerGestureEvent>({
       onActive: event => {
         if (event.scale > 1 && enablePinchZoom) {
@@ -76,10 +94,20 @@ const AppImage = ({
       {
         scale: scale.value,
       },
+      {
+        translateX: -translateX.value,
+      },
+      {
+        translateY: -translateY.value,
+      },
     ],
   }))
   return (
-    <Pressable disabled={disabled} onPress={onPress} style={containerStyle}>
+    <Pressable
+      disabled={disabled}
+      onPress={onPress}
+      style={[styles.baseContainer, containerStyle]}
+    >
       {blurHashEnabled && (
         <Animated.View style={[styles.blurhashView, blurStyle]}>
           <Obx>
@@ -93,18 +121,31 @@ const AppImage = ({
           </Obx>
         </Animated.View>
       )}
-      <PinchGestureHandler onGestureEvent={gestureHandler}>
-        <Animated.View style={imageContainerStyle}>
-          <FastImage
-            onLoadEnd={() => {
-              fadingAnim.value = withTiming(0)
-            }}
-            style={[styles.image, style]}
-            resizeMode={resizeMode}
-            source={source}
-          />
+      <PanGestureHandler
+        minPointers={2}
+        onGestureEvent={panGestureHandler}
+        ref={panRef}
+        simultaneousHandlers={pinchRef}
+      >
+        <Animated.View>
+          <PinchGestureHandler
+            ref={pinchRef}
+            simultaneousHandlers={panRef}
+            onGestureEvent={pinchGestureHandler}
+          >
+            <Animated.View style={imageContainerStyle}>
+              <FastImage
+                onLoadEnd={() => {
+                  fadingAnim.value = withTiming(0)
+                }}
+                style={[styles.image, style]}
+                resizeMode={resizeMode}
+                source={source}
+              />
+            </Animated.View>
+          </PinchGestureHandler>
         </Animated.View>
-      </PinchGestureHandler>
+      </PanGestureHandler>
     </Pressable>
   )
 }
@@ -120,4 +161,5 @@ const styles = XStyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  baseContainer: {},
 })

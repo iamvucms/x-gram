@@ -222,6 +222,7 @@ const styles = XStyleSheet.create({
     zIndex: -1,
     borderRadius: 16,
     overflow: 'hidden',
+    backgroundColor: Colors.background,
   },
   avatarView: {
     alignItems: 'center',

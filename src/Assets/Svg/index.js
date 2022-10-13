@@ -15,6 +15,8 @@ export { default as LinkSvg } from './Common/LinkSvg'
 export { default as SmsSvg } from './Common/SmsSvg'
 export { default as ShareSvg } from './Common/ShareSvg'
 export { default as WeChatSvg } from './Common/WeChatSvg'
+export { default as VideoSvg } from './Common/VideoSvg'
+export { default as SettingSvg } from './Common/SettingSvg'
 //Onboarding
 export { default as BallSvg } from './Onboarding/BallSvg'
 //Home

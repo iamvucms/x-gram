@@ -11,6 +11,7 @@ export default {
   send: 'Send',
   sent: 'Sent',
   message_placeholder: 'Type a message',
+  next: 'Next',
   onboarding: {
     description: 'Sharing your moments with your friends and family',
     description1: 'XGram is a social network for sharing photos and videos',
@@ -53,5 +54,9 @@ export default {
     copy_link: 'Copy Link',
     we_chat: 'WeChat',
     sms: 'SMS',
+  },
+  mediaPicker: {
+    select_photo: 'Select Photo',
+    select_video: 'Select Video',
   },
 }

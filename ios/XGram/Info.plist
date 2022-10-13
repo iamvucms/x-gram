@@ -37,6 +37,10 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow XGram to access your photos</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Allow XGram to save photos to your library</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>
 		To use Face ID for login
