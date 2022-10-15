@@ -296,6 +296,126 @@ export const mockPosts = [
     ],
     comments: mockComments,
   },
+  {
+    post_id: '4',
+    posted_by: mockUsers[0],
+    created_at: new Date().getTime(),
+    updated_at: new Date().getTime(),
+    message: 'This is a post by John Doe',
+    medias: [
+      {
+        media_id: '1',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
+        is_video: false,
+      },
+      {
+        media_id: '2',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
+        is_video: false,
+      },
+    ],
+    reactions: [
+      {
+        reaction_id: '1',
+        reacted_by: mockUsers[0],
+      },
+      {
+        reaction_id: '2',
+        reacted_by: mockUsers[1],
+      },
+    ],
+    comments: mockComments,
+  },
+  {
+    post_id: '5',
+    posted_by: mockUsers[0],
+    created_at: new Date().getTime(),
+    updated_at: new Date().getTime(),
+    message: 'This is a post by John Doe',
+    medias: [
+      {
+        media_id: '1',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
+        is_video: false,
+      },
+      {
+        media_id: '2',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
+        is_video: false,
+      },
+    ],
+    reactions: [
+      {
+        reaction_id: '1',
+        reacted_by: mockUsers[0],
+      },
+      {
+        reaction_id: '2',
+        reacted_by: mockUsers[1],
+      },
+    ],
+    comments: mockComments,
+  },
+  {
+    post_id: '6',
+    posted_by: mockUsers[0],
+    created_at: new Date().getTime(),
+    updated_at: new Date().getTime(),
+    message: 'This is a post by John Doe',
+    medias: [
+      {
+        media_id: '1',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
+        is_video: false,
+      },
+      {
+        media_id: '2',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '/' +
+          generateRandomIntegerInRange(500, 2000) +
+          '',
+        is_video: false,
+      },
+    ],
+    reactions: [
+      {
+        reaction_id: '1',
+        reacted_by: mockUsers[0],
+      },
+      {
+        reaction_id: '2',
+        reacted_by: mockUsers[1],
+      },
+    ],
+    comments: mockComments,
+  },
 ]
 
 export const mockStories = [

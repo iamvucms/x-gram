@@ -17,6 +17,7 @@ export { default as ShareSvg } from './Common/ShareSvg'
 export { default as WeChatSvg } from './Common/WeChatSvg'
 export { default as VideoSvg } from './Common/VideoSvg'
 export { default as SettingSvg } from './Common/SettingSvg'
+export { default as ReelSvg } from './Common/ReelSvg'
 //Onboarding
 export { default as BallSvg } from './Onboarding/BallSvg'
 //Home
@@ -37,3 +38,5 @@ export { default as BookMarkSvg } from './Home/BookMarkSvg'
 export { default as LockSvg } from './Auth/LockSvg'
 export { default as FingerPrintSvg } from './Auth/FingerPrintSvg'
 export { default as BackSpaceSvg } from './Auth/BackSpaceSvg'
+//Profile
+export { default as GridSvg } from './Profile/GridSvg'

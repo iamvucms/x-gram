@@ -12,6 +12,7 @@ export default {
   sent: 'Sent',
   message_placeholder: 'Type a message',
   next: 'Next',
+  cancel: 'Cancel',
   onboarding: {
     description: 'Sharing your moments with your friends and family',
     description1: 'XGram is a social network for sharing photos and videos',
@@ -58,5 +59,13 @@ export default {
   mediaPicker: {
     select_photo: 'Select Photo',
     select_video: 'Select Video',
+  },
+  profile: {
+    follow: 'Follow',
+    following: 'Following',
+    edit_profile: 'Edit Profile',
+    setting: 'Setting',
+    logout: 'Logout',
+    logout_confirm: 'Are you sure you want to logout?',
   },
 }

@@ -1,9 +1,18 @@
-import { CameraSvg, ChevronRightSvg, SettingSvg } from '@/Assets/Svg'
+import {
+  CameraSvg,
+  ChevronRightSvg,
+  GridSvg,
+  MenuSvg,
+  ReelSvg,
+  SettingSvg,
+  VideoSvg,
+} from '@/Assets/Svg'
 import {
   AppImage,
   AppText,
   Box,
   Container,
+  Obx,
   Padding,
   Position,
   PostGridItem,
@@ -11,31 +20,131 @@ import {
 import { mockPosts } from '@/Models'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
 import { BlurView } from '@react-native-community/blur'
-import React, { useCallback } from 'react'
-import { TouchableOpacity, View } from 'react-native'
+import { useLocalObservable } from 'mobx-react-lite'
+import React, { useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { FlatList, TouchableOpacity, View } from 'react-native'
 import Animated, {
   interpolate,
-  useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
+const PostType = {
+  photo: 'photo',
+  video: 'video',
+  reel: 'reel',
+}
 const ProfileScreen = () => {
+  const { t } = useTranslation()
   const scrollY = useSharedValue(0)
   const headerButtonAnim = useSharedValue(0)
 
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: event => {
-      scrollY.value = event.contentOffset.y
-      if (event.contentOffset.y > 150 && headerButtonAnim.value === 0) {
-        headerButtonAnim.value = withTiming(1)
-      } else if (event.contentOffset.y < 150 && headerButtonAnim.value === 1) {
-        headerButtonAnim.value = withTiming(0)
-      }
+  const state = useLocalObservable(() => ({
+    posts: mockPosts,
+    postType: PostType.photo,
+    setPosts: posts => (state.posts = posts),
+    setPostType: postType => (state.postType = postType),
+    get filteredPosts() {
+      return [1, 1, 1, ...this.posts]
     },
-  })
+  }))
+
+  const scrollHandler = useCallback(event => {
+    scrollY.value = event.nativeEvent.contentOffset.y
+    if (
+      event.nativeEvent.contentOffset.y > 150 &&
+      headerButtonAnim.value === 0
+    ) {
+      headerButtonAnim.value = withTiming(1)
+    } else if (
+      event.nativeEvent.contentOffset.y < 150 &&
+      headerButtonAnim.value === 1
+    ) {
+      headerButtonAnim.value = withTiming(0)
+    }
+  }, [])
+
+  const PostTabs = useMemo(
+    () => [
+      {
+        type: PostType.photo,
+        icon: <GridSvg size={20} />,
+      },
+      {
+        type: PostType.video,
+        icon: <VideoSvg />,
+      },
+      {
+        type: PostType.reel,
+        icon: <ReelSvg />,
+      },
+    ],
+    [],
+  )
+
+  const ListHeader = useMemo(
+    () => (
+      <Box
+        backgroundColor={Colors.kE6EEFA}
+        topLeftRadius={50}
+        topRightRadius={50}
+        marginTop={200}
+        paddingBottom={24}
+      >
+        <Box row paddingHorizontal={20}>
+          <TouchableOpacity style={styles.infoBtn}>
+            <AppText fontWeight={700}>1k</AppText>
+            <Padding top={4} />
+            <AppText color={Colors.black75}>Followers</AppText>
+          </TouchableOpacity>
+          <View>
+            <AppImage
+              containerStyle={styles.avatar}
+              source={{
+                uri: 'https://picsum.photos/1000/1000',
+              }}
+            />
+            <TouchableOpacity style={styles.updateAvatarBtn}>
+              <CameraSvg />
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={styles.infoBtn}>
+            <AppText fontWeight={700}>1k</AppText>
+            <Padding top={4} />
+            <AppText color={Colors.black75}>Following</AppText>
+          </TouchableOpacity>
+        </Box>
+        <Box paddingHorizontal={50} marginTop={16} center>
+          <AppText fontWeight={700} fontSize={16}>
+            @username
+          </AppText>
+          <AppText align="center" color={Colors.k6C7A9C} lineHeight={20}>
+            This is a description of the user. This is a description of the
+            user. This is a description of the user.
+          </AppText>
+        </Box>
+        <Box marginTop={16} paddingHorizontal={16} row align="center">
+          {/* <TouchableOpacity style={styles.optionBtn}>
+                <AppText fontWeight={700} color={Colors.white}>
+                  Follow
+                </AppText>
+              </TouchableOpacity>
+              <Padding left={16} /> */}
+          <TouchableOpacity style={styles.optionBtn}>
+            <AppText fontWeight={700} color={Colors.white}>
+              {t('profile.edit_profile')}
+            </AppText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.settingBtn}>
+            <MenuSvg size={16} color={Colors.white} />
+          </TouchableOpacity>
+        </Box>
+      </Box>
+    ),
+    [],
+  )
 
   const headerOverlayStyle = useAnimatedStyle(
     () => ({
@@ -61,9 +170,15 @@ const ProfileScreen = () => {
     ],
   }))
 
-  const renderPostItem = useCallback(({ item }) => {
+  const renderPostItem = useCallback(({ item, index }) => {
     const onPress = () => {}
-    return <PostGridItem onPress={onPress} post={item} />
+    return index <= 2 ? (
+      <TouchableOpacity style={styles.tabView}>
+        {PostTabs[index].icon}
+      </TouchableOpacity>
+    ) : (
+      <PostGridItem onPress={onPress} post={item} />
+    )
   }, [])
 
   return (
@@ -102,65 +217,30 @@ const ProfileScreen = () => {
                 <SettingSvg />
               </TouchableOpacity>
               <TouchableOpacity style={styles.headerBtn}>
-                <CameraSvg />
+                <CameraSvg strokeWidth={2} />
               </TouchableOpacity>
             </Animated.View>
           </Box>
         </SafeAreaView>
       </Position>
-      <Animated.FlatList
-        ListHeaderComponent={
-          <Box
-            backgroundColor={Colors.kE6EEFA}
-            topLeftRadius={50}
-            topRightRadius={50}
-            marginTop={200}
-            paddingBottom={24}
-          >
-            <Box row paddingHorizontal={20}>
-              <TouchableOpacity style={styles.infoBtn}>
-                <AppText fontWeight={700}>1k</AppText>
-                <Padding top={4} />
-                <AppText color={Colors.black75}>Followers</AppText>
-              </TouchableOpacity>
-              <View>
-                <AppImage
-                  containerStyle={styles.avatar}
-                  source={{
-                    uri: 'https://picsum.photos/1000/1000',
-                  }}
-                />
-                <TouchableOpacity style={styles.updateAvatarBtn}>
-                  <CameraSvg />
-                </TouchableOpacity>
-              </View>
-              <TouchableOpacity style={styles.infoBtn}>
-                <AppText fontWeight={700}>1k</AppText>
-                <Padding top={4} />
-                <AppText color={Colors.black75}>Following</AppText>
-              </TouchableOpacity>
-            </Box>
-            <Box paddingHorizontal={50} marginTop={16} center>
-              <AppText fontWeight={700} fontSize={16}>
-                @username
-              </AppText>
-              <AppText align="center" color={Colors.k6C7A9C} lineHeight={20}>
-                This is a description of the user. This is a description of the
-                user. This is a description of the user.
-              </AppText>
-            </Box>
-          </Box>
-        }
-        ListFooterComponent={
-          <Box height={90} backgroundColor={Colors.kE6EEFA} />
-        }
-        columnWrapperStyle={styles.listView}
-        onScroll={scrollHandler}
-        numColumns={3}
-        data={mockPosts.concat(mockPosts).concat(mockPosts)}
-        renderItem={renderPostItem}
-        keyExtractor={item => item.post_id}
-      />
+      <Obx>
+        {() => (
+          <FlatList
+            ListHeaderComponent={ListHeader}
+            ListFooterComponent={
+              <Box height={900} backgroundColor={Colors.kE6EEFA} />
+            }
+            columnWrapperStyle={styles.listView}
+            onScroll={scrollHandler}
+            scrollEventThrottle={16}
+            numColumns={3}
+            data={state.filteredPosts.slice()}
+            stickyHeaderIndices={[1]}
+            renderItem={renderPostItem}
+            keyExtractor={(item, index) => item.post_id || index}
+          />
+        )}
+      </Obx>
     </Container>
   )
 }
@@ -170,10 +250,10 @@ export default ProfileScreen
 const styles = XStyleSheet.create({
   rootView: {
     flex: 1,
-    backgroundColor: Colors.kE6EEFA,
+    backgroundColor: Colors.white,
   },
   listView: {
-    backgroundColor: Colors.kE6EEFA,
+    backgroundColor: Colors.white,
   },
   coverPhoto: {
     ...XStyleSheet.absoluteFillObject,
@@ -214,5 +294,34 @@ const styles = XStyleSheet.create({
     position: 'absolute',
     bottom: 15,
     right: 0,
+  },
+  optionBtn: {
+    flex: 1,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.primary,
+    borderRadius: 5,
+  },
+  settingBtn: {
+    height: 40,
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.k8E8E8E,
+    borderRadius: 5,
+    marginLeft: 16,
+  },
+  tabView: {
+    flex: 1,
+    height: 50,
+    backgroundColor: Colors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    paddingVertical: 30,
+    marginBottom: 10,
+    borderBottomColor: Colors.border,
+    borderBottomWidth: 0.5,
   },
 })
