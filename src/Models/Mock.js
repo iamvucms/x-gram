@@ -187,9 +187,9 @@ export const mockPosts = [
         media_id: '1',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
       },
@@ -197,9 +197,9 @@ export const mockPosts = [
         media_id: '2',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
       },
@@ -227,9 +227,9 @@ export const mockPosts = [
         media_id: '1',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
       },
@@ -237,9 +237,9 @@ export const mockPosts = [
         media_id: '2',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
       },
@@ -267,9 +267,9 @@ export const mockPosts = [
         media_id: '1',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
       },
@@ -277,9 +277,9 @@ export const mockPosts = [
         media_id: '2',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
       },
@@ -307,9 +307,9 @@ export const mockPosts = [
         media_id: '1',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
       },
@@ -317,9 +317,9 @@ export const mockPosts = [
         media_id: '2',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
       },
@@ -347,9 +347,9 @@ export const mockPosts = [
         media_id: '1',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
       },
@@ -357,9 +357,9 @@ export const mockPosts = [
         media_id: '2',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
       },
@@ -387,9 +387,9 @@ export const mockPosts = [
         media_id: '1',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
       },
@@ -397,9 +397,9 @@ export const mockPosts = [
         media_id: '2',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
       },
@@ -428,9 +428,9 @@ export const mockStories = [
         media_id: '1',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
         created_at: new Date().getTime(),
@@ -442,9 +442,9 @@ export const mockStories = [
         media_id: '2',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
         created_at: new Date().getTime(),
@@ -464,9 +464,9 @@ export const mockStories = [
         media_id: '1',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
         created_at: new Date().getTime(),
@@ -478,9 +478,9 @@ export const mockStories = [
         media_id: '2',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
         created_at: new Date().getTime(),
@@ -500,9 +500,9 @@ export const mockStories = [
         media_id: '1',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
         created_at: new Date().getTime(),
@@ -514,9 +514,9 @@ export const mockStories = [
         media_id: '2',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
         created_at: new Date().getTime(),
@@ -536,9 +536,9 @@ export const mockStories = [
         media_id: '1',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
         created_at: new Date().getTime(),
@@ -550,9 +550,9 @@ export const mockStories = [
         media_id: '2',
         url:
           'https://picsum.photos/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '/' +
-          generateRandomIntegerInRange(500, 2000) +
+          generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
         created_at: new Date().getTime(),

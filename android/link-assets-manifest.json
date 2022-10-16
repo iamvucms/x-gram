@@ -3,23 +3,39 @@
   "data": [
     {
       "path": "src/Assets/Fonts/Lato-Black.ttf",
-      "sha1": "a001eb827743636e04f8efa7d4aeedf0541c46ac"
+      "sha1": "b9c952639741f5b7479e1ff6d1561a3df7e8f83a"
     },
     {
       "path": "src/Assets/Fonts/Lato-Bold.ttf",
-      "sha1": "542498221d97bee5bdbccf86ee8890bf8e8005c9"
+      "sha1": "6b2c7b124cbf0aaeba48d57fb0fa19f2c6c69683"
+    },
+    {
+      "path": "src/Assets/Fonts/Lato-Hairline.ttf",
+      "sha1": "79c1dd6a9c740ef36272a9742504864a6f912be7"
+    },
+    {
+      "path": "src/Assets/Fonts/Lato-Heavy.ttf",
+      "sha1": "068af974d1346b61d9ee1e097374f2f3cac6c442"
     },
     {
       "path": "src/Assets/Fonts/Lato-Light.ttf",
-      "sha1": "ad0d178564445a535b15d417f5b18019923d3bab"
+      "sha1": "a405c8288a8a90881407f93b6ee02b29e26a8735"
+    },
+    {
+      "path": "src/Assets/Fonts/Lato-Medium.ttf",
+      "sha1": "c78e94b7cc0b782eef4f9f2be371c3cf9c3f6eaf"
     },
     {
       "path": "src/Assets/Fonts/Lato-Regular.ttf",
-      "sha1": "e923c72eda5e50a87e18ff5c71e9ef4b3b6455a3"
+      "sha1": "f59f9e4f3cbee981a5e6f58a279f9b9613f22599"
+    },
+    {
+      "path": "src/Assets/Fonts/Lato-Semibold.ttf",
+      "sha1": "96569e2cfcc3a298bb1aea21103d0d1e3c7e2ed4"
     },
     {
       "path": "src/Assets/Fonts/Lato-Thin.ttf",
-      "sha1": "07290446bee3f81ce501a3c3dbfde6097c70ca15"
+      "sha1": "dbe1f622faef3ea3f286d848da6b10f104405060"
     }
   ]
 }

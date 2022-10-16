@@ -79,7 +79,7 @@ const CreateButton = () => {
         {() => {
           return (
             !!state.isVisible && (
-              <Portal>
+              <Portal name="CREATE_MODAL">
                 <View style={styles.overlayContainer}>
                   <View
                     style={[

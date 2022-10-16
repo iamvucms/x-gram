@@ -1,17 +1,23 @@
 import { CameraSvg, CheckSvg, CloseSvg, VideoSvg } from '@/Assets/Svg'
 import { AppBar, AppText, Container, Obx } from '@/Components'
+import { PageName } from '@/Config'
+import { navigate } from '@/Navigators'
 import { Colors, ResponsiveHeight, screenWidth, XStyleSheet } from '@/Theme'
 import { isAndroid } from '@/Utils'
 import { CameraRoll } from '@react-native-camera-roll/camera-roll'
 import { FlashList } from '@shopify/flash-list'
 import { toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Image, PermissionsAndroid, TouchableOpacity, View } from 'react-native'
 
 const MediaPicker = ({ route }) => {
-  const { type = 'photo', onNext = () => {} } = route.params || {}
+  const {
+    type = 'photo',
+    onNext = () => {},
+    multiple = true,
+  } = route.params || {}
   const isPickingPhoto = type === 'photo'
   const { t } = useTranslation()
   const state = useLocalObservable(() => ({
@@ -74,6 +80,15 @@ const MediaPicker = ({ route }) => {
     }
     init()
   }, [])
+
+  const onCapturePress = useCallback(() => {
+    navigate(PageName.CaptureScreen, {
+      type,
+      onNext,
+      multiple,
+    })
+  }, [])
+
   const onNextPress = React.useCallback(async () => {
     if (!state.allowNext) {
       return
@@ -84,46 +99,54 @@ const MediaPicker = ({ route }) => {
     }))
     onNext(files)
   }, [])
-  const renderMediaItem = React.useCallback(({ item, index }) => {
-    const marginHorizontal = (index + 2) % 3 === 0 ? 5 : 0
-    const isVideo = item.type.includes('video')
-    const onPress = () => {
-      state.toggleSelect(item.image.uri)
-    }
-    return (
-      <TouchableOpacity
-        onPress={onPress}
-        activeOpacity={0.8}
-        style={[styles.mediaItem, { marginHorizontal }]}
-      >
-        <Image
-          style={styles.mediaPreviewImage}
-          source={{
-            uri: item.image.uri,
-          }}
-        />
-        {isVideo && (
-          <View style={styles.videoLabel}>
-            <VideoSvg size={12} />
-          </View>
-        )}
-        <Obx>
-          {() => (
-            <View
-              style={[
-                styles.checkbox,
-                item.selected && {
-                  backgroundColor: Colors.primary,
-                },
-              ]}
-            >
-              {item.selected && <CheckSvg size={10} color={Colors.white} />}
+  const renderMediaItem = React.useCallback(
+    ({ item }) => {
+      const isVideo = item.type.includes('video')
+      const onPress = () => {
+        if (multiple) {
+          state.toggleSelect(item.image.uri)
+        } else {
+          onNext && onNext([{ uri: item.image.uri, mimeType: item.mimeType }])
+        }
+      }
+      return (
+        <TouchableOpacity
+          onPress={onPress}
+          activeOpacity={0.8}
+          style={[styles.mediaItem]}
+        >
+          <Image
+            style={styles.mediaPreviewImage}
+            source={{
+              uri: item.image.uri,
+            }}
+          />
+          {isVideo && (
+            <View style={styles.videoLabel}>
+              <VideoSvg size={12} />
             </View>
           )}
-        </Obx>
-      </TouchableOpacity>
-    )
-  }, [])
+          {multiple && (
+            <Obx>
+              {() => (
+                <View
+                  style={[
+                    styles.checkbox,
+                    item.selected && {
+                      backgroundColor: Colors.primary,
+                    },
+                  ]}
+                >
+                  {item.selected && <CheckSvg size={10} color={Colors.white} />}
+                </View>
+              )}
+            </Obx>
+          )}
+        </TouchableOpacity>
+      )
+    },
+    [multiple],
+  )
   const mediaKeyExtractor = React.useCallback(item => `${item.image.uri}`, [])
   return (
     <Container
@@ -141,17 +164,19 @@ const MediaPicker = ({ route }) => {
         )}
         titleColor={Colors.white}
         rightComponent={
-          <Obx>
-            {() => (
-              <AppText
-                color={state.allowNext ? Colors.white : Colors.white50}
-                fontSize={16}
-                fontWeight="700"
-              >
-                {t('next')}
-              </AppText>
-            )}
-          </Obx>
+          multiple && (
+            <Obx>
+              {() => (
+                <AppText
+                  color={state.allowNext ? Colors.white : Colors.white50}
+                  fontSize={16}
+                  fontWeight="700"
+                >
+                  {t('next')}
+                </AppText>
+              )}
+            </Obx>
+          )
         }
         onRightPress={onNextPress}
       />
@@ -163,12 +188,12 @@ const MediaPicker = ({ route }) => {
               renderItem={renderMediaItem}
               keyExtractor={mediaKeyExtractor}
               numColumns={3}
-              estimatedItemSize={(screenWidth - 10) / 3 + ResponsiveHeight(5)}
+              estimatedItemSize={screenWidth / 3}
             />
           )}
         </Obx>
       </View>
-      <TouchableOpacity style={styles.captureBtn}>
+      <TouchableOpacity onPress={onCapturePress} style={styles.captureBtn}>
         <CameraSvg color={Colors.white} />
       </TouchableOpacity>
     </Container>
@@ -180,12 +205,13 @@ export default MediaPicker
 const styles = XStyleSheet.create({
   container: {
     flex: 1,
+    margin: -1,
   },
   mediaItem: {
-    width: (screenWidth - 10) / 3,
+    width: screenWidth / 3,
     aspectRatio: 1,
-    marginBottom: ResponsiveHeight(5),
     skipResponsive: true,
+    borderWidth: ResponsiveHeight(1),
   },
   mediaPreviewImage: {
     width: '100%',

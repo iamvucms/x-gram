@@ -15,10 +15,14 @@ export const FontSizes = {
 }
 export const AppFonts = {
   900: 'Lato-Black',
+  800: 'Lato-Heavy',
   700: 'Lato-Bold',
+  600: 'Lato-Semibold',
+  500: 'Lato-Medium',
   400: 'Lato-Regular',
   300: 'Lato-Light',
   200: 'Lato-Thin',
+  100: 'Lato-Hairline',
 }
 
 export const AppSubFonts = {

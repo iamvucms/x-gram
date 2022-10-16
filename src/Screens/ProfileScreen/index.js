@@ -1,4 +1,6 @@
 import {
+  BookMarkedSvg,
+  BookMarkSvg,
   CameraSvg,
   ChevronRightSvg,
   GridSvg,
@@ -16,8 +18,11 @@ import {
   Padding,
   Position,
   PostGridItem,
+  PostPreviewModal,
 } from '@/Components'
+import { PageName } from '@/Config'
 import { mockPosts } from '@/Models'
+import { navigate } from '@/Navigators'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
 import { BlurView } from '@react-native-community/blur'
 import { useLocalObservable } from 'mobx-react-lite'
@@ -32,8 +37,8 @@ import Animated, {
 } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
 const PostType = {
-  photo: 'photo',
-  video: 'video',
+  post: 'post',
+  bookmark: 'bookmark',
   reel: 'reel',
 }
 const ProfileScreen = () => {
@@ -43,11 +48,14 @@ const ProfileScreen = () => {
 
   const state = useLocalObservable(() => ({
     posts: mockPosts,
-    postType: PostType.photo,
+    postType: PostType.post,
+    previewPost: null,
+    setPreviewPost: (post, specs) => (state.previewPost = { post, specs }),
+    hidePreviewPost: () => (state.previewPost = null),
     setPosts: posts => (state.posts = posts),
     setPostType: postType => (state.postType = postType),
     get filteredPosts() {
-      return [1, 1, 1, ...this.posts]
+      return [...PostTabs, ...this.posts]
     },
   }))
 
@@ -69,20 +77,73 @@ const ProfileScreen = () => {
   const PostTabs = useMemo(
     () => [
       {
-        type: PostType.photo,
-        icon: <GridSvg size={20} />,
+        type: PostType.post,
+        icon: (
+          <Obx>
+            {() => (
+              <GridSvg
+                color={
+                  state.postType === PostType.post
+                    ? Colors.secondary
+                    : Colors.gray
+                }
+                size={20}
+              />
+            )}
+          </Obx>
+        ),
       },
       {
-        type: PostType.video,
-        icon: <VideoSvg />,
+        type: PostType.bookmark,
+        icon: (
+          <Obx>
+            {() => (
+              <BookMarkSvg
+                color={
+                  state.postType === PostType.bookmark
+                    ? Colors.secondary
+                    : Colors.gray
+                }
+              />
+            )}
+          </Obx>
+        ),
       },
       {
         type: PostType.reel,
-        icon: <ReelSvg />,
+        icon: (
+          <Obx>
+            {() => (
+              <ReelSvg
+                color={
+                  state.postType === PostType.reel
+                    ? Colors.secondary
+                    : Colors.gray
+                }
+                size={28}
+              />
+            )}
+          </Obx>
+        ),
       },
     ],
     [],
   )
+
+  const onUpdateAvatarPress = useCallback(async () => {
+    try {
+      navigate(PageName.MediaPicker, {
+        type: 'photo',
+        multiple: false,
+        onNext: medias => {
+          console.log(medias)
+        },
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }, [])
+  const onUpdateCoverPress = useCallback(() => {}, [])
 
   const ListHeader = useMemo(
     () => (
@@ -106,7 +167,10 @@ const ProfileScreen = () => {
                 uri: 'https://picsum.photos/1000/1000',
               }}
             />
-            <TouchableOpacity style={styles.updateAvatarBtn}>
+            <TouchableOpacity
+              onPress={onUpdateAvatarPress}
+              style={styles.updateAvatarBtn}
+            >
               <CameraSvg />
             </TouchableOpacity>
           </View>
@@ -170,17 +234,31 @@ const ProfileScreen = () => {
     ],
   }))
 
-  const renderPostItem = useCallback(({ item, index }) => {
-    const onPress = () => {}
-    return index <= 2 ? (
-      <TouchableOpacity style={styles.tabView}>
-        {PostTabs[index].icon}
-      </TouchableOpacity>
-    ) : (
-      <PostGridItem onPress={onPress} post={item} />
-    )
+  const onOpenPreview = useCallback((post, { x, y, height, width }) => {
+    state.setPreviewPost(post, { x, y, height, width })
   }, [])
 
+  const renderPostItem = useCallback(({ item, index }) => {
+    const onPress = () => {
+      if (index <= 2) {
+        state.setPostType(item.type)
+      } else {
+      }
+    }
+    return index <= 2 ? (
+      <TouchableOpacity onPress={onPress} style={styles.tabView}>
+        {item.icon}
+      </TouchableOpacity>
+    ) : (
+      <PostGridItem
+        enablePreview
+        onOpenPreview={specs => onOpenPreview(item, specs)}
+        onClosePreview={() => state.hidePreviewPost()}
+        onPress={onPress}
+        post={item}
+      />
+    )
+  }, [])
   return (
     <Container style={styles.rootView}>
       <Position top={0} left={0} right={0} zIndex={-1}>
@@ -228,7 +306,7 @@ const ProfileScreen = () => {
           <FlatList
             ListHeaderComponent={ListHeader}
             ListFooterComponent={
-              <Box height={900} backgroundColor={Colors.kE6EEFA} />
+              <Box height={90} backgroundColor={Colors.kE6EEFA} />
             }
             columnWrapperStyle={styles.listView}
             onScroll={scrollHandler}
@@ -238,6 +316,15 @@ const ProfileScreen = () => {
             stickyHeaderIndices={[1]}
             renderItem={renderPostItem}
             keyExtractor={(item, index) => item.post_id || index}
+          />
+        )}
+      </Obx>
+      <Obx>
+        {() => (
+          <PostPreviewModal
+            visible={!!state.previewPost}
+            post={state?.previewPost?.post}
+            {...(state?.previewPost?.specs || {})}
           />
         )}
       </Obx>
