@@ -1,6 +1,8 @@
 import { CreateStorySvg, StoryGradientBorderSvg } from '@/Assets/Svg'
 import { AppImage, AppText, Padding } from '@/Components'
+import { PageName } from '@/Config'
 import { mockStories } from '@/Models'
+import { navigate } from '@/Navigators'
 import { Colors, XStyleSheet } from '@/Theme'
 import React, { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -10,10 +12,10 @@ import Animated, {
   useAnimatedStyle,
   ZoomIn,
 } from 'react-native-reanimated'
-
+import { CreateType } from '@/Models'
 const MAX_SCROLL_Y = 100
 
-const StoryBar = ({ stories = [], scrollY }) => {
+const StoryBar = ({ stories = mockStories, scrollY }) => {
   const { t } = useTranslation()
 
   const renderStoryItem = useCallback(({ item, index }) => {
@@ -53,10 +55,21 @@ const StoryBar = ({ stories = [], scrollY }) => {
   }))
 
   const CreateButton = useMemo(() => {
+    const onCreatePress = () => {
+      navigate(PageName.MediaPicker, {
+        multiple: true,
+        onNext: medias => {
+          navigate(PageName.ImageEditor, {
+            type: CreateType.Story,
+            medias,
+          })
+        },
+      })
+    }
     return (
       <View style={styles.createBtn}>
         <Animated.View style={createBtnStyle} entering={ZoomIn}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onCreatePress}>
             <CreateStorySvg size={84} />
           </TouchableOpacity>
         </Animated.View>
@@ -71,7 +84,7 @@ const StoryBar = ({ stories = [], scrollY }) => {
   return (
     <Animated.View style={[styles.rootView, containerStyle]}>
       <FlatList
-        data={mockStories}
+        data={stories}
         keyExtractor={item => `${item.story_id}`}
         ListHeaderComponent={CreateButton}
         horizontal

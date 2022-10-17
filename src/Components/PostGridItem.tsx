@@ -1,4 +1,5 @@
 import {
+  Colors,
   moderateScale,
   ResponsiveWidth,
   screenWidth,
@@ -71,7 +72,7 @@ const styles = XStyleSheet.create({
     height: undefined,
     marginLeft: ResponsiveWidth(10),
     marginBottom: ResponsiveWidth(10),
-    backgroundColor: 'red',
+    backgroundColor: Colors.gray,
     borderRadius: moderateScale(6),
     overflow: 'hidden',
   },

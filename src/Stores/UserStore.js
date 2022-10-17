@@ -1,6 +1,6 @@
+import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
-import { makePersistExcept } from './StoreUtils'
 export default class UserStore {
   isLogged = false
   userInfo = {}

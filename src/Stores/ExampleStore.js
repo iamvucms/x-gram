@@ -1,7 +1,7 @@
 import { fetchCountries } from '@/Services/Api'
+import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
-import { makePersistExcept } from './StoreUtils'
 export default class ExampleStore {
   countries = []
   constructor() {

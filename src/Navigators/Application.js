@@ -8,6 +8,7 @@ import BottomTab from './BottomTab'
 import {
   AuthPassCodeScreen,
   CaptureScreen,
+  ImageEditor,
   InAppUpdateScreen,
   LoginScreen,
   MediaPicker,
@@ -64,6 +65,7 @@ const AuthStack = () => {
       <Stack.Screen name={PageName.HomeTab} component={BottomTab} />
       <Stack.Screen name={PageName.ProfileOther} component={ProfileOther} />
       <Stack.Screen name={PageName.MediaPicker} component={MediaPicker} />
+      <Stack.Screen name={PageName.ImageEditor} component={ImageEditor} />
       <Stack.Screen name={PageName.CaptureScreen} component={CaptureScreen} />
     </Stack.Navigator>
   )

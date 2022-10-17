@@ -94,6 +94,7 @@ const MediaPicker = ({ route }) => {
       return
     }
     const files = toJS(state.selectedMedias).map(media => ({
+      ...media,
       uri: media.image.uri,
       mimeType: media.mimeType,
     }))
@@ -106,7 +107,8 @@ const MediaPicker = ({ route }) => {
         if (multiple) {
           state.toggleSelect(item.image.uri)
         } else {
-          onNext && onNext([{ uri: item.image.uri, mimeType: item.mimeType }])
+          onNext &&
+            onNext([{ ...item, uri: item.image.uri, mimeType: item.mimeType }])
         }
       }
       return (
@@ -205,7 +207,7 @@ export default MediaPicker
 const styles = XStyleSheet.create({
   container: {
     flex: 1,
-    margin: -1,
+    marginVertical: -1,
   },
   mediaItem: {
     width: screenWidth / 3,

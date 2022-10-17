@@ -20,4 +20,5 @@ export const PageName = {
   ProfileOther: 'ProfileOther',
   CaptureScreen: 'CaptureScreen',
   MediaPicker: 'MediaPicker',
+  ImageEditor: 'ImageEditor',
 }

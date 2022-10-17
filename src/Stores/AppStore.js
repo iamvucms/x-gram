@@ -1,8 +1,8 @@
 import { getImages } from '@/Assets/Images'
 import i18n from '@/Translations/i18n'
+import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
-import { makePersistExcept } from './StoreUtils'
 export default class AppStore {
   languagues = [
     {
