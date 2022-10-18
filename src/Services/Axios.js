@@ -1,6 +1,6 @@
+import { Config } from '@/Config'
+import { generateHeader } from '@/Utils'
 import axios from 'axios'
-import Config from './Config'
-import { generateHeader } from './ServiceUtils'
 
 const API = axios.create({
   baseURL: Config.BASE_URL,
@@ -29,9 +29,17 @@ API.interceptors.response.use(
   },
 )
 
-export const generateRequest = async (url, method, data, onError) => {
+export const generateRequest = async (
+  url,
+  method = Method.GET,
+  data,
+  onError,
+) => {
   try {
-    const respose = await API[method](url, data)
+    const respose = await API[method](
+      url,
+      method === Method.GET ? { params: data } : data,
+    )
     return respose.data
   } catch (e) {
     onError && onError(e)
@@ -48,6 +56,9 @@ export const Method = {
   POST: 'post',
   PUT: 'put',
   DELETE: 'delete',
+  OPTIONS: 'options',
+  HEAD: 'head',
+  PATCH: 'patch',
 }
 
 export default API

@@ -1,6 +1,6 @@
+import { Config } from '@/Config'
 import { userStore } from '@/Stores'
 import { Platform } from 'react-native'
-import Config from './Config'
 
 const commonHeader = {
   os: Platform.OS,

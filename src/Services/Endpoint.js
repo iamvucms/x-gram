@@ -1,4 +1,4 @@
-import Config from './Config'
+import { Config } from '@/Config'
 
 export default () => {
   const baseUrl = Config.BASE_URL
