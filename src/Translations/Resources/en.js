@@ -12,6 +12,8 @@ export default {
   sent: 'Sent',
   message_placeholder: 'Type a message',
   next: 'Next',
+  done: 'Done',
+  undo: 'Undo',
   cancel: 'Cancel',
   onboarding: {
     description: 'Sharing your moments with your friends and family',
