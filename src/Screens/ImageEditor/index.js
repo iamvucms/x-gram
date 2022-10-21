@@ -1,4 +1,12 @@
-import { AppBottomSheet, AppButton, Box, Container, Obx } from '@/Components'
+import { DrawSvg, StickerSvg, TextSvg, TrashBinSvg } from '@/Assets/Svg'
+import {
+  AppBottomSheet,
+  AppButton,
+  AppText,
+  Box,
+  Container,
+  Obx,
+} from '@/Components'
 import { useAppTheme } from '@/Hooks'
 import {
   DrawColors,
@@ -40,6 +48,7 @@ import Animated, {
   FadeInDown,
   FadeInRight,
   FadeInUp,
+  interpolate,
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedProps,
@@ -84,6 +93,9 @@ const ImageEditor = ({ route }) => {
     setPackId: value => (state.packId = value),
     get currentPackStickers() {
       return stickerPacks.find(item => item.id === this.packId).stickers
+    },
+    get toolBarVisible() {
+      return state.drawables.every(item => !item)
     },
   }))
   const onScrollEnd = useCallback(
@@ -153,33 +165,29 @@ const ImageEditor = ({ route }) => {
         horizontal
         showsHorizontalScrollIndicator={false}
       />
-
-      <AppButton
-        style={{
-          position: 'absolute',
-          zIndex: 99,
-          left: 0,
-          bottom: 80,
-        }}
-        text="Draw"
-        onPress={() => {
-          // sheetRef.current?.snapTo(0)
-          state.setDrawable(true)
-        }}
-      />
-      <AppButton
-        style={{
-          position: 'absolute',
-          zIndex: 99,
-          right: 0,
-          bottom: 80,
-        }}
-        text="Sticker"
-        onPress={() => {
-          sheetRef.current?.snapTo(0)
-          // state.setDrawable(true)
-        }}
-      />
+      <Obx>
+        {() =>
+          state.toolBarVisible && (
+            <Animated.View entering={FadeInRight} style={styles.toolBar}>
+              <TouchableOpacity
+                onPress={() => sheetRef.current?.snapTo(0)}
+                style={styles.toolBarBtn}
+              >
+                <StickerSvg color={Colors.white} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.toolBarBtn}>
+                <TextSvg size={20} color={Colors.white} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => state.setDrawable(true)}
+                style={styles.toolBarBtn}
+              >
+                <DrawSvg size={20} color={Colors.white} />
+              </TouchableOpacity>
+            </Animated.View>
+          )
+        }
+      </Obx>
       <AppBottomSheet
         backgroundStyle={{ backgroundColor: Colors.transparent }}
         ref={sheetRef}
@@ -397,7 +405,11 @@ const AnimatedImage = memo(({ image, drawable, onDrew }) => {
                   backgroundColor={Colors.black50}
                   text={t('undo')}
                 />
-                <AppButton backgroundColor={Colors.black50} text={t('done')} />
+                <AppButton
+                  onPress={() => onDrew && onDrew()}
+                  backgroundColor={Colors.black50}
+                  text={t('done')}
+                />
               </Box>
             </SafeAreaView>
           </Animated.View>
@@ -530,22 +542,72 @@ const AnimatedImage = memo(({ image, drawable, onDrew }) => {
   )
 })
 const StickerLayer = memo(({ stickers = [] }) => {
-  const renderStickerItem = (sticker, index) => {
-    return <Sticker sticker={sticker} key={index} />
-  }
-  return <Fragment>{stickers.map(renderStickerItem)}</Fragment>
+  const { t } = useTranslation()
+  const trashY = useSharedValue(0)
+  const trashAnim = useSharedValue(0)
+  const renderStickerItem = useCallback((sticker, index) => {
+    return (
+      <Sticker
+        trashAnim={trashAnim}
+        trashY={trashY}
+        sticker={sticker}
+        key={index}
+      />
+    )
+  }, [])
+  const trashBarStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: (1 - trashY.value) * 60,
+      },
+    ],
+  }))
+  const trashBgStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scaleX: trashAnim.value,
+      },
+    ],
+  }))
+  return (
+    <Fragment>
+      {stickers.map(renderStickerItem)}
+      <Animated.View style={[styles.trashBar, trashBarStyle]}>
+        <Animated.View style={[styles.trashBarBg, trashBgStyle]} />
+        <TrashBinSvg color={Colors.white} />
+        <AppText color={Colors.white} fontSize={10}>
+          {t('imageEditor.dragHereToRemove')}
+        </AppText>
+      </Animated.View>
+    </Fragment>
+  )
 })
-const Sticker = memo(({ sticker }) => {
+const activeTrashY = screenHeight / 2 - (screenWidth / 4) * 0.4 - 50
+const Sticker = memo(({ sticker, trashY, trashAnim }) => {
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
+  const zIndex = useSharedValue(99)
   const panHandler = useAnimatedGestureHandler({
     onStart: (_, ctx) => {
       ctx.startX = translateX.value
       ctx.startY = translateY.value
+      trashY.value = withTiming(1)
     },
     onActive: (event, ctx) => {
       translateX.value = ctx.startX + event.translationX
       translateY.value = ctx.startY + event.translationY
+      if (translateY.value >= activeTrashY && trashAnim.value === 0) {
+        trashAnim.value = withTiming(1)
+      } else if (translateY.value < activeTrashY && trashAnim.value === 1) {
+        trashAnim.value = withTiming(0)
+      }
+    },
+    onEnd: () => {
+      trashY.value = withTiming(0)
+      if (trashAnim.value === 1) {
+        zIndex.value = -99
+        trashAnim.value = withTiming(0)
+      }
     },
   })
   const stickerStyle = useAnimatedStyle(() => ({
@@ -557,11 +619,14 @@ const Sticker = memo(({ sticker }) => {
         translateY: translateY.value,
       },
     ],
+    zIndex: zIndex.value,
   }))
   return (
     <PanGestureHandler onGestureEvent={panHandler}>
       <Animated.View style={[styles.stickerItem, stickerStyle]}>
-        <Image style={styles.stickerImg} source={sticker} />
+        <TouchableOpacity>
+          <Image style={styles.stickerImg} source={sticker} />
+        </TouchableOpacity>
       </Animated.View>
     </PanGestureHandler>
   )
@@ -595,12 +660,13 @@ const styles = XStyleSheet.create({
     width: (screenWidth / 4) * 0.8,
     height: (screenWidth / 4) * 0.8,
     resizeMode: 'contain',
+    skipResponsive: true,
   },
   stickerItem: {
     position: 'absolute',
     alignSelf: 'center',
     top: (screenHeight - (screenWidth / 4) * 0.8) / 2,
-    zIndex: 99,
+    skipResponsive: true,
   },
   drawView: {
     ...XStyleSheet.absoluteFillObject,
@@ -653,5 +719,41 @@ const styles = XStyleSheet.create({
     overflow: 'hidden',
     borderColor: Colors.white,
     borderWidth: 3,
+  },
+  toolBar: {
+    position: 'absolute',
+    zIndex: 99,
+    right: 0,
+    top: '15%',
+    paddingHorizontal: 16,
+  },
+  toolBarBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginBottom: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.black50,
+  },
+  trashBar: {
+    height: 50,
+    backgroundColor: Colors.black50,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 99,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  trashBarBg: {
+    height: 50,
+    width: screenWidth,
+    backgroundColor: Colors.error,
+    position: 'absolute',
+    top: 0,
+    zIndex: -1,
+    skipResponsive: true,
   },
 })

@@ -62,6 +62,9 @@ export default {
     select_photo: 'Select Photo',
     select_video: 'Select Video',
   },
+  imageEditor: {
+    dragHereToRemove: 'Drag here to remove',
+  },
   profile: {
     follow: 'Follow',
     following: 'Following',

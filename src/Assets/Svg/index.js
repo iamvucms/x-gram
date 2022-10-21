@@ -18,6 +18,10 @@ export { default as WeChatSvg } from './Common/WeChatSvg'
 export { default as VideoSvg } from './Common/VideoSvg'
 export { default as SettingSvg } from './Common/SettingSvg'
 export { default as ReelSvg } from './Common/ReelSvg'
+export { default as StickerSvg } from './Common/StickerSvg'
+export { default as DrawSvg } from './Common/DrawSvg'
+export { default as TextSvg } from './Common/TextSvg'
+export { default as TrashBinSvg } from './Common/TrashBinSvg'
 //Onboarding
 export { default as BallSvg } from './Onboarding/BallSvg'
 //Home
