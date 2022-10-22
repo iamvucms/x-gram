@@ -1,11 +1,25 @@
-import { DrawSvg, StickerSvg, TextSvg, TrashBinSvg } from '@/Assets/Svg'
+import {
+  AlignCenterSvg,
+  AlignLeftSvg,
+  AlignRightSvg,
+  CloseSvg,
+  DrawSvg,
+  SolidTextSvg,
+  StickerSvg,
+  TextSvg,
+  TrashBinSvg,
+} from '@/Assets/Svg'
 import {
   AppBottomSheet,
   AppButton,
+  AppGradientText,
+  AppInput,
   AppText,
   Box,
   Container,
   Obx,
+  Position,
+  Row,
 } from '@/Components'
 import { useAppTheme } from '@/Hooks'
 import {
@@ -13,7 +27,10 @@ import {
   DrawGradientColors,
   DrawStrokeColors,
   getStickerPacks,
+  TextAlignType,
+  TextType,
 } from '@/Models'
+import { goBack } from '@/Navigators'
 import {
   Colors,
   Layout,
@@ -22,7 +39,7 @@ import {
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
-import { randomRgb } from '@/Utils'
+import { getHitSlop, randomRgb } from '@/Utils'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import { BlurView } from '@react-native-community/blur'
 import { useLocalObservable } from 'mobx-react-lite'
@@ -56,15 +73,19 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg'
 import ViewShot from 'react-native-view-shot'
 
 const ImageEditor = ({ route }) => {
   const { medias } = route.params || {}
+  const { t } = useTranslation()
   const viewShotRefs = useRef([]).current
   const sheetRef = useRef()
   const { Images } = useAppTheme()
+  const { top } = useSafeAreaInsets()
+  const trashY = useSharedValue(0)
+  const trashAnim = useSharedValue(0)
   const stickerPacks = useMemo(
     () =>
       getStickerPacks({
@@ -78,6 +99,8 @@ const ImageEditor = ({ route }) => {
     drawables: medias.map(() => false),
     packId: 1,
     stickers: medias.map(() => []),
+    editText: false,
+    texts: medias.map(() => []),
     setIndex: value => (state.index = value),
     setBlur: value => (state.backgroundBlurs[state.index] = value),
     setDrawable: value => (state.drawables[state.index] = value),
@@ -91,11 +114,15 @@ const ImageEditor = ({ route }) => {
       }
     },
     setPackId: value => (state.packId = value),
+    setEditText: value => (state.editText = value),
+    addText: text =>
+      (state.texts[state.index] = [...state.texts[state.index], text]),
+    removeText: index => state.texts[state.index].splice(index, 1),
     get currentPackStickers() {
       return stickerPacks.find(item => item.id === this.packId).stickers
     },
     get toolBarVisible() {
-      return state.drawables.every(item => !item)
+      return state.drawables.every(item => !item) && !state.editText
     },
   }))
   const onScrollEnd = useCallback(
@@ -109,6 +136,20 @@ const ImageEditor = ({ route }) => {
     },
     [],
   )
+  const trashBarStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateY: (1 - trashY.value) * 60,
+      },
+    ],
+  }))
+  const trashBgStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        scaleX: trashAnim.value,
+      },
+    ],
+  }))
   const renderViewShotPage = useCallback(({ item, index }) => {
     return (
       <ViewShot
@@ -127,7 +168,24 @@ const ImageEditor = ({ route }) => {
             />
           )}
         </Obx>
-        <Obx>{() => <StickerLayer stickers={state.stickers[index]} />}</Obx>
+        <Obx>
+          {() => (
+            <StickerLayer
+              trashAnim={trashAnim}
+              trashY={trashY}
+              stickers={state.stickers[index]}
+            />
+          )}
+        </Obx>
+        <Obx>
+          {() => (
+            <TextLayer
+              trashAnim={trashAnim}
+              trashY={trashY}
+              texts={state.texts[index]}
+            />
+          )}
+        </Obx>
         <Obx>
           {() => {
             return (
@@ -143,13 +201,17 @@ const ImageEditor = ({ route }) => {
     )
   }, [])
 
-  const renderStickerItem = useCallback(({ item }) => {
+  const renderStickerItem = useCallback(({ item, index }) => {
     const onPress = () => {
       state.addSticker(item)
       sheetRef.current?.close()
     }
     return (
-      <TouchableOpacity onPress={onPress} style={styles.stickerBtn}>
+      <TouchableOpacity
+        key={`sticker-${index}`}
+        onPress={onPress}
+        style={styles.stickerBtn}
+      >
         <Image style={styles.stickerImg} source={item} />
       </TouchableOpacity>
     )
@@ -168,23 +230,57 @@ const ImageEditor = ({ route }) => {
       <Obx>
         {() =>
           state.toolBarVisible && (
-            <Animated.View entering={FadeInRight} style={styles.toolBar}>
+            <>
               <TouchableOpacity
-                onPress={() => sheetRef.current?.snapTo(0)}
-                style={styles.toolBarBtn}
+                onPress={() => goBack()}
+                hitSlop={getHitSlop(16)}
+                style={[styles.closeBtn, { top: top + 10 }]}
               >
-                <StickerSvg color={Colors.white} />
+                <CloseSvg size={30} color={Colors.white} />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.toolBarBtn}>
-                <TextSvg size={20} color={Colors.white} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => state.setDrawable(true)}
-                style={styles.toolBarBtn}
+              <Animated.View
+                entering={FadeInRight}
+                style={[styles.toolBar, { top: top + 10 }]}
               >
-                <DrawSvg size={20} color={Colors.white} />
-              </TouchableOpacity>
-            </Animated.View>
+                <TouchableOpacity
+                  onPress={() => sheetRef.current?.snapTo(0)}
+                  style={styles.toolBarBtn}
+                >
+                  <StickerSvg color={Colors.white} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    state.setEditText(true)
+                    sheetRef.current?.close()
+                  }}
+                  style={styles.toolBarBtn}
+                >
+                  <TextSvg size={20} color={Colors.white} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    state.setDrawable(true)
+                    sheetRef.current?.close()
+                  }}
+                  style={styles.toolBarBtn}
+                >
+                  <DrawSvg size={20} color={Colors.white} />
+                </TouchableOpacity>
+              </Animated.View>
+            </>
+          )
+        }
+      </Obx>
+      <Obx>
+        {() =>
+          state.editText && (
+            <TextEditor
+              onClose={() => state.setEditText(false)}
+              onDone={text => {
+                state.addText(text)
+                state.setEditText(false)
+              }}
+            />
           )
         }
       </Obx>
@@ -202,6 +298,13 @@ const ImageEditor = ({ route }) => {
           />
         </BlurView>
       </AppBottomSheet>
+      <Animated.View style={[styles.trashBar, trashBarStyle]}>
+        <Animated.View style={[styles.trashBarBg, trashBgStyle]} />
+        <TrashBinSvg color={Colors.white} />
+        <AppText color={Colors.white} fontSize={10}>
+          {t('imageEditor.dragHereToRemove')}
+        </AppText>
+      </Animated.View>
     </Container>
   )
 }
@@ -487,6 +590,7 @@ const AnimatedImage = memo(({ image, drawable, onDrew }) => {
                         <Defs>
                           {DrawGradientColors.map((colors, index) => (
                             <LinearGradient
+                              key={index}
                               id={`grad${index}`}
                               x1="0"
                               y1="0"
@@ -541,10 +645,7 @@ const AnimatedImage = memo(({ image, drawable, onDrew }) => {
     </Box>
   )
 })
-const StickerLayer = memo(({ stickers = [] }) => {
-  const { t } = useTranslation()
-  const trashY = useSharedValue(0)
-  const trashAnim = useSharedValue(0)
+const StickerLayer = memo(({ stickers = [], trashAnim, trashY }) => {
   const renderStickerItem = useCallback((sticker, index) => {
     return (
       <Sticker
@@ -555,34 +656,10 @@ const StickerLayer = memo(({ stickers = [] }) => {
       />
     )
   }, [])
-  const trashBarStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: (1 - trashY.value) * 60,
-      },
-    ],
-  }))
-  const trashBgStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        scaleX: trashAnim.value,
-      },
-    ],
-  }))
-  return (
-    <Fragment>
-      {stickers.map(renderStickerItem)}
-      <Animated.View style={[styles.trashBar, trashBarStyle]}>
-        <Animated.View style={[styles.trashBarBg, trashBgStyle]} />
-        <TrashBinSvg color={Colors.white} />
-        <AppText color={Colors.white} fontSize={10}>
-          {t('imageEditor.dragHereToRemove')}
-        </AppText>
-      </Animated.View>
-    </Fragment>
-  )
+
+  return stickers.map(renderStickerItem)
 })
-const activeTrashY = screenHeight / 2 - (screenWidth / 4) * 0.4 - 50
+const activeStickerTrashY = screenHeight / 2 - (screenWidth / 4) * 0.4 - 50
 const Sticker = memo(({ sticker, trashY, trashAnim }) => {
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
@@ -596,9 +673,12 @@ const Sticker = memo(({ sticker, trashY, trashAnim }) => {
     onActive: (event, ctx) => {
       translateX.value = ctx.startX + event.translationX
       translateY.value = ctx.startY + event.translationY
-      if (translateY.value >= activeTrashY && trashAnim.value === 0) {
+      if (translateY.value >= activeStickerTrashY && trashAnim.value === 0) {
         trashAnim.value = withTiming(1)
-      } else if (translateY.value < activeTrashY && trashAnim.value === 1) {
+      } else if (
+        translateY.value < activeStickerTrashY &&
+        trashAnim.value === 1
+      ) {
         trashAnim.value = withTiming(0)
       }
     },
@@ -624,13 +704,280 @@ const Sticker = memo(({ sticker, trashY, trashAnim }) => {
   return (
     <PanGestureHandler onGestureEvent={panHandler}>
       <Animated.View style={[styles.stickerItem, stickerStyle]}>
-        <TouchableOpacity>
-          <Image style={styles.stickerImg} source={sticker} />
-        </TouchableOpacity>
+        <Image style={styles.stickerImg} source={sticker} />
       </Animated.View>
     </PanGestureHandler>
   )
 })
+const TextEditor = memo(({ onDone, onClose }) => {
+  const { t } = useTranslation()
+  const state = useLocalObservable(() => ({
+    text: '',
+    align: TextAlignType.Center,
+    colorIndex: 1,
+    type: TextType.WhiteBox,
+    setText: text => (state.text = text),
+    setAlign: align => (state.align = align),
+    setColorIndex: colorIndex => (state.colorIndex = colorIndex),
+    setType: type => (state.type = type),
+    get colors() {
+      const color = DrawColors[this.colorIndex]
+      return typeof color === 'string' ? [color, color] : color
+    },
+  }))
+  const renderDrawColorItem = useCallback(({ item: color, index }) => {
+    return (
+      <Obx>
+        {() => (
+          <TouchableOpacity
+            onPress={() => state.setColorIndex(index)}
+            key={index}
+            style={[
+              styles.colorItem,
+              {
+                backgroundColor: color,
+                borderColor:
+                  state.colorIndex === index ? Colors.primary : Colors.white,
+              },
+            ]}
+          >
+            {!!Array.isArray(color) && (
+              <RNLinearGradient colors={color} style={styles.linearGradient} />
+            )}
+          </TouchableOpacity>
+        )}
+      </Obx>
+    )
+  }, [])
+  return (
+    <View style={styles.textEditor}>
+      <Box fill center>
+        <Animated.View style={[styles.textHeaderView]}>
+          <SafeAreaView>
+            <Box
+              paddingHorizontal={16}
+              paddingTop={10}
+              row
+              align="center"
+              justify="space-between"
+            >
+              <AppButton
+                onPress={onClose}
+                text={t('cancel')}
+                backgroundColor={Colors.black50}
+              />
+              <Row align="center" row>
+                <TouchableOpacity
+                  hitSlop={getHitSlop(10)}
+                  style={styles.textHeaderBtn}
+                  onPress={() => {
+                    if (state.type === TextType.WhiteBox) {
+                      state.setType(TextType.Revert)
+                    } else if (state.type === TextType.Revert) {
+                      state.setType(TextType.Normal)
+                    } else {
+                      state.setType(TextType.WhiteBox)
+                    }
+                  }}
+                >
+                  <Obx>
+                    {() =>
+                      state.type === TextType.WhiteBox ? (
+                        <SolidTextSvg color={Colors.white} />
+                      ) : state.type === TextType.Normal ? (
+                        <TextSvg size={22} color={Colors.white} />
+                      ) : (
+                        <Obx>
+                          {() => <SolidTextSvg color={state.colors[0]} />}
+                        </Obx>
+                      )
+                    }
+                  </Obx>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (state.align === TextAlignType.Left) {
+                      state.setAlign(TextAlignType.Center)
+                    } else if (state.align === TextAlignType.Center) {
+                      state.setAlign(TextAlignType.Right)
+                    } else {
+                      state.setAlign(TextAlignType.Left)
+                    }
+                  }}
+                  hitSlop={getHitSlop(10)}
+                  style={styles.textHeaderBtn}
+                >
+                  <Obx>
+                    {() =>
+                      state.align === TextAlignType.Center ? (
+                        <AlignCenterSvg color={Colors.white} />
+                      ) : state.align === TextAlignType.Left ? (
+                        <AlignLeftSvg color={Colors.white} />
+                      ) : (
+                        <AlignRightSvg color={Colors.white} />
+                      )
+                    }
+                  </Obx>
+                </TouchableOpacity>
+              </Row>
+              <Obx>
+                {() => (
+                  <AppButton
+                    disabled={!state.text}
+                    onPress={() =>
+                      onDone({
+                        text: state.text,
+                        align: state.align,
+                        colors: state.colors,
+                        type: state.type,
+                      })
+                    }
+                    disabledBackgroundColor={Colors.black50}
+                    text={t('done')}
+                    backgroundColor={Colors.black50}
+                  />
+                )}
+              </Obx>
+            </Box>
+          </SafeAreaView>
+        </Animated.View>
+        <Obx>
+          {() => (
+            <XText
+              text={state.text}
+              onChangeText={txt => state.setText(txt)}
+              colors={state.colors}
+              type={state.type}
+              align={state.align}
+              isEditing
+            />
+          )}
+        </Obx>
+        <Position bottom={0} left={0} right={0} zIndex={99}>
+          <Box height={44}>
+            <FlatList
+              keyboardShouldPersistTaps="always"
+              data={DrawColors}
+              horizontal
+              renderItem={renderDrawColorItem}
+              keyExtractor={(_, index) => index}
+              showsHorizontalScrollIndicator={false}
+            />
+          </Box>
+        </Position>
+      </Box>
+    </View>
+  )
+})
+
+const TextLayer = memo(({ texts, trashY, trashAnim }) => {
+  const renderTextItem = useCallback(
+    (txt, index) => (
+      <XText trashY={trashY} trashAnim={trashAnim} key={index} {...txt} />
+    ),
+    [],
+  )
+  return texts.map(renderTextItem)
+})
+const activeTextTrashY = screenHeight / 2 - ResponsiveHeight(20) - 50
+const XText = memo(
+  ({
+    type,
+    colors,
+    align,
+    isEditing,
+    text,
+    onChangeText,
+    trashY,
+    trashAnim,
+  }) => {
+    const translateX = useSharedValue(0)
+    const translateY = useSharedValue(0)
+    const zIndex = useSharedValue(99)
+    const textColors =
+      type === TextType.Revert ? [Colors.white, Colors.white] : colors
+    const containterBgColors =
+      type === TextType.WhiteBox
+        ? [Colors.white, Colors.white]
+        : type === TextType.Revert
+        ? colors
+        : [Colors.transparent, Colors.transparent]
+    const panHandler = useAnimatedGestureHandler({
+      onStart: (_, ctx) => {
+        ctx.startX = translateX.value
+        ctx.startY = translateY.value
+        trashY.value = withTiming(1)
+      },
+      onActive: (event, ctx) => {
+        translateX.value = ctx.startX + event.translationX
+        translateY.value = ctx.startY + event.translationY
+        if (translateY.value >= activeTextTrashY && trashAnim.value === 0) {
+          trashAnim.value = withTiming(1)
+        } else if (
+          translateY.value < activeTextTrashY &&
+          trashAnim.value === 1
+        ) {
+          trashAnim.value = withTiming(0)
+        }
+      },
+      onEnd: () => {
+        trashY.value = withTiming(0)
+        if (trashAnim.value === 1) {
+          zIndex.value = -99
+          trashAnim.value = withTiming(0)
+        }
+      },
+    })
+    const textStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateX: translateX.value,
+        },
+        {
+          translateY: translateY.value,
+        },
+      ],
+      zIndex: zIndex.value,
+    }))
+    return (
+      <PanGestureHandler onGestureEvent={panHandler}>
+        <Animated.View
+          style={[
+            textStyle,
+            isEditing ? styles.baseTextInputView : styles.baseTextView,
+            {
+              alignSelf: align,
+            },
+          ]}
+        >
+          <RNLinearGradient
+            start={{
+              x: 0,
+              y: 0,
+            }}
+            end={{
+              x: 1,
+              y: 0,
+            }}
+            colors={containterBgColors}
+            style={styles.textBgView}
+          />
+          <AppGradientText
+            colors={textColors}
+            color={Colors.white}
+            fontSize={18}
+            lineHeight={22}
+            fontWeight={800}
+            isInput={isEditing}
+            {...(isEditing
+              ? { onChangeText, autoFocus: true, value: text }
+              : { children: text })}
+          />
+        </Animated.View>
+      </PanGestureHandler>
+    )
+  },
+)
 const styles = XStyleSheet.create({
   rootView: {
     flex: 1,
@@ -724,7 +1071,6 @@ const styles = XStyleSheet.create({
     position: 'absolute',
     zIndex: 99,
     right: 0,
-    top: '15%',
     paddingHorizontal: 16,
   },
   toolBarBtn: {
@@ -755,5 +1101,45 @@ const styles = XStyleSheet.create({
     top: 0,
     zIndex: -1,
     skipResponsive: true,
+  },
+  closeBtn: {
+    position: 'absolute',
+    left: 16,
+    zIndex: 99,
+  },
+  textEditor: {
+    ...XStyleSheet.absoluteFillObject,
+    zIndex: 99,
+    backgroundColor: Colors.black75,
+  },
+  baseTextInputView: {
+    paddingHorizontal: 8,
+    borderRadius: 6,
+    overflow: 'hidden',
+    height: 40,
+    justifyContent: 'center',
+  },
+  baseTextView: {
+    position: 'absolute',
+    top: (screenHeight - ResponsiveHeight(40)) / 2,
+    skipResponsive: true,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+    overflow: 'hidden',
+    height: ResponsiveHeight(40),
+    justifyContent: 'center',
+  },
+  textBgView: {
+    ...XStyleSheet.absoluteFillObject,
+    zIndex: -1,
+  },
+  textHeaderView: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+  },
+  textHeaderBtn: {
+    marginHorizontal: 10,
   },
 })

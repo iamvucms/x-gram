@@ -22,6 +22,10 @@ export { default as StickerSvg } from './Common/StickerSvg'
 export { default as DrawSvg } from './Common/DrawSvg'
 export { default as TextSvg } from './Common/TextSvg'
 export { default as TrashBinSvg } from './Common/TrashBinSvg'
+export { default as SolidTextSvg } from './Common/SolidTextSvg'
+export { default as AlignLeftSvg } from './Common/AlignLeftSvg'
+export { default as AlignRightSvg } from './Common/AlignRightSvg'
+export { default as AlignCenterSvg } from './Common/AlignCenterSvg'
 //Onboarding
 export { default as BallSvg } from './Onboarding/BallSvg'
 //Home

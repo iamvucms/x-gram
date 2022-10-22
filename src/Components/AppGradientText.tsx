@@ -2,13 +2,15 @@ import { Colors } from '@/Theme'
 import MaskedView from '@react-native-masked-view/masked-view'
 import React, { memo } from 'react'
 import LinearGradient from 'react-native-linear-gradient'
+import AppInput, { AppInputProps } from './AppInput'
 import AppText, { AppTextProps } from './AppText'
-interface AppGradientTextProps extends AppTextProps {
+interface AppGradientTextProps extends AppTextProps, AppInputProps {
   locations?: number[]
   colors?: string[]
   start?: { x: number; y: number }
   end?: { x: number; y: number }
   children: string
+  isInput?: boolean
 }
 const AppGradientText = ({
   locations,
@@ -17,13 +19,15 @@ const AppGradientText = ({
   end = { x: 1, y: 0 },
   style,
   children,
+  isInput = false,
   ...restProps
 }: AppGradientTextProps) => {
+  const TextComponent = isInput ? AppInput : AppText
   return (
     <MaskedView
       androidRenderingMode="software"
       maskElement={
-        <AppText
+        <TextComponent
           {...restProps}
           style={[
             style,
@@ -33,7 +37,7 @@ const AppGradientText = ({
           ]}
         >
           {children}
-        </AppText>
+        </TextComponent>
       }
     >
       <LinearGradient
@@ -42,9 +46,9 @@ const AppGradientText = ({
         end={end}
         locations={locations}
       >
-        <AppText {...restProps} style={[style, { opacity: 0 }]}>
+        <TextComponent {...restProps} style={[style, { opacity: 0 }]}>
           {children}
-        </AppText>
+        </TextComponent>
       </LinearGradient>
     </MaskedView>
   )

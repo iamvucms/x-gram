@@ -54,3 +54,14 @@ export const DrawStrokeColors = [
   'url(#grad9)',
   'url(#grad10)',
 ]
+
+export const TextType = {
+  Normal: 'Normal',
+  WhiteBox: 'WhiteBox',
+  Revert: 'Revert',
+}
+export const TextAlignType = {
+  Left: 'flex-start',
+  Center: 'center',
+  Right: 'flex-end',
+}
