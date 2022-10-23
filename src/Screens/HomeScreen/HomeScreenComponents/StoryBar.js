@@ -1,5 +1,5 @@
 import { CreateStorySvg, StoryGradientBorderSvg } from '@/Assets/Svg'
-import { AppImage, AppText, Padding } from '@/Components'
+import { AppImage, AppText, Obx, Padding } from '@/Components'
 import { PageName } from '@/Config'
 import { mockStories } from '@/Models'
 import { navigate } from '@/Navigators'
@@ -13,11 +13,15 @@ import Animated, {
   ZoomIn,
 } from 'react-native-reanimated'
 import { CreateType } from '@/Models'
+import { useLocalObservable } from 'mobx-react-lite'
 const MAX_SCROLL_Y = 100
 
 const StoryBar = ({ stories = mockStories, scrollY }) => {
   const { t } = useTranslation()
-
+  const state = useLocalObservable(() => ({
+    uploading: false,
+    setUploading: value => (state.uploading = value),
+  }))
   const renderStoryItem = useCallback(({ item, index }) => {
     return <StoryItem story={item} index={index} scrollY={scrollY} />
   }, [])
@@ -58,21 +62,31 @@ const StoryBar = ({ stories = mockStories, scrollY }) => {
     const onCreatePress = () => {
       navigate(PageName.MediaPicker, {
         multiple: true,
-        onNext: medias => {
-          navigate(PageName.ImageEditor, {
-            type: CreateType.Story,
-            medias,
-          })
+        editable: true,
+        editorProps: {
+          type: CreateType.Story,
+          onNext: medias => {
+            navigate(PageName.HomeScreen)
+            state.setUploading(true)
+          },
         },
       })
     }
     return (
       <View style={styles.createBtn}>
-        <Animated.View style={createBtnStyle} entering={ZoomIn}>
-          <TouchableOpacity onPress={onCreatePress}>
-            <CreateStorySvg size={84} />
-          </TouchableOpacity>
-        </Animated.View>
+        <Obx>
+          {() =>
+            state.uploading ? (
+              <Animated.View></Animated.View>
+            ) : (
+              <Animated.View style={createBtnStyle} entering={ZoomIn}>
+                <TouchableOpacity onPress={onCreatePress}>
+                  <CreateStorySvg size={84} />
+                </TouchableOpacity>
+              </Animated.View>
+            )
+          }
+        </Obx>
         <Padding top={7} />
         <Animated.View style={createBtnTextStyle}>
           <AppText color={Colors.white}>{t('home.create_story')}</AppText>
@@ -99,7 +113,7 @@ const StoryBar = ({ stories = mockStories, scrollY }) => {
 
 export default memo(StoryBar)
 
-const StoryItem = memo(({ item, index, scrollY }) => {
+const StoryItem = memo(({ story, index, scrollY }) => {
   const itemStyle = useAnimatedStyle(() => ({
     transform: [
       {
@@ -124,13 +138,13 @@ const StoryItem = memo(({ item, index, scrollY }) => {
         <StoryGradientBorderSvg size={84} />
         <AppImage
           containerStyle={styles.avatarImg}
-          source={{ uri: 'https://mdbcdn.b-cdn.net/img/new/avatars/2.webp' }}
+          source={{ uri: story.posted_by.avatar_url }}
         />
       </Animated.View>
       <Padding top={7} />
       <Animated.View style={nameStyle}>
         <AppText align="center" color={Colors.white}>
-          VuCms
+          {story.posted_by.user_id}
         </AppText>
       </Animated.View>
     </Pressable>

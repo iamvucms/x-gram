@@ -21,4 +21,5 @@ export const PageName = {
   CaptureScreen: 'CaptureScreen',
   MediaPicker: 'MediaPicker',
   ImageEditor: 'ImageEditor',
+  CreatePost: 'CreatePost',
 }

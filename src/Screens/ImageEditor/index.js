@@ -13,7 +13,6 @@ import {
   AppBottomSheet,
   AppButton,
   AppGradientText,
-  AppInput,
   AppText,
   Box,
   Container,
@@ -23,6 +22,7 @@ import {
 } from '@/Components'
 import { useAppTheme } from '@/Hooks'
 import {
+  CreateType,
   DrawColors,
   DrawGradientColors,
   DrawStrokeColors,
@@ -39,18 +39,11 @@ import {
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
-import { getHitSlop, randomRgb } from '@/Utils'
+import { getHitSlop } from '@/Utils'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import { BlurView } from '@react-native-community/blur'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, {
-  Fragment,
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
+import React, { memo, useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Image, ImageBackground, TouchableOpacity, View } from 'react-native'
 import {
@@ -64,8 +57,6 @@ import Animated, {
   FadeIn,
   FadeInDown,
   FadeInRight,
-  FadeInUp,
-  interpolate,
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedProps,
@@ -78,7 +69,7 @@ import { Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg'
 import ViewShot from 'react-native-view-shot'
 
 const ImageEditor = ({ route }) => {
-  const { medias } = route.params || {}
+  const { medias, onNext, type } = route.params || {}
   const { t } = useTranslation()
   const viewShotRefs = useRef([]).current
   const sheetRef = useRef()
@@ -123,6 +114,14 @@ const ImageEditor = ({ route }) => {
     },
     get toolBarVisible() {
       return state.drawables.every(item => !item) && !state.editText
+    },
+    get lastZIndex() {
+      return (
+        Math.max(
+          [...state.stickers[state.index]].pop()?.zIndex || 99,
+          [...state.texts[state.index]].pop()?.zIndex || 99,
+        ) || 0
+      )
     },
   }))
   const onScrollEnd = useCallback(
@@ -200,10 +199,9 @@ const ImageEditor = ({ route }) => {
       </ViewShot>
     )
   }, [])
-
   const renderStickerItem = useCallback(({ item, index }) => {
     const onPress = () => {
-      state.addSticker(item)
+      state.addSticker({ src: item, zIndex: state.lastZIndex + 1 })
       sheetRef.current?.close()
     }
     return (
@@ -215,6 +213,14 @@ const ImageEditor = ({ route }) => {
         <Image style={styles.stickerImg} source={item} />
       </TouchableOpacity>
     )
+  }, [])
+  const onNextPress = useCallback(async () => {
+    try {
+      const processMedias = await Promise.all(
+        viewShotRefs.map(async ref => await ref.capture()),
+      )
+      onNext && onNext(processMedias)
+    } catch (e) {}
   }, [])
   return (
     <Container style={styles.rootView}>
@@ -267,6 +273,12 @@ const ImageEditor = ({ route }) => {
                   <DrawSvg size={20} color={Colors.white} />
                 </TouchableOpacity>
               </Animated.View>
+              <AppButton
+                onPress={onNextPress}
+                text={type === CreateType.Story ? t('create') : t('next')}
+                backgroundColor={Colors.black50}
+                style={styles.nextBtn}
+              />
             </>
           )
         }
@@ -277,7 +289,10 @@ const ImageEditor = ({ route }) => {
             <TextEditor
               onClose={() => state.setEditText(false)}
               onDone={text => {
-                state.addText(text)
+                state.addText({
+                  ...text,
+                  zIndex: state.lastZIndex + 1,
+                })
                 state.setEditText(false)
               }}
             />
@@ -663,7 +678,7 @@ const activeStickerTrashY = screenHeight / 2 - (screenWidth / 4) * 0.4 - 50
 const Sticker = memo(({ sticker, trashY, trashAnim }) => {
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
-  const zIndex = useSharedValue(99)
+  const zIndex = useSharedValue(sticker.zIndex)
   const panHandler = useAnimatedGestureHandler({
     onStart: (_, ctx) => {
       ctx.startX = translateX.value
@@ -704,7 +719,7 @@ const Sticker = memo(({ sticker, trashY, trashAnim }) => {
   return (
     <PanGestureHandler onGestureEvent={panHandler}>
       <Animated.View style={[styles.stickerItem, stickerStyle]}>
-        <Image style={styles.stickerImg} source={sticker} />
+        <Image style={styles.stickerImg} source={sticker.src} />
       </Animated.View>
     </PanGestureHandler>
   )
@@ -888,12 +903,13 @@ const XText = memo(
     isEditing,
     text,
     onChangeText,
+    zIndex: zIndexProp,
     trashY,
     trashAnim,
   }) => {
     const translateX = useSharedValue(0)
     const translateY = useSharedValue(0)
-    const zIndex = useSharedValue(99)
+    const zIndex = useSharedValue(zIndexProp)
     const textColors =
       type === TextType.Revert ? [Colors.white, Colors.white] : colors
     const containterBgColors =
@@ -1141,5 +1157,11 @@ const styles = XStyleSheet.create({
   },
   textHeaderBtn: {
     marginHorizontal: 10,
+  },
+  nextBtn: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    zIndex: 99,
   },
 })

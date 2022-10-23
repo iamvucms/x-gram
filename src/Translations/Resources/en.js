@@ -14,6 +14,7 @@ export default {
   next: 'Next',
   done: 'Done',
   undo: 'Undo',
+  create: 'Create',
   cancel: 'Cancel',
   onboarding: {
     description: 'Sharing your moments with your friends and family',

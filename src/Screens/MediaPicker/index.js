@@ -17,6 +17,8 @@ const MediaPicker = ({ route }) => {
     type = 'photo',
     onNext = () => {},
     multiple = true,
+    editable,
+    editorProps = {},
   } = route.params || {}
   const isPickingPhoto = type === 'photo'
   const { t } = useTranslation()
@@ -25,7 +27,7 @@ const MediaPicker = ({ route }) => {
     fetching: false,
     nextPageCursor: '',
     toggleSelect: uri => {
-      const media = state.medias.find(media => media.image.uri === uri)
+      const media = state.medias.find(m => m.image.uri === uri)
       if (media) {
         media.selected = !media.selected
       }
@@ -98,7 +100,14 @@ const MediaPicker = ({ route }) => {
       uri: media.image.uri,
       mimeType: media.mimeType,
     }))
-    onNext(files)
+    if (editable) {
+      navigate(PageName.ImageEditor, {
+        medias: files,
+        ...editorProps,
+      })
+    } else {
+      onNext(files)
+    }
   }, [])
   const renderMediaItem = React.useCallback(
     ({ item }) => {
