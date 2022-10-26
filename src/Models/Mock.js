@@ -125,47 +125,55 @@ export const mockUsers = [
 export const mockComments = [
   {
     comment_id: '1',
+    created_at: new Date().getTime(),
     commented_by: mockUsers[0],
     comment: '@username This is a comment by John Doe',
   },
   {
     comment_id: '2',
+    created_at: new Date().getTime(),
     commented_by: mockUsers[1],
     comment:
       'This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
   {
     comment_id: '3',
+    created_at: new Date().getTime(),
     commented_by: mockUsers[2],
     comment:
       '@username03 This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
   {
     comment_id: '4',
+    created_at: new Date().getTime(),
     commented_by: mockUsers[3],
     comment:
       'This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
   {
     comment_id: '5',
+    created_at: new Date().getTime(),
     commented_by: mockUsers[4],
     comment:
       'This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
   {
     comment_id: '6',
+    created_at: new Date().getTime(),
     commented_by: mockUsers[5],
     comment:
       '@username04 This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
   {
     comment_id: '7',
+    created_at: new Date().getTime(),
     commented_by: mockUsers[6],
     comment:
       'This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
   {
     comment_id: '8',
+    created_at: new Date().getTime(),
     commented_by: mockUsers[7],
     comment:
       '@username04 This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
@@ -431,9 +439,6 @@ export const mockStories = [
           '',
         is_video: false,
         created_at: new Date().getTime(),
-        rotation: 0,
-        scale: 1,
-        caption: 'This is a caption',
       },
       {
         media_id: '2',
@@ -445,9 +450,6 @@ export const mockStories = [
           '',
         is_video: false,
         created_at: new Date().getTime(),
-        rotation: 0,
-        scale: 1,
-        caption: 'This is a caption',
       },
     ],
     posted_by: mockUsers[0],
@@ -467,9 +469,6 @@ export const mockStories = [
           '',
         is_video: false,
         created_at: new Date().getTime(),
-        rotation: 0,
-        scale: 1,
-        caption: 'This is a caption',
       },
       {
         media_id: '2',
@@ -481,9 +480,6 @@ export const mockStories = [
           '',
         is_video: false,
         created_at: new Date().getTime(),
-        rotation: 0,
-        scale: 1,
-        caption: 'This is a caption',
       },
     ],
     posted_by: mockUsers[1],
@@ -503,9 +499,6 @@ export const mockStories = [
           '',
         is_video: false,
         created_at: new Date().getTime(),
-        rotation: 0,
-        scale: 1,
-        caption: 'This is a caption',
       },
       {
         media_id: '2',
@@ -517,9 +510,6 @@ export const mockStories = [
           '',
         is_video: false,
         created_at: new Date().getTime(),
-        rotation: 0,
-        scale: 1,
-        caption: 'This is a caption',
       },
     ],
     posted_by: mockUsers[2],
@@ -539,9 +529,6 @@ export const mockStories = [
           '',
         is_video: false,
         created_at: new Date().getTime(),
-        rotation: 0,
-        scale: 1,
-        caption: 'This is a caption',
       },
       {
         media_id: '2',
@@ -553,9 +540,6 @@ export const mockStories = [
           '',
         is_video: false,
         created_at: new Date().getTime(),
-        rotation: 0,
-        scale: 1,
-        caption: 'This is a caption',
       },
     ],
     posted_by: mockUsers[3],

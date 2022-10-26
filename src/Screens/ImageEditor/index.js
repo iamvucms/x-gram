@@ -16,6 +16,7 @@ import {
   AppText,
   Box,
   Container,
+  LoadingIndicator,
   Obx,
   Position,
   Row,
@@ -73,6 +74,7 @@ const ImageEditor = ({ route }) => {
   const { t } = useTranslation()
   const viewShotRefs = useRef([]).current
   const sheetRef = useRef()
+  const listRef = useRef()
   const { Images } = useAppTheme()
   const { top } = useSafeAreaInsets()
   const trashY = useSharedValue(0)
@@ -92,6 +94,7 @@ const ImageEditor = ({ route }) => {
     stickers: medias.map(() => []),
     editText: false,
     texts: medias.map(() => []),
+    processing: false,
     setIndex: value => (state.index = value),
     setBlur: value => (state.backgroundBlurs[state.index] = value),
     setDrawable: value => (state.drawables[state.index] = value),
@@ -109,6 +112,7 @@ const ImageEditor = ({ route }) => {
     addText: text =>
       (state.texts[state.index] = [...state.texts[state.index], text]),
     removeText: index => state.texts[state.index].splice(index, 1),
+    setProcessing: value => (state.processing = value),
     get currentPackStickers() {
       return stickerPacks.find(item => item.id === this.packId).stickers
     },
@@ -116,11 +120,9 @@ const ImageEditor = ({ route }) => {
       return state.drawables.every(item => !item) && !state.editText
     },
     get lastZIndex() {
-      return (
-        Math.max(
-          [...state.stickers[state.index]].pop()?.zIndex || 99,
-          [...state.texts[state.index]].pop()?.zIndex || 99,
-        ) || 0
+      return Math.max(
+        [...state.stickers[state.index]].pop()?.zIndex || 99,
+        [...state.texts[state.index]].pop()?.zIndex || 99,
       )
     },
   }))
@@ -215,16 +217,27 @@ const ImageEditor = ({ route }) => {
     )
   }, [])
   const onNextPress = useCallback(async () => {
+    state.setProcessing(true)
     try {
-      const processMedias = await Promise.all(
-        viewShotRefs.map(async ref => await ref.capture()),
-      )
+      const processMedias = []
+      for (let i = 0; i < viewShotRefs.length; i++) {
+        const uri = await viewShotRefs[i].capture()
+        processMedias.push(uri)
+        if (i < viewShotRefs.length - 1) {
+          listRef.current?.scrollToIndex({ index: i + 1, animated: true })
+          await new Promise(resolve => setTimeout(resolve, 300))
+        }
+      }
       onNext && onNext(processMedias)
-    } catch (e) {}
+    } catch (e) {
+      console.log(e)
+    }
+    state.setProcessing(false)
   }, [])
   return (
     <Container style={styles.rootView}>
       <FlatList
+        ref={listRef}
         pagingEnabled
         onMomentumScrollEnd={onScrollEnd}
         data={medias}
@@ -320,6 +333,11 @@ const ImageEditor = ({ route }) => {
           {t('imageEditor.dragHereToRemove')}
         </AppText>
       </Animated.View>
+      <Obx>
+        {() =>
+          state.processing && <LoadingIndicator overlay type="9CubeGrid" />
+        }
+      </Obx>
     </Container>
   )
 }

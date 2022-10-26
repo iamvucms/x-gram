@@ -1,5 +1,7 @@
-import { generateRequest, Method } from '../Axios'
+import { request, Method } from '../Axios'
 import Endpoint from '../Endpoint'
 
-export const fetchCountries = () =>
-  generateRequest(Endpoint.countries, Method.GET)
+export const getStories = page =>
+  request(Endpoint().getStories, Method.GET, { page })
+
+export const getPosts = () => request(Endpoint().getHomePosts, Method.GET)

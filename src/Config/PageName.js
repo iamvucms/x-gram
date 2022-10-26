@@ -22,4 +22,5 @@ export const PageName = {
   MediaPicker: 'MediaPicker',
   ImageEditor: 'ImageEditor',
   CreatePost: 'CreatePost',
+  StoryScreen: 'StoryScreen',
 }

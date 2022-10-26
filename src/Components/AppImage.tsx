@@ -32,6 +32,7 @@ interface AppImageProps {
   disabled?: boolean
   enablePinchZoom?: boolean
   onPress?: () => void
+  lightbox?: boolean
 }
 const AppImage = ({
   source,
@@ -42,6 +43,7 @@ const AppImage = ({
   containerStyle,
   disabled,
   onPress,
+  lightbox,
 }: AppImageProps) => {
   const pinchRef = useRef()
   const panRef = useRef()

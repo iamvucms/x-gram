@@ -31,7 +31,6 @@ const AuthPassCodeScreen = () => {
     if (state.passcode.length >= 6) {
       return
     }
-    console.log(userStore.passcode)
     state.setPasscodeError('')
     state.setPasscode(state.passcode + value)
     if (state.passcode.length === 6) {

@@ -26,6 +26,8 @@ export { default as SolidTextSvg } from './Common/SolidTextSvg'
 export { default as AlignLeftSvg } from './Common/AlignLeftSvg'
 export { default as AlignRightSvg } from './Common/AlignRightSvg'
 export { default as AlignCenterSvg } from './Common/AlignCenterSvg'
+export { default as UploadSvg } from './Common/UploadSvg'
+export { default as DotsSvg } from './Common/DotsSvg'
 //Onboarding
 export { default as BallSvg } from './Onboarding/BallSvg'
 //Home

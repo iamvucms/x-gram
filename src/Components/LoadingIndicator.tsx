@@ -1,5 +1,5 @@
 import { Colors, XStyleSheet } from '@/Theme'
-import React from 'react'
+import React, { memo } from 'react'
 import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native'
 import Spinkit, { SpinnerType } from 'react-native-spinkit'
 
@@ -48,7 +48,7 @@ const LoadingIndicator = ({
   )
 }
 
-export default LoadingIndicator
+export default memo(LoadingIndicator)
 
 const styles = XStyleSheet.create({
   overlayView: {

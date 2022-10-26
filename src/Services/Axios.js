@@ -29,12 +29,7 @@ API.interceptors.response.use(
   },
 )
 
-export const generateRequest = async (
-  url,
-  method = Method.GET,
-  data,
-  onError,
-) => {
+export const request = async (url, method = Method.GET, data, onError) => {
   try {
     const respose = await API[method](
       url,

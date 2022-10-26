@@ -16,6 +16,7 @@ import {
   ProfileOther,
   RecoveryPasswordScreen,
   RegisterScreen,
+  StoryScreen,
 } from '@/Screens'
 const Stack = createNativeStackNavigator()
 const Application = () => {
@@ -67,6 +68,13 @@ const AuthStack = () => {
       <Stack.Screen name={PageName.MediaPicker} component={MediaPicker} />
       <Stack.Screen name={PageName.ImageEditor} component={ImageEditor} />
       <Stack.Screen name={PageName.CaptureScreen} component={CaptureScreen} />
+      <Stack.Screen
+        options={{
+          animation: 'slide_from_bottom',
+        }}
+        name={PageName.StoryScreen}
+        component={StoryScreen}
+      />
     </Stack.Navigator>
   )
 }

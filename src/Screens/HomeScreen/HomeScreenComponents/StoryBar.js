@@ -1,29 +1,48 @@
 import { CreateStorySvg, StoryGradientBorderSvg } from '@/Assets/Svg'
-import { AppImage, AppText, Obx, Padding } from '@/Components'
+import {
+  AppImage,
+  AppText,
+  Box,
+  LoadingIndicator,
+  Obx,
+  Padding,
+} from '@/Components'
 import { PageName } from '@/Config'
-import { mockStories } from '@/Models'
+import { CreateType, mockStories } from '@/Models'
 import { navigate } from '@/Navigators'
 import { Colors, XStyleSheet } from '@/Theme'
-import React, { memo, useCallback, useMemo } from 'react'
+import { useLocalObservable } from 'mobx-react-lite'
+import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, Pressable, TouchableOpacity, View } from 'react-native'
+import { FlatList, Image, TouchableOpacity, View } from 'react-native'
 import Animated, {
   interpolate,
   useAnimatedStyle,
   ZoomIn,
 } from 'react-native-reanimated'
-import { CreateType } from '@/Models'
-import { useLocalObservable } from 'mobx-react-lite'
 const MAX_SCROLL_Y = 100
 
 const StoryBar = ({ stories = mockStories, scrollY }) => {
   const { t } = useTranslation()
   const state = useLocalObservable(() => ({
+    uploadingMedias: [],
     uploading: false,
     setUploading: value => (state.uploading = value),
+    setUploadingMedias: medias => (state.uploadingMedias = medias),
   }))
+  useEffect(() => {}, [])
   const renderStoryItem = useCallback(({ item, index }) => {
-    return <StoryItem story={item} index={index} scrollY={scrollY} />
+    const onPress = () => {
+      navigate(PageName.StoryScreen, { story: item })
+    }
+    return (
+      <StoryItem
+        onPress={onPress}
+        story={item}
+        index={index}
+        scrollY={scrollY}
+      />
+    )
   }, [])
 
   const containerStyle = useAnimatedStyle(() => ({
@@ -57,6 +76,15 @@ const StoryBar = ({ stories = mockStories, scrollY }) => {
   const createBtnTextStyle = useAnimatedStyle(() => ({
     opacity: interpolate(scrollY.value, [0, MAX_SCROLL_Y], [1, 0]),
   }))
+  const onNext = medias => {
+    navigate(PageName.HomeScreen)
+    state.setUploading(true)
+    state.setUploadingMedias(medias)
+    //TODO create story
+
+    // state.setUploading(false)
+    // state.setUploadingMedias([])
+  }
 
   const CreateButton = useMemo(() => {
     const onCreatePress = () => {
@@ -65,10 +93,7 @@ const StoryBar = ({ stories = mockStories, scrollY }) => {
         editable: true,
         editorProps: {
           type: CreateType.Story,
-          onNext: medias => {
-            navigate(PageName.HomeScreen)
-            state.setUploading(true)
-          },
+          onNext,
         },
       })
     }
@@ -77,7 +102,42 @@ const StoryBar = ({ stories = mockStories, scrollY }) => {
         <Obx>
           {() =>
             state.uploading ? (
-              <Animated.View></Animated.View>
+              <Animated.View entering={ZoomIn}>
+                <View style={styles.creatingStoryView}>
+                  <Box overflow="hidden" radius={27} fill row flexWrap="wrap">
+                    <View style={styles.uploadIcView}>
+                      <LoadingIndicator color={Colors.white} />
+                    </View>
+                    <Obx>
+                      {() => {
+                        const width =
+                          state.uploadingMedias.length > 1 ? '50%' : '100%'
+                        const height =
+                          state.uploadingMedias.length > 2 ? '50%' : '100%'
+                        return state.uploadingMedias
+                          .slice(0, 4)
+                          .map((uri, index) => (
+                            <Image
+                              key={index}
+                              // eslint-disable-next-line react-native/no-inline-styles
+                              style={{
+                                width:
+                                  state.uploadingMedias.length === 3 &&
+                                  index === 2
+                                    ? '100%'
+                                    : width,
+                                height,
+                              }}
+                              source={{
+                                uri,
+                              }}
+                            />
+                          ))
+                      }}
+                    </Obx>
+                  </Box>
+                </View>
+              </Animated.View>
             ) : (
               <Animated.View style={createBtnStyle} entering={ZoomIn}>
                 <TouchableOpacity onPress={onCreatePress}>
@@ -89,7 +149,15 @@ const StoryBar = ({ stories = mockStories, scrollY }) => {
         </Obx>
         <Padding top={7} />
         <Animated.View style={createBtnTextStyle}>
-          <AppText color={Colors.white}>{t('home.create_story')}</AppText>
+          <AppText color={Colors.white}>
+            <Obx>
+              {() =>
+                state.uploading
+                  ? t('home.creating_story')
+                  : t('home.create_story')
+              }
+            </Obx>
+          </AppText>
         </Animated.View>
       </View>
     )
@@ -113,7 +181,7 @@ const StoryBar = ({ stories = mockStories, scrollY }) => {
 
 export default memo(StoryBar)
 
-const StoryItem = memo(({ story, index, scrollY }) => {
+const StoryItem = memo(({ story, index, scrollY, onPress }) => {
   const itemStyle = useAnimatedStyle(() => ({
     transform: [
       {
@@ -130,13 +198,14 @@ const StoryItem = memo(({ story, index, scrollY }) => {
     opacity: interpolate(scrollY.value, [0, MAX_SCROLL_Y], [1, 0]),
   }))
   return (
-    <Pressable>
+    <View>
       <Animated.View
         entering={ZoomIn.delay((index + 1) * 200)}
         style={[styles.storyAvatarView, itemStyle]}
       >
         <StoryGradientBorderSvg size={84} />
         <AppImage
+          onPress={onPress}
           containerStyle={styles.avatarImg}
           source={{ uri: story.posted_by.avatar_url }}
         />
@@ -147,7 +216,7 @@ const StoryItem = memo(({ story, index, scrollY }) => {
           {story.posted_by.user_id}
         </AppText>
       </Animated.View>
-    </Pressable>
+    </View>
   )
 })
 const styles = XStyleSheet.create({
@@ -172,5 +241,25 @@ const styles = XStyleSheet.create({
     borderRadius: 28,
     zIndex: 99,
     overflow: 'hidden',
+  },
+  creatingStoryView: {
+    height: 84,
+    width: 84,
+    borderRadius: 38,
+    borderColor: Colors.kF8F8F8,
+    borderWidth: 2,
+    overflow: 'hidden',
+    padding: 6,
+  },
+  creatingStoryImage: {
+    backgroundColor: 'red',
+  },
+  uploadIcView: {
+    ...XStyleSheet.absoluteFillObject,
+    zIndex: 99,
+    borderRadius: 27,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.black50,
   },
 })

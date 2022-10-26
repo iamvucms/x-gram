@@ -5,8 +5,7 @@ import {
   SendSvg,
   StoryGradientBorderSvg,
 } from '@/Assets/Svg'
-import { PageName } from '@/Config'
-import { navigate, navigateToProfile } from '@/Navigators'
+import { navigateToProfile } from '@/Navigators'
 import {
   Colors,
   moderateScale,
@@ -17,9 +16,10 @@ import {
 } from '@/Theme'
 import { formatAmount } from '@/Utils'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { memo, useCallback } from 'react'
+import React, { memo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TouchableOpacity, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import Animated, {
   interpolate,
   SharedValue,
@@ -44,6 +44,16 @@ const PostItem = ({ post, onCommentPress, onSharePress }: PostItemProps) => {
     imageIndex: 0,
     setImageIndex: (index: number) => (state.imageIndex = index),
   }))
+  useEffect(() => {
+    if (post.medias.length > 1) {
+      FastImage.preload(
+        post.medias
+          .slice(1, 999)
+          .filter(m => !m.is_video)
+          .map((item: any) => ({ uri: item.url, priority: 'low' })),
+      )
+    }
+  }, [])
 
   const onImagePress = useCallback(() => {
     if (state.imageIndex < post.medias.length - 1) {
@@ -58,8 +68,8 @@ const PostItem = ({ post, onCommentPress, onSharePress }: PostItemProps) => {
   const renderIndicatorItem = useCallback((_, index) => {
     return <IndicatorItem pageAnim={pageAnim} key={index} index={index} />
   }, [])
-  const onMentionPress = useCallback(user_id => {
-    navigateToProfile(user_id)
+  const onMentionPress = useCallback(userId => {
+    navigateToProfile(userId)
   }, [])
   return (
     <Box marginHorizontal={16} marginTop={16}>

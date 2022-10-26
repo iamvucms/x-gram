@@ -53,6 +53,7 @@ export default {
   },
   home: {
     create_story: 'Create Story',
+    creating_story: 'Creating Story',
     comment_placeholder: 'Add a comment...',
     share_to: 'Share to',
     copy_link: 'Copy Link',

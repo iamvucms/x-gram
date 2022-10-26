@@ -1,26 +1,66 @@
-import { fetchCountries } from '@/Services/Api'
+import { getPosts, getStories } from '@/Services/Api'
 import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
 export default class HomeStore {
-  name = 'HomeStore'
-  countries = []
+  stories = []
+  posts = []
+  storyPage = 1
+  postPage = 1
+  loadingStories = false
+  loadingPosts = false
+  loadingMorePosts = false
+  loadingMoreStories = false
   constructor() {
     makeAutoObservable(this)
-    // makePersist(this, 'HOME_STORE', ['countries'])
-    makePersistExcept(this, 'HOME_STORE', ['name'])
+    makePersistExcept(this, 'HomeStore', [
+      'loadingMorePosts',
+      'loadingStories',
+      'loadingPosts',
+      'loadingMoreStories',
+      'storyPage',
+      'postPage',
+    ])
   }
-  *fetchCountries() {
-    const countries = yield fetchCountries()
-    if (Array.isArray(countries)) {
-      this.countries = countries
+  *fetchStories(loadMore) {
+    try {
+      if (!loadMore) {
+        this.loadingStories = true
+      } else {
+        this.loadingMoreStories = true
+      }
+      const { data } = yield getStories(this.storyPage)
+      if (!loadMore) {
+        this.stories = data
+      } else {
+        this.stories = [...this.stories, ...data]
+      }
+      this.storyPage += 1
+    } catch (e) {
+      console.log({
+        fetchStories: e,
+      })
     }
   }
-  resetCountries() {
-    this.countries = []
-  }
-  get totalCountries() {
-    return this.countries.length
+  *fetchPosts(loadMore) {
+    try {
+      if (!loadMore) {
+        this.loadingPosts = true
+      } else {
+        this.loadingMorePosts = true
+      }
+      const { data } = yield getPosts(this.postPage)
+      if (!loadMore) {
+        this.posts = data
+      } else {
+        this.posts = [...this.posts, ...data]
+      }
+      this.postPage += 1
+    } catch (e) {
+      console.log({
+        fetchPosts: e,
+      })
+    }
   }
   get isHydrated() {
     return isHydrated(this)
