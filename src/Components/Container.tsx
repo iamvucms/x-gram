@@ -1,16 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
-import {
-  StyleSheet,
-  StatusBar,
-  View,
-  StyleProp,
-  ViewStyle,
-  StatusBarProps,
-} from 'react-native'
-import React, { memo } from 'react'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import Animated, { FadeIn } from 'react-native-reanimated'
 import { ResponsiveHeight } from '@/Theme'
+import React, { memo } from 'react'
+import {
+  StatusBar,
+  StatusBarProps,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native'
+import Animated, { FadeIn } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 interface ContainerProps {
   children: React.ReactNode

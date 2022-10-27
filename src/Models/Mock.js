@@ -451,6 +451,17 @@ export const mockStories = [
         is_video: false,
         created_at: new Date().getTime(),
       },
+      {
+        media_id: '3',
+        url:
+          'https://picsum.photos/' +
+          generateRandomIntegerInRange(800, 2000) +
+          '/' +
+          generateRandomIntegerInRange(800, 2000) +
+          '',
+        is_video: false,
+        created_at: new Date().getTime(),
+      },
     ],
     posted_by: mockUsers[0],
   },

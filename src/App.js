@@ -11,6 +11,8 @@ import AppDiaLog from './Components/AppDiaLog'
 import { PortalProvider } from '@gorhom/portal'
 import { LanguageSheet, Obx } from './Components'
 import i18n from './Translations/i18n'
+import { enableFreeze } from 'react-native-screens'
+enableFreeze(true)
 const App = () => {
   const [isReady, setIsReady] = useState(false)
   useEffect(() => {

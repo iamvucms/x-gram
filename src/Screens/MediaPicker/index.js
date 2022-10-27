@@ -161,6 +161,7 @@ const MediaPicker = ({ route }) => {
   const mediaKeyExtractor = React.useCallback(item => `${item.image.uri}`, [])
   return (
     <Container
+      style={styles.rootView}
       statusBarProps={{
         barStyle: 'light-content',
       }}
@@ -181,7 +182,7 @@ const MediaPicker = ({ route }) => {
                 <AppText
                   color={state.allowNext ? Colors.white : Colors.white50}
                   fontSize={16}
-                  fontWeight="700"
+                  fontWeight={700}
                 >
                   {t('next')}
                 </AppText>
@@ -214,9 +215,13 @@ const MediaPicker = ({ route }) => {
 export default MediaPicker
 
 const styles = XStyleSheet.create({
+  rootView: {
+    backgroundColor: Colors.black,
+  },
   container: {
     flex: 1,
     marginVertical: -1,
+    backgroundColor: Colors.black,
   },
   mediaItem: {
     width: screenWidth / 3,

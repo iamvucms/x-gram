@@ -71,6 +71,7 @@ const HomeScreen = () => {
     >
       <HomeMenu />
       <Animated.FlatList
+        bounces={false}
         ListHeaderComponent={<StoryBar scrollY={scrollY} />}
         scrollEventThrottle={16}
         onScroll={scrollHandler}

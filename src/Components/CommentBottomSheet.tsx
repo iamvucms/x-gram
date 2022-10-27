@@ -1,13 +1,14 @@
 import { CommentSvg, HeartSvg, PhotoSvg, SendSvg } from '@/Assets/Svg'
 import { AppFonts, Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
-import { formatAmount, getHitSlop, isAndroid } from '@/Utils'
+import { formatAmount, getHitSlop, isAndroid, isIOS } from '@/Utils'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { forwardRef, memo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Keyboard, TextInput, TouchableOpacity, View } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker'
-import { LoadingIndicator, Obx } from '.'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { KeyboardSpacer, LoadingIndicator, Obx } from '.'
 import AppBottomSheet from './AppBottomSheet'
 import AppText from './AppText'
 import Box from './Box'
@@ -56,13 +57,14 @@ const CommentBottomSheet = forwardRef(
       Keyboard.dismiss()
       onClose && onClose()
     }, [])
+    const { bottom } = useSafeAreaInsets()
     return (
       <AppBottomSheet
         onClose={_onClose}
         index={0}
         snapPoints={[screenHeight - 100]}
       >
-        <View style={Layout.fill}>
+        <View style={[Layout.fill, { paddingBottom: bottom }]}>
           <Box
             row
             align="center"
@@ -151,6 +153,7 @@ const CommentBottomSheet = forwardRef(
             </Obx>
           </Box>
         </View>
+        {isIOS && <KeyboardSpacer topSpacing={bottom > 16 ? -bottom : 0} />}
       </AppBottomSheet>
     )
   },
@@ -176,6 +179,7 @@ const styles = XStyleSheet.create({
     color: Colors.black,
     flex: 1,
     paddingHorizontal: 10,
+    paddingVertical: 5,
     ...(isAndroid && {
       marginVertical: -15,
     }),

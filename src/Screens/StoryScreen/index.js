@@ -43,6 +43,12 @@ const StoryScreen = () => {
                 state.setIndex(index + 1)
               }
             }}
+            onPrevPage={() => {
+              if (state.index > 0) {
+                listRef.current?.scrollToIndex({ index: index - 1 })
+                state.setIndex(index - 1)
+              }
+            }}
           />
         )}
       </Obx>
@@ -80,7 +86,15 @@ const StoryScreen = () => {
 
 export default StoryScreen
 const StoryPage = memo(
-  ({ story, scrollX, index, isActive, onNextPage, onOpenOption }) => {
+  ({
+    story,
+    scrollX,
+    index,
+    isActive,
+    onNextPage,
+    onPrevPage,
+    onOpenOption,
+  }) => {
     const controlAnim = useSharedValue(1)
     const indexAnim = useSharedValue(-1)
     const inputRange = [screenWidth * (index - 1), screenWidth * (index + 1)]
@@ -96,7 +110,7 @@ const StoryPage = memo(
           state.setIndex(state.index + 1)
           indexAnim.value = withTiming(
             state.index,
-            { duration: 8000 },
+            { duration: 8000 * (state.index - indexAnim.value) },
             isFinished => isFinished && runOnJS(callback)(),
           )
         } else {
@@ -105,10 +119,9 @@ const StoryPage = memo(
           onNextPage && onNextPage()
         }
       }
-
       indexAnim.value = withTiming(
         state.index,
-        { duration: 8000 },
+        { duration: 8000 * (state.index - indexAnim.value) },
         isFinished => isFinished && runOnJS(callback)(),
       )
     }
@@ -147,7 +160,7 @@ const StoryPage = memo(
           translateY: interpolate(
             controlAnim.value,
             [0, 1],
-            [-100, 0],
+            [-200, 0],
             Extrapolation.CLAMP,
           ),
         },
@@ -163,16 +176,41 @@ const StoryPage = memo(
         />
       )
     }, [])
+    const onPress = useCallback(e => {
+      const pageX = e.nativeEvent.pageX
+      if (pageX < screenWidth / 2) {
+        if (state.index > 0) {
+          state.setIndex(state.index - 1)
+          indexAnim.value = state.index - 1
+          animateIndex()
+        } else {
+          onPrevPage && onPrevPage()
+        }
+      } else if (pageX > screenWidth / 2) {
+        if (state.index < story.medias.length - 1) {
+          state.setIndex(state.index + 1)
+          indexAnim.value = state.index - 1
+          animateIndex()
+        } else {
+          onNextPage && onNextPage()
+        }
+      }
+    }, [])
     const onPausePress = useCallback(() => {
       controlAnim.value = withTiming(0)
       indexAnim.value = indexAnim.value
     }, [])
     const onResumePress = useCallback(() => {
       controlAnim.value = withTiming(1)
+      animateIndex()
     }, [])
     const { top } = useSafeAreaInsets()
     return (
-      <Pressable onLongPress={onPausePress} onPressOut={onResumePress}>
+      <Pressable
+        onPress={onPress}
+        onLongPress={onPausePress}
+        onPressOut={onResumePress}
+      >
         <Animated.View style={[styles.storyPage, pageStyle]}>
           <Obx>
             {() => (

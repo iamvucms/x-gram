@@ -37,7 +37,7 @@ interface AppImageProps {
 const AppImage = ({
   source,
   blurHashEnabled = true,
-  enablePinchZoom,
+  enablePinchZoom = false,
   resizeMode = 'cover',
   style,
   containerStyle,
@@ -83,7 +83,7 @@ const AppImage = ({
   const pinchGestureHandler =
     useAnimatedGestureHandler<PinchGestureHandlerGestureEvent>({
       onActive: event => {
-        if (event.scale > 1 && enablePinchZoom) {
+        if (event.scale > 1) {
           scale.value = event.scale
         }
       },
@@ -124,6 +124,7 @@ const AppImage = ({
         </Animated.View>
       )}
       <PanGestureHandler
+        enabled={enablePinchZoom}
         minPointers={2}
         onGestureEvent={panGestureHandler}
         ref={panRef}
@@ -131,6 +132,7 @@ const AppImage = ({
       >
         <Animated.View>
           <PinchGestureHandler
+            enabled={enablePinchZoom}
             ref={pinchRef}
             simultaneousHandlers={panRef}
             onGestureEvent={pinchGestureHandler}

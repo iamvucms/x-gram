@@ -16,6 +16,7 @@ import {
   AppText,
   Box,
   Container,
+  KeyboardSpacer,
   LoadingIndicator,
   Obx,
   Position,
@@ -40,11 +41,11 @@ import {
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
-import { getHitSlop } from '@/Utils'
+import { getHitSlop, isIOS } from '@/Utils'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import { BlurView } from '@react-native-community/blur'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { memo, useCallback, useMemo, useRef } from 'react'
+import React, { Fragment, memo, useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Image, ImageBackground, TouchableOpacity, View } from 'react-native'
 import {
@@ -68,7 +69,6 @@ import Animated, {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Defs, LinearGradient, Path, Stop, Svg } from 'react-native-svg'
 import ViewShot from 'react-native-view-shot'
-
 const ImageEditor = ({ route }) => {
   const { medias, onNext, type } = route.params || {}
   const { t } = useTranslation()
@@ -236,16 +236,21 @@ const ImageEditor = ({ route }) => {
   }, [])
   return (
     <Container style={styles.rootView}>
-      <FlatList
-        ref={listRef}
-        pagingEnabled
-        onMomentumScrollEnd={onScrollEnd}
-        data={medias}
-        renderItem={renderViewShotPage}
-        keyExtractor={item => item.uri}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-      />
+      <Obx>
+        {() => (
+          <FlatList
+            ref={listRef}
+            scrollEnabled={state.toolBarVisible}
+            pagingEnabled
+            onMomentumScrollEnd={onScrollEnd}
+            data={medias}
+            renderItem={renderViewShotPage}
+            keyExtractor={item => item.uri}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          />
+        )}
+      </Obx>
       <Obx>
         {() =>
           state.toolBarVisible && (
@@ -518,14 +523,17 @@ const AnimatedImage = memo(({ image, drawable, onDrew }) => {
             styles.drawView,
             // eslint-disable-next-line react-native/no-inline-styles
             {
-              zIndex: drawable ? 100 : -100,
+              zIndex: drawable ? 100 : -101,
             },
           ]}
         />
       </PanGestureHandler>
       {drawable && (
-        <View style={styles.drawControlView}>
-          <Animated.View entering={FadeIn} style={headerDrawControlStyle}>
+        <Fragment>
+          <Animated.View
+            entering={FadeIn}
+            style={[styles.headerDrawControlView, headerDrawControlStyle]}
+          >
             <SafeAreaView>
               <Box
                 row
@@ -579,7 +587,10 @@ const AnimatedImage = memo(({ image, drawable, onDrew }) => {
               </Animated.View>
             </Animated.View>
           </PanGestureHandler>
-          <Animated.View entering={FadeInDown} style={drawColorViewStyle}>
+          <Animated.View
+            entering={FadeInDown}
+            style={[styles.bottomDrawControlView, drawColorViewStyle]}
+          >
             <Box height={44}>
               <FlatList
                 data={DrawColors}
@@ -590,7 +601,7 @@ const AnimatedImage = memo(({ image, drawable, onDrew }) => {
               />
             </Box>
           </Animated.View>
-        </View>
+        </Fragment>
       )}
       <PinchGestureHandler
         ref={pinchRef}
@@ -899,6 +910,7 @@ const TextEditor = memo(({ onDone, onClose }) => {
           </Box>
         </Position>
       </Box>
+      {isIOS && <KeyboardSpacer />}
     </View>
   )
 })
@@ -1055,7 +1067,7 @@ const styles = XStyleSheet.create({
   },
   drawControlView: {
     ...XStyleSheet.absoluteFillObject,
-    zIndex: 100,
+    zIndex: 102,
     justifyContent: 'space-between',
   },
   pathView: {
@@ -1077,7 +1089,7 @@ const styles = XStyleSheet.create({
   strokeWidthView: {
     skipResponsive: true,
     position: 'absolute',
-    zIndex: 99,
+    zIndex: 101,
     right: 0,
     paddingHorizontal: 20,
     top: (screenHeight - ResponsiveHeight(150)) / 2,
@@ -1181,5 +1193,19 @@ const styles = XStyleSheet.create({
     bottom: 16,
     right: 16,
     zIndex: 99,
+  },
+  headerDrawControlView: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 101,
+  },
+  bottomDrawControlView: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 101,
   },
 })

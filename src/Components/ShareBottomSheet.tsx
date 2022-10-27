@@ -1,13 +1,13 @@
 import { LinkSvg, SendSvg, ShareSvg, SmsSvg, WeChatSvg } from '@/Assets/Svg'
 import { mockUsers, ShareType } from '@/Models'
 import { AppFonts, Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
-import { isAndroid } from '@/Utils'
+import { isAndroid, isIOS } from '@/Utils'
 import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { forwardRef, memo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Keyboard, TextInput, View } from 'react-native'
-import { LoadingIndicator, Obx, Padding } from '.'
+import { KeyboardSpacer, LoadingIndicator, Obx, Padding } from '.'
 import AppBottomSheet from './AppBottomSheet'
 import AppImage from './AppImage'
 import AppText from './AppText'
@@ -191,6 +191,7 @@ const ShareBottomSheet = forwardRef(
             </TouchableOpacity>
           </View>
         </View>
+        {isIOS && <KeyboardSpacer />}
       </AppBottomSheet>
     )
   },
@@ -200,7 +201,7 @@ export default memo(ShareBottomSheet)
 
 const styles = XStyleSheet.create({
   headerView: {
-    borderBottomWidth: 0.6,
+    borderBottomWidth: 1,
     borderColor: Colors.border,
   },
   photoBtn: {
@@ -235,7 +236,7 @@ const styles = XStyleSheet.create({
     overflow: 'hidden',
   },
   otherOptionsView: {
-    borderTopWidth: 0.5,
+    borderTopWidth: 1,
     borderTopColor: Colors.border,
     paddingVertical: 16,
     paddingHorizontal: 6,

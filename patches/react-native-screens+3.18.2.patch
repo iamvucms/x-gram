@@ -1,0 +1,41 @@
+diff --git a/node_modules/react-native-screens/ios/RNSScreen.mm b/node_modules/react-native-screens/ios/RNSScreen.mm
+index 337b325..1fb7a27 100644
+--- a/node_modules/react-native-screens/ios/RNSScreen.mm
++++ b/node_modules/react-native-screens/ios/RNSScreen.mm
+@@ -224,25 +224,25 @@ - (void)setActivityStateOrNil:(NSNumber *)activityStateOrNil
+ #if !TARGET_OS_TV
+ - (void)setStatusBarStyle:(RNSStatusBarStyle)statusBarStyle
+ {
+-  _hasStatusBarStyleSet = YES;
+-  _statusBarStyle = statusBarStyle;
+-  [RNSScreenWindowTraits assertViewControllerBasedStatusBarAppearenceSet];
+-  [RNSScreenWindowTraits updateStatusBarAppearance];
++  // _hasStatusBarStyleSet = YES;
++  // _statusBarStyle = statusBarStyle;
++  // [RNSScreenWindowTraits assertViewControllerBasedStatusBarAppearenceSet];
++  // [RNSScreenWindowTraits updateStatusBarAppearance];
+ }
+ 
+ - (void)setStatusBarAnimation:(UIStatusBarAnimation)statusBarAnimation
+ {
+-  _hasStatusBarAnimationSet = YES;
+-  _statusBarAnimation = statusBarAnimation;
+-  [RNSScreenWindowTraits assertViewControllerBasedStatusBarAppearenceSet];
++  // _hasStatusBarAnimationSet = YES;
++  // _statusBarAnimation = statusBarAnimation;
++  // [RNSScreenWindowTraits assertViewControllerBasedStatusBarAppearenceSet];
+ }
+ 
+ - (void)setStatusBarHidden:(BOOL)statusBarHidden
+ {
+-  _hasStatusBarHiddenSet = YES;
+-  _statusBarHidden = statusBarHidden;
+-  [RNSScreenWindowTraits assertViewControllerBasedStatusBarAppearenceSet];
+-  [RNSScreenWindowTraits updateStatusBarAppearance];
++  // _hasStatusBarHiddenSet = YES;
++  // _statusBarHidden = statusBarHidden;
++  // [RNSScreenWindowTraits assertViewControllerBasedStatusBarAppearenceSet];
++  // [RNSScreenWindowTraits updateStatusBarAppearance];
+ }
+ 
+ - (void)setScreenOrientation:(UIInterfaceOrientationMask)screenOrientation

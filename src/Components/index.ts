@@ -1,6 +1,7 @@
 import { Observer } from 'mobx-react-lite'
-
+import RNKeyboardSpacer from 'react-native-keyboard-spacer'
 export const Obx = Observer
+export const KeyboardSpacer = RNKeyboardSpacer
 export { default as AnimatedNumber } from './AnimatedNumber'
 export { default as AppBar } from './AppBar'
 export { default as AppBottomSheet } from './AppBottomSheet'
