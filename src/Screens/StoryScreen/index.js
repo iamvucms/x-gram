@@ -9,6 +9,8 @@ import React, { memo, useCallback, useEffect, useRef } from 'react'
 import { Pressable, TouchableOpacity, View } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import Animated, {
+  cancelAnimation,
+  Easing,
   Extrapolation,
   interpolate,
   runOnJS,
@@ -110,7 +112,10 @@ const StoryPage = memo(
           state.setIndex(state.index + 1)
           indexAnim.value = withTiming(
             state.index,
-            { duration: 8000 * (state.index - indexAnim.value) },
+            {
+              duration: 8000 * (state.index - indexAnim.value),
+              easing: Easing.linear,
+            },
             isFinished => isFinished && runOnJS(callback)(),
           )
         } else {
@@ -121,7 +126,10 @@ const StoryPage = memo(
       }
       indexAnim.value = withTiming(
         state.index,
-        { duration: 8000 * (state.index - indexAnim.value) },
+        {
+          duration: 8000 * (state.index - indexAnim.value),
+          easing: Easing.linear,
+        },
         isFinished => isFinished && runOnJS(callback)(),
       )
     }
@@ -181,16 +189,22 @@ const StoryPage = memo(
       if (pageX < screenWidth / 2) {
         if (state.index > 0) {
           state.setIndex(state.index - 1)
-          indexAnim.value = state.index - 1
-          animateIndex()
+          indexAnim.value = withTiming(
+            state.index - 1,
+            { duration: 0 },
+            isFinished => isFinished && runOnJS(animateIndex)(),
+          )
         } else {
           onPrevPage && onPrevPage()
         }
       } else if (pageX > screenWidth / 2) {
         if (state.index < story.medias.length - 1) {
           state.setIndex(state.index + 1)
-          indexAnim.value = state.index - 1
-          animateIndex()
+          indexAnim.value = withTiming(
+            state.index - 1,
+            { duration: 0 },
+            isFinished => isFinished && runOnJS(animateIndex)(),
+          )
         } else {
           onNextPage && onNextPage()
         }
@@ -201,8 +215,10 @@ const StoryPage = memo(
       indexAnim.value = indexAnim.value
     }, [])
     const onResumePress = useCallback(() => {
-      controlAnim.value = withTiming(1)
-      animateIndex()
+      if (controlAnim.value === 0) {
+        controlAnim.value = withTiming(1)
+        animateIndex()
+      }
     }, [])
     const { top } = useSafeAreaInsets()
     return (
