@@ -117,7 +117,7 @@ const ShareBottomSheet = forwardRef(
             {() =>
               state.loading ? (
                 <Box center fill>
-                  <LoadingIndicator type="Circle" />
+                  <LoadingIndicator />
                 </Box>
               ) : (
                 <BottomSheetFlatList

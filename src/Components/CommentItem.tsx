@@ -1,24 +1,32 @@
 import { navigateToProfile } from '@/Navigators'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
 import { useBottomSheet } from '@gorhom/bottom-sheet'
+import moment from 'moment'
 import React, { useCallback } from 'react'
-import { Pressable } from 'react-native'
+import { Pressable, TouchableOpacity } from 'react-native'
 import AppImage from './AppImage'
 import AppText from './AppText'
 import Box from './Box'
 import Padding from './Padding'
 interface CommentItemProps {
   comment: any
+  insideBottomSheet?: boolean
   onRequestClose?: () => void
+  onShowOptions?: () => void
 }
-const CommentItem = ({ comment }: CommentItemProps) => {
-  const sheet = useBottomSheet()
-  const onMentionPress = useCallback(user_id => {
+const CommentItem = ({
+  comment,
+  onShowOptions,
+  insideBottomSheet = false,
+}: CommentItemProps) => {
+  const sheet = insideBottomSheet ? useBottomSheet() : { close: () => {} }
+  const onMentionPress = useCallback(userId => {
     sheet.close()
-    navigateToProfile(user_id)
+    navigateToProfile(userId)
   }, [])
+  const Touchable = insideBottomSheet ? Pressable : TouchableOpacity
   return (
-    <Pressable>
+    <Touchable onLongPress={onShowOptions}>
       <Box paddingHorizontal={16} marginTop={20} row>
         <AppImage
           source={{
@@ -27,7 +35,7 @@ const CommentItem = ({ comment }: CommentItemProps) => {
           containerStyle={styles.avatarView}
         />
         <Padding left={14} />
-        <Box fill paddingTop={3}>
+        <Box fill>
           <AppText style={Layout.fill} fontWeight={700}>
             {comment.commented_by.full_name}{' '}
             <AppText
@@ -40,11 +48,11 @@ const CommentItem = ({ comment }: CommentItemProps) => {
           </AppText>
           <Padding top={3} />
           <AppText fontSize={12} color={Colors.black50}>
-            12h ago
+            {moment(comment.created_at).fromNow()}
           </AppText>
         </Box>
       </Box>
-    </Pressable>
+    </Touchable>
   )
 }
 

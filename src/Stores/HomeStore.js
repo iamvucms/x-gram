@@ -1,10 +1,11 @@
-import { getPosts, getStories } from '@/Services/Api'
+import { getPostDetail, getPosts, getStories } from '@/Services/Api'
 import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
 export default class HomeStore {
   stories = []
   posts = []
+  additionalPosts = []
   storyPage = 1
   postPage = 1
   loadingStories = false
@@ -61,6 +62,22 @@ export default class HomeStore {
         fetchPosts: e,
       })
     }
+  }
+  *fetchAndAddAdditionalPosts(postId) {
+    try {
+      const { data } = yield getPostDetail(postId)
+      this.additionalPosts = [...this.additionalPosts, data]
+    } catch (e) {
+      console.log({
+        fetchAndAddAdditionalPosts: e,
+      })
+    }
+  }
+  findPostById(postId) {
+    return (
+      this.posts.find(post => post.post_id === postId) ||
+      this.additionalPosts.find(post => post.post_id === postId)
+    )
   }
   get isHydrated() {
     return isHydrated(this)

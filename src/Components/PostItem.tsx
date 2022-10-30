@@ -16,9 +16,10 @@ import {
 } from '@/Theme'
 import { formatAmount } from '@/Utils'
 import { useLocalObservable } from 'mobx-react-lite'
+import moment from 'moment'
 import React, { memo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TouchableOpacity, View } from 'react-native'
+import { Pressable, TouchableOpacity, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import Animated, {
   interpolate,
@@ -35,9 +36,17 @@ import Padding from './Padding'
 interface PostItemProps {
   onCommentPress?: () => void
   onSharePress?: () => void
+  onPress?: () => void
   post: any
+  showDetail?: boolean
 }
-const PostItem = ({ post, onCommentPress, onSharePress }: PostItemProps) => {
+const PostItem = ({
+  post,
+  onCommentPress,
+  onSharePress,
+  onPress,
+  showDetail = false,
+}: PostItemProps) => {
   const pageAnim = useSharedValue(0)
   const { t } = useTranslation()
   const state = useLocalObservable(() => ({
@@ -110,11 +119,11 @@ const PostItem = ({ post, onCommentPress, onSharePress }: PostItemProps) => {
                 lineHeight={23}
                 fontWeight={400}
               >
-                Eric Ray
+                {post.posted_by.full_name}
               </AppText>
               <Padding top={3} />
               <AppText fontSize={12} color={Colors.white75}>
-                1 hour ago
+                {moment(post.created_at).fromNow()}
               </AppText>
             </View>
           </Box>
@@ -150,47 +159,52 @@ const PostItem = ({ post, onCommentPress, onSharePress }: PostItemProps) => {
           </TouchableOpacity>
         </View>
       </View>
-      <Box marginTop={14}>
-        <AppText lineHeight={18}>
-          <AppText lineHeight={18} fontWeight={700}>
-            {post.posted_by.user_id}
-          </AppText>{' '}
-          {post.message}
-        </AppText>
-        <Padding top={8} />
-        {post.comments.length > 0 &&
-          post.comments.slice(-2).map(comment => (
-            <AppText
-              key={comment.comment_id}
-              regexMetion
-              onMentionPress={onMentionPress}
-              numberOfLines={1}
-              lineHeight={18}
-            >
-              <AppText numberOfLines={1} lineHeight={18} fontWeight={700}>
-                {comment.commented_by.user_id}
-              </AppText>{' '}
-              {comment.comment}
-            </AppText>
-          ))}
-      </Box>
-      <TouchableOpacity onPress={onCommentPress} style={styles.commentBar}>
-        <AppImage
-          source={{
-            uri: 'https://picsum.photos/500/500',
-          }}
-          containerStyle={styles.profileImg}
-        />
-        <AppText>{t('home.comment_placeholder')}</AppText>
-        <Expanded />
-        <Obx>
-          {() => (
-            <AppText fontWeight={700}>
-              ({formatAmount(post.comments.length)} Comments)
-            </AppText>
-          )}
-        </Obx>
-      </TouchableOpacity>
+      <Pressable onPress={onPress}>
+        <Box marginTop={14}>
+          <AppText lineHeight={18}>
+            <AppText lineHeight={18} fontWeight={700}>
+              {post.posted_by.user_id}
+            </AppText>{' '}
+            {post.message}
+          </AppText>
+          <Padding top={8} />
+          {!showDetail &&
+            post.comments.length > 0 &&
+            post.comments.slice(-2).map(comment => (
+              <AppText
+                key={comment.comment_id}
+                regexMetion
+                onMentionPress={onMentionPress}
+                numberOfLines={1}
+                lineHeight={18}
+              >
+                <AppText numberOfLines={1} lineHeight={18} fontWeight={700}>
+                  {comment.commented_by.user_id}
+                </AppText>{' '}
+                {comment.comment}
+              </AppText>
+            ))}
+        </Box>
+      </Pressable>
+      {!showDetail && (
+        <TouchableOpacity onPress={onCommentPress} style={styles.commentBar}>
+          <AppImage
+            source={{
+              uri: 'https://picsum.photos/500/500',
+            }}
+            containerStyle={styles.profileImg}
+          />
+          <AppText>{t('home.comment_placeholder')}</AppText>
+          <Expanded />
+          <Obx>
+            {() => (
+              <AppText fontWeight={700}>
+                ({formatAmount(post.comments.length)} Comments)
+              </AppText>
+            )}
+          </Obx>
+        </TouchableOpacity>
+      )}
     </Box>
   )
 }

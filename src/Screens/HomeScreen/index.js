@@ -6,7 +6,9 @@ import {
   PostItem,
   ShareBottomSheet,
 } from '@/Components'
+import { PageName } from '@/Config'
 import { mockPosts, ShareType } from '@/Models'
+import { navigate } from '@/Navigators'
 import { Colors, XStyleSheet } from '@/Theme'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback, useRef } from 'react'
@@ -53,10 +55,16 @@ const HomeScreen = () => {
       state.setSelectedPost(item)
       state.setType(SheetType.SHARE)
     }
+    const onPress = () => {
+      navigate(PageName.PostDetailScreen, {
+        postId: item.post_id,
+      })
+    }
     return (
       <PostItem
         onSharePress={onSharePress}
         onCommentPress={onCommentPress}
+        onPress={onPress}
         post={item}
       />
     )

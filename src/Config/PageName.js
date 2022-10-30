@@ -23,4 +23,5 @@ export const PageName = {
   ImageEditor: 'ImageEditor',
   CreatePost: 'CreatePost',
   StoryScreen: 'StoryScreen',
+  PostDetailScreen: 'PostDetailScreen',
 }

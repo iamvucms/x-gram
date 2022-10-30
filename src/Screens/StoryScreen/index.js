@@ -191,7 +191,7 @@ const StoryPage = memo(
           state.setIndex(state.index - 1)
           indexAnim.value = withTiming(
             state.index - 1,
-            { duration: 0 },
+            { duration: 250 },
             isFinished => isFinished && runOnJS(animateIndex)(),
           )
         } else {
@@ -202,7 +202,7 @@ const StoryPage = memo(
           state.setIndex(state.index + 1)
           indexAnim.value = withTiming(
             state.index - 1,
-            { duration: 0 },
+            { duration: 250 },
             isFinished => isFinished && runOnJS(animateIndex)(),
           )
         } else {

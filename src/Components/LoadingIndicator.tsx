@@ -4,7 +4,7 @@ import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native'
 import Spinkit, { SpinnerType } from 'react-native-spinkit'
 
 interface LoadingIndicatorProps {
-  type: 'default' | SpinnerType
+  type?: 'default' | SpinnerType
   color?: string
   size?: number
   overlay?: boolean
@@ -13,7 +13,7 @@ interface LoadingIndicatorProps {
   backdropPressToClose?: boolean
 }
 const LoadingIndicator = ({
-  type = 'default',
+  type = '9CubeGrid',
   color = Colors.primary,
   size = 20,
   overlay,

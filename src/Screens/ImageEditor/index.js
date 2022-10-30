@@ -338,11 +338,7 @@ const ImageEditor = ({ route }) => {
           {t('imageEditor.dragHereToRemove')}
         </AppText>
       </Animated.View>
-      <Obx>
-        {() =>
-          state.processing && <LoadingIndicator overlay type="9CubeGrid" />
-        }
-      </Obx>
+      <Obx>{() => state.processing && <LoadingIndicator overlay />}</Obx>
     </Container>
   )
 }

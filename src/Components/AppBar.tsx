@@ -36,7 +36,7 @@ const AppBar = ({
           {leftIcon || <ChevronRightSvg />}
         </TouchableOpacity>
       )}
-      <AppText color={titleColor} fontSize={18}>
+      <AppText color={titleColor} fontWeight={700} fontSize={18}>
         {title}
       </AppText>
       {!!rightComponent && (
@@ -59,6 +59,8 @@ const styles = XStyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: 60,
+    borderBottomColor: Colors.border,
+    borderBottomWidth: 0.6,
   },
   backBtn: {
     position: 'absolute',

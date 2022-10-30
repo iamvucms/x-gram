@@ -59,6 +59,8 @@ export default {
     copy_link: 'Copy Link',
     we_chat: 'WeChat',
     sms: 'SMS',
+    post: 'Post',
+    comments: 'Comments',
   },
   mediaPicker: {
     select_photo: 'Select Photo',

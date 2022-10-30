@@ -13,6 +13,7 @@ import {
   LoginScreen,
   MediaPicker,
   OnboardingScreen,
+  PostDetailScreen,
   ProfileOther,
   RecoveryPasswordScreen,
   RegisterScreen,
@@ -74,6 +75,10 @@ const AuthStack = () => {
         }}
         name={PageName.StoryScreen}
         component={StoryScreen}
+      />
+      <Stack.Screen
+        name={PageName.PostDetailScreen}
+        component={PostDetailScreen}
       />
     </Stack.Navigator>
   )

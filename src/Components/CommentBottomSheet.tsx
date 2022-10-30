@@ -1,14 +1,13 @@
-import { CommentSvg, HeartSvg, PhotoSvg, SendSvg } from '@/Assets/Svg'
-import { AppFonts, Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
-import { formatAmount, getHitSlop, isAndroid, isIOS } from '@/Utils'
+import { CommentSvg, HeartSvg } from '@/Assets/Svg'
+import { Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
+import { formatAmount, getHitSlop, isIOS } from '@/Utils'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { forwardRef, memo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Keyboard, TextInput, TouchableOpacity, View } from 'react-native'
-import { launchImageLibrary } from 'react-native-image-picker'
+import { Keyboard, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { KeyboardSpacer, LoadingIndicator, Obx } from '.'
+import { KeyboardSpacer, LoadingIndicator, MessageInput, Obx } from '.'
 import AppBottomSheet from './AppBottomSheet'
 import AppText from './AppText'
 import Box from './Box'
@@ -39,18 +38,11 @@ const CommentBottomSheet = forwardRef(
       }, 1000)
       return () => clearTimeout(to)
     }, [])
-    const onImagePickerPress = useCallback(async () => {
-      const response = await launchImageLibrary({
-        mediaType: 'photo',
-      })
-      if (response?.assets?.[0]) {
-      }
-    }, [])
 
-    const onSendPress = useCallback(() => {}, [])
+    const onSendPress = useCallback((message, isImage) => {}, [])
 
     const renderCommentItem = useCallback(({ item }) => {
-      return <CommentItem comment={item} />
+      return <CommentItem insideBottomSheet comment={item} />
     }, [])
 
     const _onClose = useCallback(() => {
@@ -92,7 +84,7 @@ const CommentBottomSheet = forwardRef(
             {() =>
               state.loading ? (
                 <Box center fill>
-                  <LoadingIndicator type="Circle" />
+                  <LoadingIndicator />
                 </Box>
               ) : (
                 <Obx>
@@ -108,50 +100,10 @@ const CommentBottomSheet = forwardRef(
             }
           </Obx>
 
-          <Box
-            row
-            padding={10}
-            radius={99}
-            backgroundColor={Colors.border}
-            align="center"
-            margin={16}
-          >
-            <TouchableOpacity
-              onPress={onImagePickerPress}
-              hitSlop={getHitSlop(10)}
-              style={styles.photoBtn}
-            >
-              <PhotoSvg />
-            </TouchableOpacity>
-            <Obx>
-              {() => (
-                <TextInput
-                  placeholderTextColor={Colors.placeholder}
-                  placeholder={t('home.comment_placeholder')}
-                  value={state.comment}
-                  onChangeText={txt => state.setComment(txt)}
-                  style={styles.textInput}
-                />
-              )}
-            </Obx>
-            <Obx>
-              {() => (
-                <TouchableOpacity
-                  disabled={state.isCommentEmpty}
-                  onPress={onSendPress}
-                  hitSlop={getHitSlop(10)}
-                  style={styles.photoBtn}
-                >
-                  <SendSvg
-                    size={20}
-                    color={
-                      state.isCommentEmpty ? Colors.black50 : Colors.primary
-                    }
-                  />
-                </TouchableOpacity>
-              )}
-            </Obx>
-          </Box>
+          <MessageInput
+            placeholder={t('home.comment_placeholder')}
+            onSendPress={onSendPress}
+          />
         </View>
         {isIOS && <KeyboardSpacer topSpacing={bottom > 16 ? -bottom : 0} />}
       </AppBottomSheet>
@@ -165,23 +117,5 @@ const styles = XStyleSheet.create({
   headerView: {
     borderBottomWidth: 0.6,
     borderColor: Colors.border,
-  },
-  photoBtn: {
-    height: 36,
-    width: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.white,
-    borderRadius: 99,
-  },
-  textInput: {
-    fontFamily: AppFonts['400'],
-    color: Colors.black,
-    flex: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    ...(isAndroid && {
-      marginVertical: -15,
-    }),
   },
 })

@@ -16,9 +16,9 @@ export default () => {
     resetPassword: `${apiUrl}/reset-password`,
     //posts
     getHomePosts: `${apiUrl}/posts`,
-    getPostDetail: `${apiUrl}/posts/{id}`,
+    getPostDetail: id => `${apiUrl}/posts/${id}`,
     getProfile: `${apiUrl}/users/{id}`,
-    getProfilePosts: `${apiUrl}/users/{id}/posts`,
+    getProfilePosts: (id, page) => `${apiUrl}/users/${id}/posts?page=${page}`,
     searchPosts: `${apiUrl}/search/posts`,
     createPost: `${apiUrl}/posts`,
     updatePostMessage: `${apiUrl}/posts/{id}`,

@@ -1,14 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Container } from '@/Components'
+import { Colors, XStyleSheet } from '@/Theme'
 import React from 'react'
 
 const SearchScreen = () => {
-  return (
-    <View>
-      <Text>SearchScreen</Text>
-    </View>
-  )
+  return <Container style={styles.rootView}></Container>
 }
 
 export default SearchScreen
 
-const styles = StyleSheet.create({})
+const styles = XStyleSheet.create({
+  rootView: {
+    backgroundColor: Colors.white,
+  },
+})
