@@ -9,7 +9,11 @@ import { Obx } from '.'
 import Box from './Box'
 
 interface MessageInputProps extends TextInputProps {
-  onSendPress: (message: object | string, isImage?: boolean) => void
+  onSendPress: (
+    message: object | string,
+    isImage?: boolean,
+    retryId?: string,
+  ) => void
 }
 const MessageInput = forwardRef(
   (
@@ -26,12 +30,19 @@ const MessageInput = forwardRef(
     const onImagePickerPress = useCallback(async () => {
       const response = await launchImageLibrary({
         mediaType: 'photo',
+        includeBase64: true,
       })
       if (response?.assets?.[0]) {
         state.setComment('')
-        onSendPress && onSendPress(response.assets[0], true)
+        const url = `data:${response.assets[0].type};base64,${response.assets[0].base64}`
+        onSendPress && onSendPress(url, true)
       }
     }, [])
+    const onSendMessage = useCallback(() => {
+      if (state.isCommentEmpty) return
+      onSendPress && onSendPress(state.comment, false)
+      state.setComment('')
+    }, [onSendPress])
     return (
       <Fragment>
         <View style={styles.separator} />
@@ -54,10 +65,12 @@ const MessageInput = forwardRef(
             {() => (
               <TextInput
                 style={styles.textInput}
+                placeholderTextColor={Colors.placeholder}
                 {...textInputProps}
                 ref={ref}
                 value={state.comment}
                 onChangeText={txt => state.setComment(txt)}
+                onEndEditing={onSendMessage}
               />
             )}
           </Obx>
@@ -65,7 +78,7 @@ const MessageInput = forwardRef(
             {() => (
               <TouchableOpacity
                 disabled={state.isCommentEmpty}
-                onPress={() => onSendPress && onSendPress(state.comment, false)}
+                onPress={onSendMessage}
                 hitSlop={getHitSlop(10)}
                 style={styles.photoBtn}
               >

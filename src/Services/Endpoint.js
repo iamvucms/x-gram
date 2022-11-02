@@ -25,8 +25,9 @@ export default () => {
     deletePost: `${apiUrl}/posts/{id}`,
     likePost: `${apiUrl}/posts/{id}/like`,
     unlikePost: `${apiUrl}/posts/{id}/unlike`,
-    sendComment: `${apiUrl}/posts/{id}/comments`,
-    deleteComment: `${apiUrl}/posts/{id}/comments/{comment_id}`,
+    sendComment: postId => `${apiUrl}/posts/${postId}/comments`,
+    deleteComment: (postId, commentId) =>
+      `${apiUrl}/posts/${postId}/comments/${commentId}`,
     //stories
     getStories: `${apiUrl}/stories`,
     getUserStories: `${apiUrl}/users/{id}/stories`,
@@ -39,6 +40,7 @@ export default () => {
     searchUsers: `${apiUrl}/search/users`,
     updateUserInfo: `${apiUrl}/user`,
     updatePassword: `${apiUrl}/user/password`,
+    getUserInfo: id => `${apiUrl}/users/${id}`,
     //chat
     getConversations: `${apiUrl}/conversations`,
     getConversationDetail: `${apiUrl}/conversations/{id}`,

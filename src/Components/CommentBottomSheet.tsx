@@ -1,4 +1,5 @@
 import { CommentSvg, HeartSvg } from '@/Assets/Svg'
+import { sendCommentRequest } from '@/Stores'
 import { Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
 import { formatAmount, getHitSlop, isIOS } from '@/Utils'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
@@ -15,21 +16,15 @@ import CommentItem from './CommentItem'
 import Padding from './Padding'
 import Row from './Row'
 interface CommentBottomSheetProps {
-  data: any
-  postId: string
+  post: any
   onClose: () => void
 }
 const CommentBottomSheet = forwardRef(
-  ({ data, onClose }: CommentBottomSheetProps, ref) => {
+  ({ post, onClose }: CommentBottomSheetProps, ref) => {
     const { t } = useTranslation()
     const state = useLocalObservable(() => ({
-      comment: '',
-      setComment: (comment: string) => (state.comment = comment),
       loading: true,
       setLoading: (loading: boolean) => (state.loading = loading),
-      get isCommentEmpty() {
-        return this.comment.trim().length === 0
-      },
     }))
 
     useEffect(() => {
@@ -39,10 +34,20 @@ const CommentBottomSheet = forwardRef(
       return () => clearTimeout(to)
     }, [])
 
-    const onSendPress = useCallback((message, isImage) => {}, [])
+    const onSendPress = useCallback(async (message, isImage, retryId) => {
+      sendCommentRequest(post.post_id, message, isImage, retryId)
+      Keyboard.dismiss()
+    }, [])
 
     const renderCommentItem = useCallback(({ item }) => {
-      return <CommentItem insideBottomSheet comment={item} />
+      const onRetry = () =>
+        sendCommentRequest(
+          post.post_id,
+          item.comment,
+          item.is_image,
+          item.comment_id,
+        )
+      return <CommentItem onRetry={onRetry} insideBottomSheet comment={item} />
     }, [])
 
     const _onClose = useCallback(() => {
@@ -71,7 +76,7 @@ const CommentBottomSheet = forwardRef(
               <Obx>
                 {() => (
                   <AppText fontSize={16}>
-                    {formatAmount(data.comments.length)}
+                    {formatAmount(post.comments.length)}
                   </AppText>
                 )}
               </Obx>
@@ -90,7 +95,7 @@ const CommentBottomSheet = forwardRef(
                 <Obx>
                   {() => (
                     <BottomSheetFlatList
-                      data={data.comments.slice()}
+                      data={post.comments.slice()}
                       renderItem={renderCommentItem}
                       keyExtractor={item => item.comment_id}
                     />

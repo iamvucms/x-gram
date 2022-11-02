@@ -13,3 +13,12 @@ export enum CreateType {
   Story,
   Reel,
 }
+
+export enum CommentStatus {
+  SENDING,
+  UPDATING,
+  ERROR,
+  SENT,
+}
+
+export const PostStatus = CommentStatus

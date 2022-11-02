@@ -7,11 +7,12 @@ import {
   ShareBottomSheet,
 } from '@/Components'
 import { PageName } from '@/Config'
-import { mockPosts, ShareType } from '@/Models'
+import { ShareType } from '@/Models'
 import { navigate } from '@/Navigators'
+import { homeStore, initData } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
@@ -37,6 +38,9 @@ const HomeScreen = () => {
       this.selectedPost = post
     },
   }))
+  useEffect(() => {
+    initData()
+  }, [])
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
       if (event.contentOffset.y > 150) {
@@ -78,24 +82,28 @@ const HomeScreen = () => {
       statusBarProps={{ barStyle: 'light-content' }}
     >
       <HomeMenu />
-      <Animated.FlatList
-        bounces={false}
-        ListHeaderComponent={<StoryBar scrollY={scrollY} />}
-        scrollEventThrottle={16}
-        onScroll={scrollHandler}
-        data={mockPosts}
-        renderItem={renderPostItem}
-        keyExtractor={(_, index) => index.toString()}
-        ListFooterComponent={<Padding bottom={110} />}
-        showsVerticalScrollIndicator={false}
-      />
+      <Obx>
+        {() => (
+          <Animated.FlatList
+            bounces={false}
+            ListHeaderComponent={<StoryBar scrollY={scrollY} />}
+            scrollEventThrottle={16}
+            onScroll={scrollHandler}
+            data={homeStore.posts.slice()}
+            renderItem={renderPostItem}
+            keyExtractor={(_, index) => index.toString()}
+            ListFooterComponent={<Padding bottom={110} />}
+            showsVerticalScrollIndicator={false}
+          />
+        )}
+      </Obx>
       <Obx>
         {() =>
           state.sheetType === SheetType.COMMENT && (
             <CommentBottomSheet
               onClose={() => state.setType(null)}
               ref={commentSheetRef}
-              data={state?.selectedPost}
+              post={state?.selectedPost}
             />
           )
         }

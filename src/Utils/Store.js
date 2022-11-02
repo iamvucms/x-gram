@@ -13,7 +13,6 @@ export const makePersist = (context, storeName, properties = []) => {
     name: storeName,
     properties,
     storage: maskStorage,
-    debugMode: __DEV__,
   })
 }
 
@@ -23,6 +22,5 @@ export const makePersistExcept = (context, storeName, properties = []) => {
     name: storeName,
     properties: persistProps,
     storage: maskStorage,
-    debugMode: __DEV__,
   })
 }

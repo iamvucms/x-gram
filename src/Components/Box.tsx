@@ -56,6 +56,16 @@ interface BoxProps {
   bottomLeftRadius?: number
   bottomRightRadius?: number
   overflow?: 'visible' | 'hidden' | 'scroll'
+  borderTopWidth?: number
+  borderBottomWidth?: number
+  borderLeftWidth?: number
+  borderRightWidth?: number
+  borderTopColor?: string
+  borderBottomColor?: string
+  borderLeftColor?: string
+  borderRightColor?: string
+  borderWidth?: number
+  borderColor?: string
   style?: StyleProp<ViewStyle>
 }
 
@@ -99,6 +109,16 @@ const Box = forwardRef(
       bottomLeftRadius,
       bottomRightRadius,
       overflow,
+      borderBottomColor,
+      borderBottomWidth,
+      borderLeftColor,
+      borderLeftWidth,
+      borderRightColor,
+      borderRightWidth,
+      borderTopColor,
+      borderTopWidth,
+      borderColor,
+      borderWidth,
       ...restProps
     }: BoxProps,
     ref: React.ForwardedRef<View>,
@@ -188,6 +208,24 @@ const Box = forwardRef(
           marginVertical && {
             marginVertical: ResponsiveHeight(marginVertical),
           },
+          borderTopWidth && {
+            borderTopWidth: ResponsiveHeight(borderTopWidth),
+          },
+          borderBottomWidth && {
+            borderBottomWidth: ResponsiveHeight(borderBottomWidth),
+          },
+          borderLeftWidth && {
+            borderLeftWidth: ResponsiveWidth(borderLeftWidth),
+          },
+          borderRightWidth && {
+            borderRightWidth: ResponsiveWidth(borderRightWidth),
+          },
+          borderTopColor && { borderTopColor },
+          borderBottomColor && { borderBottomColor },
+          borderLeftColor && { borderLeftColor },
+          borderRightColor && { borderRightColor },
+          borderColor && { borderColor },
+          borderWidth && { borderWidth: moderateScale(borderWidth) },
         ]}
       >
         {children}

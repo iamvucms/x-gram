@@ -1,4 +1,5 @@
-import { getUserPosts } from '@/Services/Api'
+import { mockUsers } from '@/Models'
+import { getUserPosts, getUserInfo } from '@/Services/Api'
 import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
@@ -37,6 +38,18 @@ export default class UserStore {
   removeBookmarkPost(postId) {
     this.bookmarkPosts = this.bookmarkPosts.filter(post => post.id !== postId)
   }
+  *fetchUserInfo() {
+    try {
+      // fetch user info
+      const { data } = yield getUserInfo(this.userInfo.user_id)
+      this.userInfo = data
+    } catch (e) {
+      this.userInfo = mockUsers[0]
+      console.log({
+        fetchUserInfo: e,
+      })
+    }
+  }
   *fetchPosts(loadMore) {
     try {
       if (!loadMore) {
@@ -59,6 +72,31 @@ export default class UserStore {
   }
   findPostById(postId) {
     return this.posts.find(post => post.post_id === postId)
+  }
+  addPostComment(postId, comment) {
+    const post = this.findPostById(postId)
+    if (post) {
+      post.comments = [comment, ...post.comments]
+    }
+  }
+  updatePostComment(postId, commentId, comment) {
+    const post = this.findPostById(postId)
+    if (post) {
+      const index = post.comments.findIndex(
+        item => item.comment_id === commentId,
+      )
+      if (index > -1) {
+        post.comments[index] = { ...post.comments[index], ...comment }
+      }
+    }
+  }
+  deletePostComment(postId, commentId) {
+    const post = this.findPostById(postId)
+    if (post) {
+      post.comments = post.comments.filter(
+        item => item.comment_id !== commentId,
+      )
+    }
   }
   // check for hydration (required)
   get isHydrated() {

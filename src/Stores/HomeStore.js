@@ -1,3 +1,4 @@
+import { mockPosts } from '@/Models'
 import { getPostDetail, getPosts, getStories } from '@/Services/Api'
 import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
@@ -58,6 +59,7 @@ export default class HomeStore {
       }
       this.postPage += 1
     } catch (e) {
+      this.posts = mockPosts
       console.log({
         fetchPosts: e,
       })
@@ -78,6 +80,31 @@ export default class HomeStore {
       this.posts.find(post => post.post_id === postId) ||
       this.additionalPosts.find(post => post.post_id === postId)
     )
+  }
+  addPostComment(postId, comment) {
+    const post = this.findPostById(postId)
+    if (post) {
+      post.comments = [comment, ...post.comments]
+    }
+  }
+  updatePostComment(postId, commentId, comment) {
+    const post = this.findPostById(postId)
+    if (post) {
+      const index = post.comments.findIndex(
+        item => item.comment_id === commentId,
+      )
+      if (index > -1) {
+        post.comments[index] = { ...post.comments[index], ...comment }
+      }
+    }
+  }
+  deletePostComment(postId, commentId) {
+    const post = this.findPostById(postId)
+    if (post) {
+      post.comments = post.comments.filter(
+        item => item.comment_id !== commentId,
+      )
+    }
   }
   get isHydrated() {
     return isHydrated(this)

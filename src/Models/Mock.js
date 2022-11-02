@@ -178,6 +178,13 @@ export const mockComments = [
     comment:
       '@username04 This is a comment by Jane Doe. This is a comment by Jane Doe .This is a comment by Jane Doe This is a comment by Jane Doe ',
   },
+  {
+    comment_id: '9',
+    created_at: new Date().getTime(),
+    commented_by: mockUsers[7],
+    comment: 'https://picsum.photos/200/300',
+    is_image: true,
+  },
 ]
 
 export const mockPosts = [
