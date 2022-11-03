@@ -1,4 +1,5 @@
 import {
+  BookMarkedSvg,
   BookMarkSvg,
   CommentSvg,
   HeartSvg,
@@ -6,8 +7,10 @@ import {
   StoryGradientBorderSvg,
 } from '@/Assets/Svg'
 import { navigateToProfile } from '@/Navigators'
+import { isReactedPost, reactRequest, userStore } from '@/Stores'
 import {
   Colors,
+  Layout,
   moderateScale,
   ResponsiveHeight,
   ResponsiveWidth,
@@ -15,6 +18,7 @@ import {
   XStyleSheet,
 } from '@/Theme'
 import { formatAmount } from '@/Utils'
+import { autorun } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import moment from 'moment'
 import React, { memo, useCallback, useEffect } from 'react'
@@ -22,7 +26,9 @@ import { useTranslation } from 'react-i18next'
 import { Pressable, TouchableOpacity, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import Animated, {
+  BounceIn,
   interpolate,
+  interpolateColor,
   SharedValue,
   useAnimatedStyle,
   useSharedValue,
@@ -47,6 +53,8 @@ const PostItem = ({
   onPress,
   showDetail = false,
 }: PostItemProps) => {
+  const reactAnim = useSharedValue(0)
+  const bookmarkAnim = useSharedValue(0)
   const pageAnim = useSharedValue(0)
   const { t } = useTranslation()
   const state = useLocalObservable(() => ({
@@ -61,6 +69,26 @@ const PostItem = ({
           .filter(m => !m.is_video)
           .map((item: any) => ({ uri: item.url, priority: 'low' })),
       )
+    }
+    const disposeReaction = autorun(() => {
+      const isReacted = isReactedPost(post.post_id)
+      if (isReacted) {
+        reactAnim.value = withTiming(1)
+      } else {
+        reactAnim.value = withTiming(0)
+      }
+    })
+    const disposeBookmark = autorun(() => {
+      const isBookmarked = userStore.isBookmarked(post.post_id)
+      if (isBookmarked) {
+        bookmarkAnim.value = withTiming(1)
+      } else {
+        bookmarkAnim.value = withTiming(0)
+      }
+    })
+    return () => {
+      disposeReaction()
+      disposeBookmark()
     }
   }, [])
 
@@ -80,6 +108,20 @@ const PostItem = ({
   const onMentionPress = useCallback(userId => {
     navigateToProfile(userId)
   }, [])
+  const reactButtonStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      reactAnim.value,
+      [0, 1],
+      [Colors.white50, Colors.kFB2576],
+    ),
+  }))
+  const bookmarkButtonStyle = useAnimatedStyle(() => ({
+    backgroundColor: interpolateColor(
+      bookmarkAnim.value,
+      [0, 1],
+      [Colors.white50, Colors.kFF7A51],
+    ),
+  }))
   return (
     <Box marginHorizontal={16} marginTop={16}>
       <View style={styles.rootView}>
@@ -127,8 +169,28 @@ const PostItem = ({
               </AppText>
             </View>
           </Box>
-          <TouchableOpacity style={styles.bookMarkBtn}>
-            <BookMarkSvg color={Colors.white} />
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() =>
+              userStore.isBookmarked(post.post_id)
+                ? userStore.removeBookmarkPost(post.post_id)
+                : userStore.addBookmarkPost(post)
+            }
+            style={styles.bookMarkBtn}
+          >
+            <Animated.View
+              style={[Layout.fill, Layout.center, bookmarkButtonStyle]}
+            >
+              <Obx>
+                {() =>
+                  userStore.isBookmarked(post.post_id) ? (
+                    <BookMarkedSvg color={Colors.white} />
+                  ) : (
+                    <BookMarkSvg color={Colors.white} />
+                  )
+                }
+              </Obx>
+            </Animated.View>
           </TouchableOpacity>
         </Box>
         <View style={styles.sideBarView}>
@@ -146,16 +208,31 @@ const PostItem = ({
               )}
             </Obx>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.sideBarBtn, styles.reactBtn]}>
-            <HeartSvg color={Colors.white} />
-            <Padding top={4} />
-            <Obx>
-              {() => (
-                <AppText fontWeight={700} color={Colors.white}>
-                  {formatAmount(post.reactions.length)}
-                </AppText>
-              )}
-            </Obx>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() =>
+              reactRequest(post.post_id, isReactedPost(post.post_id))
+            }
+            style={[styles.reactBtn]}
+          >
+            <Animated.View
+              style={[Layout.fill, Layout.center, reactButtonStyle]}
+            >
+              <Obx>
+                {() => (
+                  <Animated.View
+                    key={isReactedPost(post.post_id)}
+                    entering={BounceIn}
+                  >
+                    <HeartSvg color={Colors.white} />
+                  </Animated.View>
+                )}
+              </Obx>
+              <Padding top={4} />
+              <AppText fontWeight={700} color={Colors.white}>
+                <Obx>{() => formatAmount(post.reactions.length)}</Obx>
+              </AppText>
+            </Animated.View>
           </TouchableOpacity>
         </View>
       </View>
@@ -263,10 +340,8 @@ const styles = XStyleSheet.create({
   bookMarkBtn: {
     height: 57,
     width: 57,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.white50,
     borderRadius: 99,
+    overflow: 'hidden',
   },
   sideBarView: {
     position: 'absolute',
@@ -281,12 +356,13 @@ const styles = XStyleSheet.create({
     width: 57,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16,
+    marginBottom: 16,
   },
   reactBtn: {
-    backgroundColor: Colors.white50,
     height: 80,
+    width: 57,
     borderRadius: 99,
+    overflow: 'hidden',
   },
   indicatorView: {
     position: 'absolute',

@@ -26,7 +26,6 @@ const SheetType = {
 
 const HomeScreen = () => {
   const commentSheetRef = useRef()
-  const shareSheetRef = useRef()
   const scrollY = useSharedValue(0)
   const state = useLocalObservable(() => ({
     selectedPost: null,
@@ -114,7 +113,6 @@ const HomeScreen = () => {
             <ShareBottomSheet
               type={ShareType.Post}
               onClose={() => state.setType(null)}
-              ref={shareSheetRef}
               data={state?.selectedPost}
             />
           )

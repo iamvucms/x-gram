@@ -1,7 +1,7 @@
 import { mockUsers } from '@/Models'
-import { getUserPosts, getUserInfo } from '@/Services/Api'
+import { getUserInfo, getUserPosts } from '@/Services/Api'
 import { makePersistExcept } from '@/Utils'
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, toJS } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
 export default class UserStore {
   isLogged = false
@@ -36,7 +36,12 @@ export default class UserStore {
     this.bookmarkPosts = [...this.bookmarkPosts, post]
   }
   removeBookmarkPost(postId) {
-    this.bookmarkPosts = this.bookmarkPosts.filter(post => post.id !== postId)
+    this.bookmarkPosts = this.bookmarkPosts.filter(
+      post => post.post_id !== postId,
+    )
+  }
+  isBookmarked(postId) {
+    return this.bookmarkPosts.some(post => post.post_id === postId)
   }
   *fetchUserInfo() {
     try {
@@ -97,6 +102,39 @@ export default class UserStore {
         item => item.comment_id !== commentId,
       )
     }
+  }
+  reactPost(postId) {
+    const post = this.findPostById(postId)
+    if (post) {
+      const isReacted = post.reactions.some(
+        r => r.reacted_by.user_id === this.userInfo.user_id,
+      )
+      if (!isReacted) {
+        post.reactions = [
+          {
+            reacted_by: toJS(this.userInfo),
+          },
+          ...post.reactions,
+        ]
+      }
+    }
+  }
+  unReactPost(postId) {
+    const post = this.findPostById(postId)
+    if (post) {
+      post.reactions = post.reactions.filter(
+        r => r.reacted_by.user_id !== this.userInfo.user_id,
+      )
+    }
+  }
+  isReactedPost(postId) {
+    const post = this.findPostById(postId)
+    if (post) {
+      return post.reactions.some(
+        r => r.reacted_by.user_id === this.userInfo.user_id,
+      )
+    }
+    return false
   }
   // check for hydration (required)
   get isHydrated() {

@@ -1,4 +1,10 @@
-import { CopySvg, EyeOffSvg, RemoveSvg, ReportSvg } from '@/Assets/Svg'
+import {
+  CopySvg,
+  EyeOffSvg,
+  RemoveSvg,
+  ReportSvg,
+  TrashBinSvg,
+} from '@/Assets/Svg'
 import {
   AppBar,
   AppBottomSheet,
@@ -12,7 +18,9 @@ import {
   Obx,
   Padding,
   PostItem,
+  ShareBottomSheet,
 } from '@/Components'
+import { ShareType } from '@/Models'
 import {
   findPostById,
   homeStore,
@@ -34,16 +42,19 @@ import { Keyboard, TouchableOpacity, View } from 'react-native'
 const PostDetailScreen = ({ route }) => {
   const { postId } = route.params
   const { t } = useTranslation()
-  const sheetRef = useRef()
+  const optionSheetRef = useRef()
+  const listRef = useRef()
   const state = useLocalObservable(() => ({
     post: null,
     loading: true,
     selectedComment: null,
     editing: false,
+    openShare: false,
     setPost: post => (state.post = post),
     setLoading: loading => (state.loading = loading),
     setSelectedComment: comment => (state.selectedComment = comment),
     setEditing: editing => (state.editing = editing),
+    setOpenShare: openShare => (state.openShare = openShare),
   }))
   useEffect(() => {
     const dispose = autorun(() => {
@@ -66,12 +77,12 @@ const PostDetailScreen = ({ route }) => {
   }, [])
   const onDeleteCommentPress = useCallback(comment => {
     deleteCommentRequest(postId, comment.comment_id, toJS(comment))
-    sheetRef.current?.close?.()
+    optionSheetRef.current?.close?.()
   }, [])
   const renderCommentItem = useCallback(({ item }) => {
     const onShowOptions = () => {
       state.setSelectedComment(item)
-      sheetRef.current.snapTo(0)
+      optionSheetRef.current.snapTo(0)
     }
     const onRetry = () =>
       sendCommentRequest(postId, item.comment, item.is_image, item.comment_id)
@@ -89,7 +100,14 @@ const PostDetailScreen = ({ route }) => {
         {() =>
           !state.loading && (
             <Fragment>
-              <PostItem showDetail post={state.post} />
+              <PostItem
+                onCommentPress={() => {
+                  listRef.current?.scrollToIndex?.({ index: 0, animated: true })
+                }}
+                onSharePress={() => state.setOpenShare(true)}
+                showDetail
+                post={state.post}
+              />
               <View style={styles.separator} />
               <Padding horizontal={16}>
                 <AppText fontWeight={800}>
@@ -116,6 +134,7 @@ const PostDetailScreen = ({ route }) => {
             <Obx>
               {() => (
                 <FlashList
+                  ref={listRef}
                   ListHeaderComponent={ListHeaderComponent}
                   data={state.post.comments.slice()}
                   renderItem={renderCommentItem}
@@ -128,16 +147,14 @@ const PostDetailScreen = ({ route }) => {
           )
         }
       </Obx>
-
       <MessageInput
         placeholder={t('home.comment_placeholder')}
         onSendPress={onSendPress}
       />
-
       {isIOS && <KeyboardSpacer />}
       <AppBottomSheet
         backgroundStyle={{ backgroundColor: Colors.transparent }}
-        ref={sheetRef}
+        ref={optionSheetRef}
         snapPoints={[screenHeight * 0.5]}
       >
         <Box
@@ -203,7 +220,7 @@ const PostDetailScreen = ({ route }) => {
                       }
                       style={styles.optionBtn}
                     >
-                      <RemoveSvg size={20} />
+                      <TrashBinSvg size={20} />
                       <Padding left={14} />
                       <AppText fontSize={16} fontWeight={500}>
                         {t('home.remove_comment')}
@@ -233,6 +250,18 @@ const PostDetailScreen = ({ route }) => {
           </BottomSheetScrollView>
         </Box>
       </AppBottomSheet>
+      <Obx>
+        {() =>
+          !!state.post &&
+          state.openShare && (
+            <ShareBottomSheet
+              type={ShareType.Post}
+              data={state.post}
+              onClose={() => state.setOpenShare(false)}
+            />
+          )
+        }
+      </Obx>
     </Container>
   )
 }

@@ -18,6 +18,7 @@ import {
   RecoveryPasswordScreen,
   RegisterScreen,
   StoryScreen,
+  UserPostsScreen,
 } from '@/Screens'
 const Stack = createNativeStackNavigator()
 const Application = () => {
@@ -79,6 +80,10 @@ const AuthStack = () => {
       <Stack.Screen
         name={PageName.PostDetailScreen}
         component={PostDetailScreen}
+      />
+      <Stack.Screen
+        name={PageName.UserPostsScreen}
+        component={UserPostsScreen}
       />
     </Stack.Navigator>
   )

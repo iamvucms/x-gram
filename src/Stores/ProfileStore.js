@@ -1,6 +1,7 @@
 import { getUserPosts } from '@/Services/Api'
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, toJS } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
+import { userStore } from '.'
 export default class ProfileStore {
   profileInfo = {}
   fetching = false
@@ -65,6 +66,39 @@ export default class ProfileStore {
         item => item.comment_id !== commentId,
       )
     }
+  }
+  reactPost(postId) {
+    const post = this.findPostById(postId)
+    if (post) {
+      const isReacted = post.reactions.some(
+        r => r.reacted_by.user_id === userStore.userInfo.user_id,
+      )
+      if (!isReacted) {
+        post.reactions = [
+          {
+            reacted_by: toJS(userStore.userInfo),
+          },
+          ...post.reactions,
+        ]
+      }
+    }
+  }
+  unReactPost(postId) {
+    const post = this.findPostById(postId)
+    if (post) {
+      post.reactions = post.reactions.filter(
+        r => r.reacted_by.user_id !== userStore.userInfo.user_id,
+      )
+    }
+  }
+  isReactedPost(postId) {
+    const post = this.findPostById(postId)
+    if (post) {
+      return post.reactions.some(
+        r => r.reacted_by.user_id === userStore.userInfo.user_id,
+      )
+    }
+    return false
   }
   get isHydrated() {
     return isHydrated(this)

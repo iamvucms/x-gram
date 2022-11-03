@@ -1,5 +1,11 @@
 import { CommentStatus } from '@/Models'
-import { deleteComment, sendComment } from '@/Services/Api'
+import {
+  deleteComment,
+  sendComment,
+  sendReactPost,
+  sendUnReactPost,
+  updateComment,
+} from '@/Services/Api'
 import { toJS } from 'mobx'
 import { homeStore, profileStore, userStore } from '.'
 
@@ -24,6 +30,23 @@ export const deletePostComment = (postId, commentId) => {
   homeStore.deletePostComment(postId, commentId)
   userStore.deletePostComment(postId, commentId)
   profileStore.deletePostComment(postId, commentId)
+}
+export const reactPost = postId => {
+  homeStore.reactPost(postId)
+  userStore.reactPost(postId)
+  profileStore.reactPost(postId)
+}
+export const unReactPost = postId => {
+  homeStore.unReactPost(postId)
+  userStore.unReactPost(postId)
+  profileStore.unReactPost(postId)
+}
+export const isReactedPost = postId => {
+  return (
+    homeStore.isReactedPost(postId) ||
+    userStore.isReactedPost(postId) ||
+    profileStore.isReactedPost(postId)
+  )
 }
 export const initData = () => {
   homeStore.fetchPosts()
@@ -67,11 +90,54 @@ export const sendCommentRequest = async (postId, message, isImage, retryId) => {
 export const deleteCommentRequest = async (postId, commentId, comment) => {
   try {
     deletePostComment(postId, commentId)
-    const response = await deleteComment(postId, commentId)
-    if (response?.status !== 'OK') {
-      addPostComment(postId, comment)
+    if (comment.status !== CommentStatus.ERROR) {
+      const response = await deleteComment(postId, commentId)
+      if (response?.status !== 'OK') {
+        addPostComment(postId, comment)
+      }
     }
   } catch (e) {
     addPostComment(postId, comment)
+  }
+}
+export const updatePostCommentRequest = async (postId, commentId, comment) => {
+  try {
+    updatePostComment(postId, commentId, {
+      status: CommentStatus.UPDATING,
+    })
+    const response = await updateComment(postId, commentId, comment)
+    if (response.status === 'OK') {
+      updatePostComment(postId, commentId, {
+        status: CommentStatus.SENT,
+      })
+    } else {
+      updatePostComment(postId, commentId, {
+        status: CommentStatus.ERROR_UPDATE,
+      })
+    }
+  } catch (e) {
+    updatePostComment(postId, commentId, {
+      status: CommentStatus.ERROR_UPDATE,
+    })
+  }
+}
+export const reactRequest = async (postId, isUnReact) => {
+  try {
+    if (isUnReact) {
+      unReactPost(postId)
+    } else {
+      reactPost(postId)
+    }
+    let response
+    if (isUnReact) {
+      response = await sendUnReactPost(postId)
+    } else {
+      response = await sendReactPost(postId)
+    }
+    if (response.status !== 'OK') {
+      console.log({ reactRequestError: response })
+    }
+  } catch (e) {
+    console.log({ reactRequestError: e })
   }
 }

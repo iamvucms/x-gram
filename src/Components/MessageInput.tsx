@@ -66,11 +66,11 @@ const MessageInput = forwardRef(
               <TextInput
                 style={styles.textInput}
                 placeholderTextColor={Colors.placeholder}
-                {...textInputProps}
-                ref={ref}
                 value={state.comment}
                 onChangeText={txt => state.setComment(txt)}
+                {...textInputProps}
                 onEndEditing={onSendMessage}
+                ref={ref}
               />
             )}
           </Obx>

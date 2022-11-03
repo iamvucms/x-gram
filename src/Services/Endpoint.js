@@ -23,9 +23,11 @@ export default () => {
     createPost: `${apiUrl}/posts`,
     updatePostMessage: `${apiUrl}/posts/{id}`,
     deletePost: `${apiUrl}/posts/{id}`,
-    likePost: `${apiUrl}/posts/{id}/like`,
-    unlikePost: `${apiUrl}/posts/{id}/unlike`,
+    reactPost: postId => `${apiUrl}/posts/${postId}/like`,
+    unReactPost: postId => `${apiUrl}/posts/${postId}/unlike`,
     sendComment: postId => `${apiUrl}/posts/${postId}/comments`,
+    updateComment: (postId, commentId) =>
+      `${apiUrl}/posts/${postId}/comments/${commentId}`,
     deleteComment: (postId, commentId) =>
       `${apiUrl}/posts/${postId}/comments/${commentId}`,
     //stories

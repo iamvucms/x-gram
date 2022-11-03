@@ -1,5 +1,5 @@
 import { CommentSvg, HeartSvg } from '@/Assets/Svg'
-import { sendCommentRequest } from '@/Stores'
+import { isReactedPost, reactRequest, sendCommentRequest } from '@/Stores'
 import { Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
 import { formatAmount, getHitSlop, isIOS } from '@/Utils'
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
@@ -7,6 +7,7 @@ import { useLocalObservable } from 'mobx-react-lite'
 import React, { forwardRef, memo, useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Keyboard, TouchableOpacity, View } from 'react-native'
+import Animated, { BounceIn } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { KeyboardSpacer, LoadingIndicator, MessageInput, Obx } from '.'
 import AppBottomSheet from './AppBottomSheet'
@@ -71,18 +72,36 @@ const CommentBottomSheet = forwardRef(
             style={styles.headerView}
           >
             <Row align="center">
-              <CommentSvg color={Colors.placeholder} size={18} />
+              <CommentSvg color={Colors.kC2C2C2} size={18} />
               <Padding left={6} />
               <Obx>
                 {() => (
-                  <AppText fontSize={16}>
+                  <AppText color={Colors.placeholder} fontSize={16}>
                     {formatAmount(post.comments.length)}
                   </AppText>
                 )}
               </Obx>
             </Row>
-            <TouchableOpacity hitSlop={getHitSlop(16)}>
-              <HeartSvg color={Colors.kC2C2C2} size={20} />
+            <TouchableOpacity
+              onPress={() =>
+                reactRequest(post.post_id, isReactedPost(post.post_id))
+              }
+              hitSlop={getHitSlop(16)}
+            >
+              <Obx>
+                {() => (
+                  <Animated.View entering={BounceIn} key={Math.random()}>
+                    <HeartSvg
+                      color={
+                        isReactedPost(post.post_id)
+                          ? Colors.kFB2576
+                          : Colors.kC2C2C2
+                      }
+                      size={20}
+                    />
+                  </Animated.View>
+                )}
+              </Obx>
             </TouchableOpacity>
           </Box>
           <Obx>

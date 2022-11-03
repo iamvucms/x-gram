@@ -18,6 +18,7 @@ export enum CommentStatus {
   SENDING,
   UPDATING,
   ERROR,
+  ERROR_UPDATE,
   SENT,
 }
 

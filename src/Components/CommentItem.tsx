@@ -16,12 +16,14 @@ interface CommentItemProps {
   insideBottomSheet?: boolean
   onShowOptions?: () => void
   onRetry?: () => void
+  onRetryUpdate?: () => void
 }
 const CommentItem = ({
   comment,
   onShowOptions,
   insideBottomSheet = false,
   onRetry,
+  onRetryUpdate,
 }: CommentItemProps) => {
   const { t } = useTranslation()
   const sheet = insideBottomSheet ? useBottomSheet() : { close: () => {} }
@@ -34,9 +36,13 @@ const CommentItem = ({
   return (
     <Touchable
       activeOpacity={0.8}
-      onPress={() =>
-        comment.status === CommentStatus.ERROR && !!onRetry && onRetry()
-      }
+      onPress={() => {
+        if (comment.status === CommentStatus.ERROR) {
+          onRetry && onRetry()
+        } else if (comment.status === CommentStatus.ERROR_UPDATE) {
+          onRetryUpdate && onRetryUpdate()
+        }
+      }}
       onLongPress={onShowOptions}
     >
       <Box paddingHorizontal={16} marginTop={20} row>

@@ -218,11 +218,9 @@ export const mockPosts = [
     ],
     reactions: [
       {
-        reaction_id: '1',
         reacted_by: mockUsers[0],
       },
       {
-        reaction_id: '2',
         reacted_by: mockUsers[1],
       },
     ],
@@ -258,11 +256,9 @@ export const mockPosts = [
     ],
     reactions: [
       {
-        reaction_id: '1',
         reacted_by: mockUsers[0],
       },
       {
-        reaction_id: '2',
         reacted_by: mockUsers[1],
       },
     ],
@@ -298,11 +294,9 @@ export const mockPosts = [
     ],
     reactions: [
       {
-        reaction_id: '1',
         reacted_by: mockUsers[0],
       },
       {
-        reaction_id: '2',
         reacted_by: mockUsers[1],
       },
     ],
@@ -338,11 +332,9 @@ export const mockPosts = [
     ],
     reactions: [
       {
-        reaction_id: '1',
         reacted_by: mockUsers[0],
       },
       {
-        reaction_id: '2',
         reacted_by: mockUsers[1],
       },
     ],
@@ -378,11 +370,9 @@ export const mockPosts = [
     ],
     reactions: [
       {
-        reaction_id: '1',
         reacted_by: mockUsers[0],
       },
       {
-        reaction_id: '2',
         reacted_by: mockUsers[1],
       },
     ],
@@ -418,11 +408,9 @@ export const mockPosts = [
     ],
     reactions: [
       {
-        reaction_id: '1',
         reacted_by: mockUsers[0],
       },
       {
-        reaction_id: '2',
         reacted_by: mockUsers[1],
       },
     ],
