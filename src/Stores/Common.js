@@ -87,6 +87,28 @@ export const sendCommentRequest = async (postId, message, isImage, retryId) => {
     })
   }
 }
+export const updateCommentRequest = async (postId, commentId, message) => {
+  try {
+    updatePostComment(postId, commentId, {
+      comment: message,
+      status: CommentStatus.UPDATING,
+    })
+    const response = await updateComment(postId, commentId, message)
+    if (response.status === 'OK') {
+      updatePostComment(postId, commentId, {
+        status: CommentStatus.SENT,
+      })
+    } else {
+      updatePostComment(postId, commentId, {
+        status: CommentStatus.ERROR_UPDATE,
+      })
+    }
+  } catch (e) {
+    updatePostComment(postId, commentId, {
+      status: CommentStatus.ERROR_UPDATE,
+    })
+  }
+}
 export const deleteCommentRequest = async (postId, commentId, comment) => {
   try {
     deletePostComment(postId, commentId)

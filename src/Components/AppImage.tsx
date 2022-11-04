@@ -1,9 +1,9 @@
-import { Colors, XStyleSheet } from '@/Theme'
+import { XStyleSheet } from '@/Theme'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { useEffect, useRef } from 'react'
+import React, { Fragment, memo, useEffect, useRef } from 'react'
 import {
   ImageRequireSource,
-  ImageURISource,
+  Modal,
   Pressable,
   StyleProp,
   ViewStyle,
@@ -22,7 +22,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
-import { Obx } from '.'
+import { LightBox, Obx } from '.'
 interface AppImageProps {
   source: Source | ImageRequireSource
   style?: FastImageProps['style']
@@ -53,7 +53,9 @@ const AppImage = ({
   const fadingAnim = useSharedValue(1)
   const state = useLocalObservable(() => ({
     hash: 'L9AB*A%LPqys8_H=yDR5nMMeVXR5',
+    lightboxVisible: false,
     setHash: payload => (state.hash = payload),
+    setLightboxVisible: payload => (state.lightboxVisible = payload),
   }))
 
   useEffect(() => {
@@ -105,56 +107,69 @@ const AppImage = ({
     ],
   }))
   return (
-    <Pressable
-      disabled={disabled}
-      onPress={onPress}
-      style={[styles.baseContainer, containerStyle]}
-    >
-      {blurHashEnabled && (
-        <Animated.View style={[styles.blurhashView, blurStyle]}>
-          <Obx>
-            {() => (
-              <Blurhash
-                style={styles.blurhashView}
-                blurhash={state.hash}
-                resizeMode="cover"
-              />
-            )}
-          </Obx>
-        </Animated.View>
-      )}
-      <PanGestureHandler
-        enabled={enablePinchZoom}
-        minPointers={2}
-        onGestureEvent={panGestureHandler}
-        ref={panRef}
-        simultaneousHandlers={pinchRef}
+    <Fragment>
+      <Pressable
+        disabled={disabled}
+        onPress={lightbox ? () => state.setLightboxVisible(true) : onPress}
+        style={[styles.baseContainer, containerStyle]}
       >
-        <Animated.View>
-          <PinchGestureHandler
-            enabled={enablePinchZoom}
-            ref={pinchRef}
-            simultaneousHandlers={panRef}
-            onGestureEvent={pinchGestureHandler}
-          >
-            <Animated.View style={imageContainerStyle}>
-              <FastImage
-                onLoadEnd={() => {
-                  fadingAnim.value = withTiming(0)
-                }}
-                style={[styles.image, style]}
-                resizeMode={resizeMode}
-                source={source}
-              />
-            </Animated.View>
-          </PinchGestureHandler>
-        </Animated.View>
-      </PanGestureHandler>
-    </Pressable>
+        {blurHashEnabled && (
+          <Animated.View style={[styles.blurhashView, blurStyle]}>
+            <Obx>
+              {() => (
+                <Blurhash
+                  style={styles.blurhashView}
+                  blurhash={state.hash}
+                  resizeMode="cover"
+                />
+              )}
+            </Obx>
+          </Animated.View>
+        )}
+        <PanGestureHandler
+          enabled={enablePinchZoom}
+          minPointers={2}
+          onGestureEvent={panGestureHandler}
+          ref={panRef}
+          simultaneousHandlers={pinchRef}
+        >
+          <Animated.View>
+            <PinchGestureHandler
+              enabled={enablePinchZoom}
+              ref={pinchRef}
+              simultaneousHandlers={panRef}
+              onGestureEvent={pinchGestureHandler}
+            >
+              <Animated.View style={imageContainerStyle}>
+                <FastImage
+                  onLoadEnd={() => {
+                    fadingAnim.value = withTiming(0)
+                  }}
+                  style={[styles.image, style]}
+                  resizeMode={resizeMode}
+                  source={source}
+                />
+              </Animated.View>
+            </PinchGestureHandler>
+          </Animated.View>
+        </PanGestureHandler>
+      </Pressable>
+      {lightbox && (
+        <Obx>
+          {() => (
+            <LightBox
+              visible={state.lightboxVisible}
+              onRequestClose={() => state.setLightboxVisible(false)}
+              source={source}
+            />
+          )}
+        </Obx>
+      )}
+    </Fragment>
   )
 }
 
-export default AppImage
+export default memo(AppImage)
 
 const styles = XStyleSheet.create({
   blurhashView: {

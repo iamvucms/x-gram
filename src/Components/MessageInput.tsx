@@ -2,7 +2,7 @@ import { PhotoSvg, SendSvg } from '@/Assets/Svg'
 import { AppFonts, Colors, XStyleSheet } from '@/Theme'
 import { getHitSlop, isAndroid } from '@/Utils'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { forwardRef, Fragment, useCallback } from 'react'
+import React, { forwardRef, Fragment, useCallback, useEffect } from 'react'
 import { TextInput, TextInputProps, TouchableOpacity, View } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker'
 import { Obx } from '.'
@@ -14,34 +14,40 @@ interface MessageInputProps extends TextInputProps {
     isImage?: boolean,
     retryId?: string,
   ) => void
+  edittingMessage?: string
 }
 const MessageInput = forwardRef(
   (
-    { onSendPress, ...textInputProps }: MessageInputProps,
+    { onSendPress, edittingMessage, ...textInputProps }: MessageInputProps,
     ref: React.ForwardedRef<TextInput>,
   ) => {
     const state = useLocalObservable(() => ({
-      comment: '',
-      setComment: (comment: string) => (state.comment = comment),
+      message: '',
+      setMessage: (message: string) => (state.message = message),
       get isCommentEmpty() {
-        return this.comment.trim().length === 0
+        return this.message.trim().length === 0
       },
     }))
+    useEffect(() => {
+      if (typeof edittingMessage === 'string') {
+        state.setMessage(edittingMessage)
+      }
+    }, [edittingMessage])
     const onImagePickerPress = useCallback(async () => {
       const response = await launchImageLibrary({
         mediaType: 'photo',
         includeBase64: true,
       })
       if (response?.assets?.[0]) {
-        state.setComment('')
+        state.setMessage('')
         const url = `data:${response.assets[0].type};base64,${response.assets[0].base64}`
         onSendPress && onSendPress(url, true)
       }
     }, [])
     const onSendMessage = useCallback(() => {
       if (state.isCommentEmpty) return
-      onSendPress && onSendPress(state.comment, false)
-      state.setComment('')
+      onSendPress && onSendPress(state.message, false)
+      state.setMessage('')
     }, [onSendPress])
     return (
       <Fragment>
@@ -66,10 +72,10 @@ const MessageInput = forwardRef(
               <TextInput
                 style={styles.textInput}
                 placeholderTextColor={Colors.placeholder}
-                value={state.comment}
-                onChangeText={txt => state.setComment(txt)}
                 {...textInputProps}
-                onEndEditing={onSendMessage}
+                value={state.message}
+                onChangeText={txt => state.setMessage(txt)}
+                onSubmitEditing={onSendMessage}
                 ref={ref}
               />
             )}

@@ -9,13 +9,18 @@ export default class UserStore {
   passcode = '123456'
   passcodeEnabled = true
   bookmarkPosts = []
+  hiddenCommentIds = {}
   posts = []
   postPage = 1
   loadingPosts = false
   loadingMorePosts = false
   constructor() {
     makeAutoObservable(this)
-    makePersistExcept(this, 'UserStore', [])
+    makePersistExcept(this, 'UserStore', [
+      'loadingPosts',
+      'loadingMorePosts',
+      'postPage',
+    ])
   }
   setUserInfo(userInfo, isLogged = true) {
     this.userInfo = userInfo
@@ -42,6 +47,15 @@ export default class UserStore {
   }
   isBookmarked(postId) {
     return this.bookmarkPosts.some(post => post.post_id === postId)
+  }
+  addHiddenComment(commentId) {
+    this.hiddenCommentIds[commentId] = true
+  }
+  removeHiddenComment(commentId) {
+    delete this.hiddenCommentIds[commentId]
+  }
+  isHiddenComment(commentId) {
+    return !!this.hiddenCommentIds[commentId]
   }
   *fetchUserInfo() {
     try {

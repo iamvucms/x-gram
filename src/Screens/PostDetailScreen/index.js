@@ -27,6 +27,7 @@ import {
   sendCommentRequest,
   deleteCommentRequest,
   userStore,
+  updateCommentRequest,
 } from '@/Stores'
 import { Colors, screenHeight, XStyleSheet } from '@/Theme'
 import { isIOS } from '@/Utils'
@@ -75,6 +76,16 @@ const PostDetailScreen = ({ route }) => {
     sendCommentRequest(postId, message, isImage, retryId)
     Keyboard.dismiss()
   }, [])
+  const onUpdatePress = useCallback(message => {
+    state.setEditing(false)
+    if (message.trim() === '') {
+      return
+    }
+    const { comment_id: commentId } = state.selectedComment
+    updateCommentRequest(postId, commentId, message)
+    Keyboard.dismiss()
+    state.setSelectedComment(null)
+  }, [])
   const onDeleteCommentPress = useCallback(comment => {
     deleteCommentRequest(postId, comment.comment_id, toJS(comment))
     optionSheetRef.current?.close?.()
@@ -86,9 +97,12 @@ const PostDetailScreen = ({ route }) => {
     }
     const onRetry = () =>
       sendCommentRequest(postId, item.comment, item.is_image, item.comment_id)
+    const onRetryUpdate = () =>
+      updateCommentRequest(postId, item.comment_id, item.comment)
     return (
       <CommentItem
         onRetry={onRetry}
+        onRetryUpdate={onRetryUpdate}
         onShowOptions={onShowOptions}
         comment={item}
       />
@@ -147,10 +161,17 @@ const PostDetailScreen = ({ route }) => {
           )
         }
       </Obx>
-      <MessageInput
-        placeholder={t('home.comment_placeholder')}
-        onSendPress={onSendPress}
-      />
+      <Obx>
+        {() => (
+          <MessageInput
+            edittingMessage={
+              state.editing ? state.selectedComment.comment : null
+            }
+            placeholder={t('home.comment_placeholder')}
+            onSendPress={state.editing ? onUpdatePress : onSendPress}
+          />
+        )}
+      </Obx>
       {isIOS && <KeyboardSpacer />}
       <AppBottomSheet
         backgroundStyle={{ backgroundColor: Colors.transparent }}
@@ -194,26 +215,64 @@ const PostDetailScreen = ({ route }) => {
                 )
               }
             </Obx>
-            <TouchableOpacity style={styles.optionBtn}>
-              <EyeOffSvg size={20} />
-              <Padding left={14} />
-              <AppText fontSize={16} fontWeight={500}>
-                {t('home.hide_comment')}
-              </AppText>
-            </TouchableOpacity>
+            <Obx>
+              {() =>
+                state.selectedComment &&
+                userStore.userInfo.user_id !==
+                  state.selectedComment.commented_by.user_id && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      optionSheetRef.current?.close?.()
+                      userStore.isHiddenComment(
+                        state.selectedComment.comment_id,
+                      )
+                        ? userStore.removeHiddenComment(
+                            state.selectedComment.comment_id,
+                          )
+                        : userStore.addHiddenComment(
+                            state.selectedComment.comment_id,
+                          )
+                    }}
+                    style={styles.optionBtn}
+                  >
+                    <EyeOffSvg size={20} />
+                    <Padding left={14} />
+                    <AppText fontSize={16} fontWeight={500}>
+                      <Obx>
+                        {() =>
+                          userStore.isHiddenComment(
+                            state.selectedComment.comment_id,
+                          )
+                            ? t('home.unhide_comment')
+                            : t('home.hide_comment')
+                        }
+                      </Obx>
+                    </AppText>
+                  </TouchableOpacity>
+                )
+              }
+            </Obx>
             <Obx>
               {() =>
                 state.selectedComment &&
                 userStore.userInfo.user_id ===
                   state.selectedComment.commented_by.user_id && (
                   <>
-                    <TouchableOpacity style={styles.optionBtn}>
-                      <RemoveSvg size={20} />
-                      <Padding left={14} />
-                      <AppText fontSize={16} fontWeight={500}>
-                        {t('home.edit_comment')}
-                      </AppText>
-                    </TouchableOpacity>
+                    {!state.selectedComment.is_image && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          state.setEditing(true)
+                          optionSheetRef.current?.close?.()
+                        }}
+                        style={styles.optionBtn}
+                      >
+                        <RemoveSvg size={20} />
+                        <Padding left={14} />
+                        <AppText fontSize={16} fontWeight={500}>
+                          {t('home.edit_comment')}
+                        </AppText>
+                      </TouchableOpacity>
+                    )}
                     <TouchableOpacity
                       onPress={() =>
                         onDeleteCommentPress(state.selectedComment)

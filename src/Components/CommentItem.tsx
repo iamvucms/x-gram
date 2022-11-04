@@ -1,5 +1,6 @@
 import { CommentStatus } from '@/Models'
 import { navigateToProfile } from '@/Navigators'
+import { userStore } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
 import { useBottomSheet } from '@gorhom/bottom-sheet'
 import moment from 'moment'
@@ -33,83 +34,95 @@ const CommentItem = ({
   }, [])
 
   const Touchable = insideBottomSheet ? Pressable : TouchableOpacity
+  const opacity20 = { opacity: 0.2 }
   return (
-    <Touchable
-      activeOpacity={0.8}
-      onPress={() => {
-        if (comment.status === CommentStatus.ERROR) {
-          onRetry && onRetry()
-        } else if (comment.status === CommentStatus.ERROR_UPDATE) {
-          onRetryUpdate && onRetryUpdate()
-        }
-      }}
-      onLongPress={onShowOptions}
-    >
-      <Box paddingHorizontal={16} marginTop={20} row>
-        <AppImage
-          source={{
-            uri: comment.commented_by.avatar_url,
+    <Obx>
+      {() => (
+        <Touchable
+          activeOpacity={
+            userStore.isHiddenComment(comment.comment_id) ? 0.1 : 0.8
+          }
+          onPress={() => {
+            if (comment.status === CommentStatus.ERROR) {
+              onRetry && onRetry()
+            } else if (comment.status === CommentStatus.ERROR_UPDATE) {
+              onRetryUpdate && onRetryUpdate()
+            }
           }}
-          containerStyle={styles.avatarView}
-        />
-        <Padding left={14} />
-        <Box fill>
-          <AppText fontWeight={700}>
-            {comment.commented_by.full_name}{' '}
-            {!comment.is_image && (
-              <AppText
-                regexMetion
-                onMentionPress={onMentionPress}
-                color={Colors.black75}
-              >
-                {comment.comment}
-              </AppText>
-            )}
-          </AppText>
-          <Padding top={3} />
-          <View>
-            {comment.is_image && (
-              <Fragment>
-                <AppImage
-                  onPress={() =>
-                    comment.status === CommentStatus.ERROR &&
-                    !!onRetry &&
-                    onRetry()
-                  }
-                  containerStyle={styles.image}
-                  source={{
-                    uri: comment.comment,
-                  }}
-                />
-                <Padding top={3} />
-              </Fragment>
-            )}
-            <Obx>
-              {() => (
-                <>
+          onLongPress={onShowOptions}
+          style={userStore.isHiddenComment(comment.comment_id) ? opacity20 : {}}
+        >
+          <Box paddingHorizontal={16} marginTop={20} row>
+            <AppImage
+              source={{
+                uri: comment.commented_by.avatar_url,
+              }}
+              containerStyle={styles.avatarView}
+            />
+            <Padding left={14} />
+            <Box fill>
+              <AppText fontWeight={700}>
+                {comment.commented_by.full_name}{' '}
+                {!comment.is_image && (
                   <AppText
-                    fontSize={12}
-                    color={
-                      comment.status === CommentStatus.ERROR
-                        ? Colors.error
-                        : Colors.black50
-                    }
+                    regexMetion
+                    onMentionPress={onMentionPress}
+                    color={Colors.black75}
                   >
-                    {comment.status === CommentStatus.SENDING
-                      ? t('sending')
-                      : comment.status === CommentStatus.UPDATING
-                      ? t('updating')
-                      : comment.status === CommentStatus.ERROR
-                      ? t('wrong')
-                      : moment(comment.created_at).fromNow()}
+                    {comment.comment}
                   </AppText>
-                </>
-              )}
-            </Obx>
-          </View>
-        </Box>
-      </Box>
-    </Touchable>
+                )}
+              </AppText>
+              <Padding top={3} />
+              <View>
+                {comment.is_image && (
+                  <Fragment>
+                    <AppImage
+                      lightbox
+                      onPress={() =>
+                        comment.status === CommentStatus.ERROR &&
+                        !!onRetry &&
+                        onRetry()
+                      }
+                      containerStyle={styles.image}
+                      source={{
+                        uri: comment.comment,
+                      }}
+                    />
+                    <Padding top={3} />
+                  </Fragment>
+                )}
+                <Obx>
+                  {() => (
+                    <>
+                      <AppText
+                        fontSize={12}
+                        color={
+                          comment.status === CommentStatus.ERROR ||
+                          comment.status === CommentStatus.ERROR_UPDATE
+                            ? Colors.error
+                            : Colors.black50
+                        }
+                      >
+                        {comment.status === CommentStatus.SENDING
+                          ? t('sending')
+                          : comment.status === CommentStatus.UPDATING
+                          ? t('updating')
+                          : comment.status === CommentStatus.ERROR
+                          ? t('wrong')
+                          : comment.status === CommentStatus.ERROR_UPDATE
+                          ? t('update_wrong')
+                          : moment(comment.created_at).fromNow()}
+                      </AppText>
+                    </>
+                  )}
+                </Obx>
+              </View>
+            </Box>
+          </Box>
+        </Touchable>
+      )}
+    </Obx>
   )
 }
 
