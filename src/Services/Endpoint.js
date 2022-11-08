@@ -45,8 +45,8 @@ export default () => {
     getUserInfo: id => `${apiUrl}/users/${id}`,
     //chat
     getConversations: `${apiUrl}/conversations`,
-    getConversationDetail: `${apiUrl}/conversations/{id}`,
+    getMessages: id => `${apiUrl}/conversations/${id}/messages`,
     createConversation: `${apiUrl}/conversations`,
-    deleteConversation: `${apiUrl}/conversations/{id}`,
+    deleteConversation: id => `${apiUrl}/conversations/${id}`,
   }
 }

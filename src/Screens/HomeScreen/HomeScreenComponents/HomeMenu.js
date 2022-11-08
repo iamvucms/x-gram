@@ -1,5 +1,7 @@
 import { BellSvg, MenuSvg, MessageSvg } from '@/Assets/Svg'
 import { Box } from '@/Components'
+import { PageName } from '@/Config'
+import { navigate } from '@/Navigators'
 import { Colors, XStyleSheet } from '@/Theme'
 import { isAndroid } from '@/Utils'
 import React from 'react'
@@ -30,6 +32,7 @@ const HomeMenu = () => {
           <BellSvg color={Colors.k8E8E8E} size={25} />
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={() => navigate(PageName.ConversationsScreen)}
           activeOpacity={0.8}
           style={[styles.headerBtn, { backgroundColor: Colors.white }]}
         >

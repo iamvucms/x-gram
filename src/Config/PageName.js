@@ -25,4 +25,6 @@ export const PageName = {
   StoryScreen: 'StoryScreen',
   PostDetailScreen: 'PostDetailScreen',
   UserPostsScreen: 'UserPostsScreen',
+  ConversationsScreen: 'ConversationsScreen',
+  ConversationDetailScreen: 'ConversationDetailScreen',
 }

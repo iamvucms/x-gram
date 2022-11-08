@@ -20,7 +20,7 @@ const mergeAppTheme = (
 
   const primaryTheme = isDark ? theme.dark : theme.default
   const secondaryTheme = isDark ? theme.default : theme.dark
-  const mergedColors: { [key in ColorKey]: ImageSourcePropType } = {
+  const mergedColors: { [key in ColorKey]: string } = {
     ...secondaryTheme.Colors,
     ...primaryTheme.Colors,
   } as any

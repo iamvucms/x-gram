@@ -26,6 +26,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Circle, Defs, LinearGradient, Stop, Svg } from 'react-native-svg'
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle)
@@ -84,7 +85,7 @@ const OnboardingScreen = () => {
     return <PageDot key={index} scrollX={scrollX} index={index} />
   }
 
-  const backgroundStlye = useAnimatedStyle(() => ({
+  const backgroundStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(
       scrollX.value,
       [0, screenWidth, screenWidth * 2],
@@ -116,9 +117,10 @@ const OnboardingScreen = () => {
   setTimeout(() => {
     navigate(PageName.AuthStack)
   }, 1000)
+  const { top: paddingTop } = useSafeAreaInsets()
   return (
     <Container statusBarProps={{ barStyle: 'light-content' }} disableTop>
-      <Animated.View style={[Layout.fill, backgroundStlye]}>
+      <Animated.View style={[Layout.fill, { paddingTop }, backgroundStyle]}>
         <View style={styles.headerView}>
           <TouchableOpacity
             onPress={() => {

@@ -1,15 +1,9 @@
-/* eslint-disable react-native/no-inline-styles */
-import { ResponsiveHeight } from '@/Theme'
-import React, { memo } from 'react'
-import {
-  StatusBar,
-  StatusBarProps,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native'
+import { useAppTheme } from '@/Hooks'
+import { Layout, XStyleSheet } from '@/Theme'
+import React, { memo, useMemo } from 'react'
+import { StatusBar, StatusBarProps, View, ViewStyle } from 'react-native'
 import Animated, { FadeIn } from 'react-native-reanimated'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Edge, SafeAreaView } from 'react-native-safe-area-context'
 
 interface ContainerProps {
   children: React.ReactNode
@@ -19,73 +13,82 @@ interface ContainerProps {
   statusBarProps?: StatusBarProps
   useFading?: boolean
   containerStyle?: ViewStyle
+  safeAreaStyle?: ViewStyle
   safeAreaColor?: string
-  bottomPadding?: number
 }
 
 const Container = ({
   children,
-  disableTop = true,
+  disableTop = false,
   disableBottom = true,
-  statusBarProps = { translucent: true, barStyle: 'dark-content' },
+  statusBarProps,
   safeAreaColor,
+  safeAreaStyle,
   useFading = false,
   style,
   containerStyle,
-  bottomPadding = 0,
 }: ContainerProps) => {
-  const { bottom, top } = useSafeAreaInsets()
+  const { Colors } = useAppTheme()
+  const safeEdges = useMemo<ReadonlyArray<Edge>>(() => {
+    if (!disableTop && !disableBottom) {
+      return ['top', 'bottom', 'left', 'right']
+    } else if (!disableTop) {
+      return ['top', 'left', 'right']
+    } else if (!disableBottom) {
+      return ['bottom']
+    } else {
+      return ['left', 'right']
+    }
+  }, [disableTop, disableBottom])
   return (
-    <Animated.View
-      entering={useFading ? FadeIn : null}
-      style={[styles.container, containerStyle]}
+    <SafeAreaView
+      edges={safeEdges}
+      style={[
+        Layout.fill,
+        safeAreaStyle,
+        {
+          backgroundColor:
+            safeAreaColor ||
+            containerStyle?.backgroundColor ||
+            style?.backgroundColor,
+        },
+      ]}
     >
-      {!disableTop && (
+      <Animated.View
+        entering={useFading ? FadeIn : null}
+        style={[
+          styles.container,
+          {
+            backgroundColor: Colors.background,
+          },
+          containerStyle,
+        ]}
+      >
+        <StatusBar
+          translucent
+          backgroundColor="transparent"
+          barStyle="dark-content"
+          {...statusBarProps}
+        />
         <View
           style={[
-            styles.bar,
+            styles.container,
             {
-              height: top,
-              backgroundColor:
-                safeAreaColor ||
-                style?.backgroundColor ||
-                containerStyle?.backgroundColor,
+              backgroundColor: Colors.background,
             },
+            style,
           ]}
-        />
-      )}
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="dark-content"
-        {...statusBarProps}
-      />
-      <View style={[styles.container, style]}>{children}</View>
-      {!disableBottom && (
-        <View
-          style={[
-            styles.bar,
-            {
-              height: bottomPadding
-                ? ResponsiveHeight(bottomPadding)
-                : bottom > 0
-                ? bottom
-                : 0,
-              backgroundColor:
-                safeAreaColor ||
-                style?.backgroundColor ||
-                containerStyle?.backgroundColor,
-            },
-          ]}
-        />
-      )}
-    </Animated.View>
+        >
+          {children}
+        </View>
+      </Animated.View>
+    </SafeAreaView>
   )
 }
 
 export default memo(Container)
 
-const styles = StyleSheet.create({
+const styles = XStyleSheet.create({
   container: {
     flex: 1,
   },

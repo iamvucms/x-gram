@@ -88,4 +88,15 @@ export default {
     logout: 'Logout',
     logout_confirm: 'Are you sure you want to logout?',
   },
+  conversations: {
+    conversations: 'Conversations',
+    no_conversations: 'No conversations yet',
+    you_sent_sticker: 'You sent a sticker',
+    you_sent_photo: 'You sent a photo',
+    you_sent_message: 'You: {{message}}',
+    so_sent_sticker: '{{full_name}} sent a sticker',
+    so_sent_photo: '{{full_name}} sent a photo',
+    active_now: 'Active now',
+    inactive: 'Inactive',
+  },
 }

@@ -9,7 +9,6 @@ import React, { memo, useCallback, useEffect, useRef } from 'react'
 import { Pressable, TouchableOpacity, View } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import Animated, {
-  cancelAnimation,
   Easing,
   Extrapolation,
   interpolate,
@@ -66,7 +65,7 @@ const StoryScreen = () => {
     state.setIndex(index)
   }
   return (
-    <Container style={styles.rootView}>
+    <Container style={styles.rootView} disableTop>
       <Obx>
         {() => (
           <Animated.FlatList

@@ -53,3 +53,5 @@ export { default as FingerPrintSvg } from './Auth/FingerPrintSvg'
 export { default as BackSpaceSvg } from './Auth/BackSpaceSvg'
 //Profile
 export { default as GridSvg } from './Profile/GridSvg'
+//Conversations
+export { default as DoubleCheckSvg } from './Conversations/DoubleCheckSvg'

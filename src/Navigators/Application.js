@@ -8,6 +8,8 @@ import BottomTab from './BottomTab'
 import {
   AuthPassCodeScreen,
   CaptureScreen,
+  ConversationDetailScreen,
+  ConversationsScreen,
   ImageEditor,
   InAppUpdateScreen,
   LoginScreen,
@@ -84,6 +86,14 @@ const AuthStack = () => {
       <Stack.Screen
         name={PageName.UserPostsScreen}
         component={UserPostsScreen}
+      />
+      <Stack.Screen
+        name={PageName.ConversationsScreen}
+        component={ConversationsScreen}
+      />
+      <Stack.Screen
+        name={PageName.ConversationDetailScreen}
+        component={ConversationDetailScreen}
       />
     </Stack.Navigator>
   )
