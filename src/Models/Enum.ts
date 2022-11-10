@@ -23,3 +23,14 @@ export enum CommentStatus {
 }
 
 export const PostStatus = CommentStatus
+export enum MessageStatus {
+  SENDING,
+  ERROR,
+  SENT,
+  READ,
+}
+export enum MessageType {
+  Text = 'text',
+  Image = 'image',
+  Sticker = 'sticker',
+}

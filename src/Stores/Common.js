@@ -7,7 +7,7 @@ import {
   updateComment,
 } from '@/Services/Api'
 import { toJS } from 'mobx'
-import { homeStore, profileStore, userStore } from '.'
+import { chatStore, homeStore, profileStore, userStore } from '.'
 
 export const findPostById = postId => {
   return (
@@ -52,6 +52,7 @@ export const initData = () => {
   homeStore.fetchPosts()
   homeStore.fetchStories()
   userStore.fetchUserInfo()
+  chatStore.initSocket()
 }
 //Async Action
 export const sendCommentRequest = async (postId, message, isImage, retryId) => {

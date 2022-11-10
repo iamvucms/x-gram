@@ -68,7 +68,8 @@
     "react-native-spinkit": "^1.5.1",
     "react-native-svg": "^12.4.1",
     "react-native-video": "5.2.1",
-    "react-native-view-shot": "^3.4.0"
+    "react-native-view-shot": "^3.4.0",
+    "socket.io-client": "^4.5.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

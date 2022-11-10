@@ -10,24 +10,51 @@ import {
   Padding,
   Row,
 } from '@/Components'
+import { MessageStatus, MessageType } from '@/Models'
 import { goBack } from '@/Navigators'
 import { chatStore, userStore } from '@/Stores'
-import { Colors, screenHeight, XStyleSheet } from '@/Theme'
+import {
+  Colors,
+  ResponsiveWidth,
+  screenHeight,
+  screenWidth,
+  XStyleSheet,
+} from '@/Theme'
 import { getHitSlop } from '@/Utils'
-import { FlashList } from '@shopify/flash-list'
-import React, { memo, useCallback, useRef } from 'react'
+import { autorun, toJS } from 'mobx'
+import moment from 'moment'
+import React, { memo, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TouchableOpacity, View } from 'react-native'
+import { FlatList, Pressable, TouchableOpacity, View } from 'react-native'
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from 'react-native-reanimated'
 
 const ConversationDetailScreen = () => {
   const { t } = useTranslation()
   const sheetRef = useRef()
   const conversation = chatStore.getConversationById()
+  useEffect(() => {
+    return () => chatStore.resetMessages()
+  }, [])
   const onBackPress = () => {
     goBack()
     chatStore.resetMessages()
   }
-  const renderMessageItem = useCallback(({ item, index }) => {
+  const onSendPress = useCallback((message, messageType, retryId) => {
+    const msg = {
+      message,
+      created_at: new Date().getTime(),
+      type: messageType,
+      sent_by: toJS(userStore.userInfo),
+    }
+    chatStore.sendMessage(conversation.conversation_id, msg, retryId)
+  }, [])
+  const renderMessageItem = useCallback(({ item }) => {
     return <MessageItem message={item} />
   }, [])
   return (
@@ -95,24 +122,59 @@ const ConversationDetailScreen = () => {
       >
         <Obx>
           {() => (
-            <FlashList
+            <FlatList
+              initialNumToRender={10}
+              maxToRenderPerBatch={10}
+              keyboardShouldPersistTaps="handled"
               inverted
               data={chatStore.messages.slice()}
               renderItem={renderMessageItem}
               keyExtractor={item => item.message_id}
-              estimatedItemSize={100}
+              ListFooterComponent={<Padding top={16} />}
+              showsVerticalScrollIndicator={false}
             />
           )}
         </Obx>
-        <MessageInput placeholder={t('message_placeholder')} />
+        <MessageInput
+          onSendPress={onSendPress}
+          placeholder={t('message_placeholder')}
+        />
       </Box>
-      <AppBottomSheet ref={sheetRef} snapPoints={[0.5 * screenHeight]}>
+      <AppBottomSheet
+        backgroundStyle={styles.sheetHeader}
+        ref={sheetRef}
+        snapPoints={[0.3 * screenHeight]}
+      >
+        <Box
+          paddingVertical={16}
+          center
+          borderBottomWidth={0.5}
+          borderBottomColor={Colors.border}
+        >
+          <AppText fontSize={16} fontWeight={700}>
+            {t('conversations.conversation_options')}
+          </AppText>
+        </Box>
         <Box fill padding={16}>
           <TouchableOpacity style={styles.optionBtn}>
             <ReportSvg size={20} />
             <Padding left={14} />
             <AppText fontSize={16} fontWeight={500}>
-              {t('home.report_comment')}
+              {t('conversations.view_profile')}
+            </AppText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.optionBtn}>
+            <ReportSvg size={20} />
+            <Padding left={14} />
+            <AppText fontSize={16} fontWeight={500}>
+              {t('conversations.report_user')}
+            </AppText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.optionBtn}>
+            <ReportSvg size={20} />
+            <Padding left={14} />
+            <AppText fontSize={16} fontWeight={500}>
+              {t('conversations.block_user')}
             </AppText>
           </TouchableOpacity>
         </Box>
@@ -124,11 +186,129 @@ const ConversationDetailScreen = () => {
 export default ConversationDetailScreen
 
 const MessageItem = memo(({ message }) => {
+  const { t } = useTranslation()
+  const infoAnim = useSharedValue(0)
   const isUser = message.sent_by.user_id === userStore.userInfo.user_id
   const justify = isUser ? 'flex-end' : 'flex-start'
-  const isSticker = message.is_sticker
-  const isImage = message.is_image
-  return <Box row justify={justify} height={10}></Box>
+  const isSticker = message.type === MessageType.Sticker
+  const isImage = message.type === MessageType.Image
+  const isText = message.type === MessageType.Text
+  useEffect(() => {
+    const dispose = autorun(() => {
+      if (
+        message.status === MessageStatus.SENDING ||
+        message.status === MessageStatus.ERROR
+      ) {
+        infoAnim.value = withDelay(200, withTiming(1))
+      }
+    })
+    return () => dispose()
+  }, [])
+  const onPress = () => {
+    if (message.status === MessageStatus.ERROR) {
+      chatStore.sendMessage(
+        chatStore.conversationId,
+        {
+          ...message,
+        },
+        message.message_id,
+      )
+    } else {
+      infoAnim.value = withTiming(infoAnim.value === 0 ? 1 : 0)
+    }
+  }
+  const infoStyle = useAnimatedStyle(() => ({
+    height: interpolate(infoAnim.value, [0, 1], [0, 15]),
+    opacity: interpolate(infoAnim.value, [0, 1], [0, 1]),
+    overflow: 'hidden',
+  }))
+
+  return (
+    <Pressable onPress={onPress}>
+      <Box row justify={justify} paddingHorizontal={16} marginBottom={16}>
+        <View>
+          <Animated.View style={[styles.msgTime, infoStyle]}>
+            <AppText fontSize={10} fontWeight={700} color={Colors.black50}>
+              {moment(message.created_at).format('HH:mm')}
+            </AppText>
+          </Animated.View>
+          <Row align="flex-start">
+            {!isUser && (
+              <AppImage
+                source={{
+                  uri: message.sent_by.avatar_url,
+                }}
+                containerStyle={styles.msgUserAvatar}
+              />
+            )}
+            {isSticker && (
+              <AppImage source={21} containerStyle={styles.msgSticker} />
+            )}
+            {isImage && (
+              <AppImage
+                source={{ uri: message.message }}
+                containerStyle={styles.msgImage}
+                lightbox
+              />
+            )}
+            {isText && (
+              <Obx>
+                {() => (
+                  <Box
+                    opacity={
+                      message.status === MessageStatus.SENDING ||
+                      message.status === MessageStatus.ERROR
+                        ? 0.5
+                        : 1
+                    }
+                    marginLeft={16}
+                    padding={10}
+                    radius={16}
+                    maxWidth={0.6 * screenWidth}
+                    minWidth={40}
+                    center
+                    backgroundColor={isUser ? Colors.primary : Colors.gray}
+                  >
+                    <AppText color={Colors.white}>{message.message}</AppText>
+                  </Box>
+                )}
+              </Obx>
+            )}
+          </Row>
+          <Animated.View
+            style={[
+              infoStyle,
+              {
+                marginLeft: isUser ? ResponsiveWidth(24) : ResponsiveWidth(64),
+              },
+            ]}
+          >
+            <Obx>
+              {() => (
+                <AppText
+                  fontSize={10}
+                  fontWeight={700}
+                  color={
+                    message.status === MessageStatus.ERROR
+                      ? Colors.error
+                      : Colors.black50
+                  }
+                >
+                  {message.status === MessageStatus.SENDING
+                    ? t('conversations.sending')
+                    : message.status === MessageStatus.SENT
+                    ? t('conversations.sent')
+                    : message.status === MessageStatus.ERROR
+                    ? t('conversations.error')
+                    : t('conversations.seen')}
+                </AppText>
+              )}
+            </Obx>
+          </Animated.View>
+        </View>
+      </Box>
+    </Pressable>
+  )
 })
 const styles = XStyleSheet.create({
   rootView: {
@@ -141,6 +321,7 @@ const styles = XStyleSheet.create({
     alignItems: 'center',
     borderRadius: 20,
     overflow: 'hidden',
+    backgroundColor: Colors.white,
   },
   backBtn: {
     paddingHorizontal: 16,
@@ -163,7 +344,34 @@ const styles = XStyleSheet.create({
   optionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
     paddingVertical: 12,
+  },
+  msgUserAvatar: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  msgSticker: {
+    height: 100,
+    width: 100,
+    marginLeft: 16,
+  },
+  msgImage: {
+    height: 200,
+    aspectRatio: 3 / 4,
+    borderRadius: 8,
+    overflow: 'hidden',
+    marginLeft: 16,
+  },
+  msgTime: {
+    alignSelf: 'flex-end',
+    marginRight: 8,
+  },
+  sheetHeader: {
+    borderWidth: 0.5,
+    borderColor: Colors.border,
+    borderBottomWidth: 0,
+    marginHorizontal: -0.5,
   },
 })

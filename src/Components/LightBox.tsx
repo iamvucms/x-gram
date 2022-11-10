@@ -1,11 +1,16 @@
 import { CloseSvg } from '@/Assets/Svg'
 import { Colors, Layout, screenHeight, screenWidth, XStyleSheet } from '@/Theme'
 import { getHitSlop } from '@/Utils'
-import { Portal } from '@gorhom/portal'
-import React, { memo, useEffect, useRef } from 'react'
-import { BackHandler, ImageRequireSource, TouchableOpacity } from 'react-native'
+import React, { memo, useEffect } from 'react'
+import {
+  BackHandler,
+  ImageRequireSource,
+  Modal,
+  TouchableOpacity,
+} from 'react-native'
 import { Source } from 'react-native-fast-image'
 import {
+  GestureHandlerRootView,
   PanGestureHandler,
   PinchGestureHandler,
   PinchGestureHandlerGestureEvent,
@@ -13,12 +18,12 @@ import {
 import Animated, {
   FadeInRight,
   runOnJS,
-  SlideInDown,
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
   withTiming,
+  ZoomIn,
 } from 'react-native-reanimated'
 import AppImage from './AppImage'
 interface LightBoxProps {
@@ -31,7 +36,6 @@ const LightBox = ({ visible, source, onRequestClose }: LightBoxProps) => {
   const focalX = useSharedValue(0)
   const focalY = useSharedValue(0)
   const translateY = useSharedValue(0)
-  const panRef = useRef()
   const onClose = () => {
     translateY.value = withTiming(screenHeight, {}, isFinished => {
       if (isFinished) {
@@ -92,33 +96,35 @@ const LightBox = ({ visible, source, onRequestClose }: LightBoxProps) => {
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: 1 - translateY.value / screenHeight,
   }))
-  if (!visible) return null
   return (
-    <Portal name="LIGHT_BOX">
-      <Animated.View style={[styles.backdrop, backdropStyle]} />
+    <Modal visible={visible} animationType="none" transparent>
+      <GestureHandlerRootView style={Layout.fill}>
+        <Animated.View style={[styles.backdrop, backdropStyle]} />
 
-      <PinchGestureHandler onGestureEvent={pinchHandler}>
-        <Animated.View style={styles.container}>
-          <Animated.View entering={FadeInRight} style={styles.closeBtn}>
-            <TouchableOpacity hitSlop={getHitSlop(20)} onPress={onClose}>
-              <CloseSvg size={30} color={Colors.white} />
-            </TouchableOpacity>
-          </Animated.View>
-          <PanGestureHandler maxPointers={1} onGestureEvent={panHandler}>
-            <Animated.View
-              entering={SlideInDown}
-              style={[Layout.fill, imageContainerStyle]}
-            >
-              <AppImage
-                containerStyle={Layout.fill}
-                resizeMode="contain"
-                source={source}
-              />
+        <PinchGestureHandler onGestureEvent={pinchHandler}>
+          <Animated.View style={styles.container}>
+            <Animated.View entering={FadeInRight} style={styles.closeBtn}>
+              <TouchableOpacity hitSlop={getHitSlop(20)} onPress={onClose}>
+                <CloseSvg size={30} color={Colors.white} />
+              </TouchableOpacity>
             </Animated.View>
-          </PanGestureHandler>
-        </Animated.View>
-      </PinchGestureHandler>
-    </Portal>
+            <PanGestureHandler maxPointers={1} onGestureEvent={panHandler}>
+              <Animated.View
+                entering={ZoomIn}
+                style={[Layout.fill, imageContainerStyle]}
+              >
+                <AppImage
+                  blurHashEnabled={false}
+                  containerStyle={Layout.fill}
+                  resizeMode="contain"
+                  source={source}
+                />
+              </Animated.View>
+            </PanGestureHandler>
+          </Animated.View>
+        </PinchGestureHandler>
+      </GestureHandlerRootView>
+    </Modal>
   )
 }
 

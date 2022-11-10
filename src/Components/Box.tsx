@@ -13,6 +13,7 @@ interface BoxProps {
   flex?: number
   align?: 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline'
   backgroundColor?: string
+  opacity?: number
   alignSelf?:
     | 'auto'
     | 'flex-start'
@@ -102,6 +103,7 @@ const Box = forwardRef(
       maxHeight,
       maxWidth,
       width,
+      opacity,
       size,
       radius,
       topLeftRadius,
@@ -139,6 +141,7 @@ const Box = forwardRef(
           center && Layout.center,
           fill && Layout.fill,
           flex && { flex },
+          opacity && { opacity },
           (height || size) && {
             height: size
               ? moderateScale(size)

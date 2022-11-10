@@ -1,5 +1,5 @@
 import { generateRandomIntegerInRange } from '@/Utils'
-import { Gender } from './Enum'
+import { Gender, MessageStatus } from './Enum'
 export const mockUsers = [
   {
     user_id: 'username01',
@@ -555,20 +555,74 @@ export const mockMessages = [
   {
     message_id: '1',
     message: 'Hello',
-    seen: false,
+    status: MessageStatus.READ,
     created_at: new Date().getTime(),
-    is_image: false,
-    is_sticker: false,
+    type: 'text',
     sent_by: mockUsers[0],
   },
   {
     message_id: '2',
     message: 'Hi',
-    seen: true,
+    status: MessageStatus.READ,
     created_at: new Date().getTime(),
-    is_image: false,
-    is_sticker: false,
+    type: 'text',
     sent_by: mockUsers[1],
+  },
+  {
+    message_id: '3',
+    message: 'How are you?',
+    status: MessageStatus.READ,
+    created_at: new Date().getTime(),
+    type: 'text',
+    sent_by: mockUsers[0],
+  },
+  {
+    message_id: '4',
+    message: 'I am fine',
+    status: MessageStatus.READ,
+    created_at: new Date().getTime(),
+    type: 'text',
+    sent_by: mockUsers[1],
+  },
+  {
+    message_id: '5',
+    message: 'What about you?',
+    status: MessageStatus.READ,
+    created_at: new Date().getTime(),
+    type: 'text',
+    sent_by: mockUsers[0],
+  },
+  {
+    message_id: '6',
+    message: 'I am also fine',
+    status: MessageStatus.READ,
+    created_at: new Date().getTime(),
+    type: 'text',
+    sent_by: mockUsers[1],
+  },
+  {
+    message_id: '7',
+    message: 'https://picsum.photos/2000/3000',
+    status: MessageStatus.READ,
+    created_at: new Date().getTime(),
+    type: 'image',
+    sent_by: mockUsers[0],
+  },
+  {
+    message_id: '8',
+    message: 2,
+    status: MessageStatus.READ,
+    created_at: new Date().getTime(),
+    type: 'sticker',
+    sent_by: mockUsers[1],
+  },
+  {
+    message_id: '9',
+    message: 'https://picsum.photos/2001/3000',
+    status: MessageStatus.READ,
+    created_at: new Date().getTime(),
+    type: 'image',
+    sent_by: mockUsers[0],
   },
 ]
 export const mockConversations = [

@@ -20,7 +20,7 @@ import {
   PostItem,
   ShareBottomSheet,
 } from '@/Components'
-import { ShareType } from '@/Models'
+import { MessageType, ShareType } from '@/Models'
 import {
   findPostById,
   homeStore,
@@ -72,7 +72,8 @@ const PostDetailScreen = ({ route }) => {
     return () => dispose()
   }, [])
 
-  const onSendPress = useCallback((message, isImage, retryId) => {
+  const onSendPress = useCallback((message, messageType, retryId) => {
+    const isImage = MessageType.Image === messageType
     sendCommentRequest(postId, message, isImage, retryId)
     Keyboard.dismiss()
   }, [])
@@ -174,7 +175,7 @@ const PostDetailScreen = ({ route }) => {
       </Obx>
       {isIOS && <KeyboardSpacer />}
       <AppBottomSheet
-        backgroundStyle={{ backgroundColor: Colors.transparent }}
+        backgroundStyle={styles.sheetHeader}
         ref={optionSheetRef}
         snapPoints={[screenHeight * 0.5]}
       >
@@ -341,5 +342,11 @@ const styles = XStyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
+  },
+  sheetHeader: {
+    borderWidth: 0.5,
+    borderColor: Colors.border,
+    borderBottomWidth: 0,
+    marginHorizontal: -0.5,
   },
 })

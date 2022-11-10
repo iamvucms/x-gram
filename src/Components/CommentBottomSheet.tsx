@@ -1,4 +1,5 @@
 import { CommentSvg, HeartSvg } from '@/Assets/Svg'
+import { MessageType } from '@/Models'
 import { isReactedPost, reactRequest, sendCommentRequest } from '@/Stores'
 import { Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
 import { formatAmount, getHitSlop, isIOS } from '@/Utils'
@@ -35,7 +36,8 @@ const CommentBottomSheet = forwardRef(
       return () => clearTimeout(to)
     }, [])
 
-    const onSendPress = useCallback(async (message, isImage, retryId) => {
+    const onSendPress = useCallback(async (message, messageType, retryId) => {
+      const isImage = messageType === MessageType.Image
       sendCommentRequest(post.post_id, message, isImage, retryId)
       Keyboard.dismiss()
     }, [])

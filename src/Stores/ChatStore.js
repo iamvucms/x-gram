@@ -1,4 +1,5 @@
-import { mockConversations, mockMessages } from '@/Models'
+import { Config } from '@/Config'
+import { MessageStatus, mockConversations, mockMessages } from '@/Models'
 import {
   deleteConversation,
   getConversations,
@@ -7,6 +8,7 @@ import {
 import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
+import { io } from 'socket.io-client'
 export default class ChatStore {
   conversations = []
   messages = []
@@ -18,9 +20,48 @@ export default class ChatStore {
   conversationPage = 1
   messagePage = 1
   conversationId = null
+  socket = null
   constructor() {
     makeAutoObservable(this)
-    makePersistExcept(this, 'ChatStore', [])
+    makePersistExcept(this, 'ChatStore', [
+      'socket',
+      'onlineUsers',
+      'loadingConversations',
+      'loadingMoreConversations',
+      'loadingMessages',
+      'loadingMoreMessages',
+      'conversationPage',
+      'messagePage',
+    ])
+  }
+  initSocket() {
+    return new Promise(resolve => {
+      this.socket = io(Config.SOCKET_URL, {
+        autoConnect: true,
+        timeout: 10000,
+      })
+      this.socket.on('connect', () => {
+        console.log('connected')
+        resolve()
+      })
+      this.socket.on('disconnect', () => {
+        console.log('disconnected')
+      })
+      this.socket.on('onlineUsers', onlineUsers => {
+        this.setOnlineUsers(onlineUsers)
+      })
+      this.socket.on('newMessage', ({ message, conversation_id }) => {
+        this.addMessage(conversation_id, message)
+        this.updateLastMessage(message.conversation_id, message)
+      })
+      this.socket.on(
+        'messageStatus',
+        ({ conversation_id, message_id, status }) => {
+          this.updateMessage(message_id, { status })
+          this.updateLastMessage(conversation_id, { message_id, status })
+        },
+      )
+    })
   }
   *fetchConversations(loadMore = false) {
     this[loadMore ? 'loadingMoreConversations' : 'loadingConversations'] = true
@@ -60,7 +101,54 @@ export default class ChatStore {
     }
     this[loadMore ? 'loadingMoreMessages' : 'loadingMessages'] = false
   }
-  *sendMessage(conversationId, message) {}
+  *sendMessage(conversationId, message, retryId) {
+    if (!this.socket) {
+      // yield this.initSocket()
+    }
+    const msgId = retryId || Math.random()
+    try {
+      if (!retryId) {
+        this.addMessage(
+          conversationId,
+          {
+            ...message,
+            message_id: msgId,
+            status: MessageStatus.SENDING,
+          },
+          msgId,
+        )
+      } else {
+        this.updateMessage(msgId, {
+          status: MessageStatus.SENDING,
+        })
+      }
+      setTimeout(() => {
+        this.updateMessage(msgId, { status: MessageStatus.ERROR })
+      }, 1000)
+      this.socket.emit(
+        'sendMessage',
+        {
+          conversation_id: conversationId,
+          message,
+        },
+        response => {
+          if (response?.status === 'OK') {
+            this.updateMessage(msgId, {
+              ...response?.data,
+              status: MessageStatus.SENT,
+            })
+          } else {
+            this.updateMessage(msgId, {
+              status: MessageStatus.ERROR,
+            })
+          }
+        },
+      )
+    } catch (e) {
+      this.updateMessage(msgId, { status: MessageStatus.ERROR })
+      console.log({ sendMessage: e })
+    }
+  }
   *deleleConversation(conversationId) {
     try {
       this.conversations = this.conversations.filter(
@@ -85,11 +173,24 @@ export default class ChatStore {
     if (this.conversationId === conversationId) {
       this.messages = [message, ...this.messages]
     }
+    this.updateLastMessage(conversationId, message)
   }
   updateLastMessage(conversationId, message) {
     const conversation = this.getConversationById(conversationId)
-    if (conversation) {
-      conversation.last_message = message
+    if (
+      conversation &&
+      conversation.last_message.message_id === message.message_id
+    ) {
+      conversation.last_message = { ...conversation.last_message, ...message }
+    }
+  }
+  updateMessage(messageId, message) {
+    const index = this.messages.findIndex(item => item.message_id === messageId)
+    if (index !== -1) {
+      this.messages[index] = {
+        ...this.messages[index],
+        ...message,
+      }
     }
   }
   setOnlineUsers(onlineUsers) {
@@ -102,6 +203,7 @@ export default class ChatStore {
     return !!this.onlineUsers[userId]
   }
   resetMessages() {
+    this.conversationId = null
     this.messages = []
     this.messagePage = 1
   }

@@ -1,4 +1,5 @@
 import { PhotoSvg, SendSvg } from '@/Assets/Svg'
+import { MessageType } from '@/Models'
 import { AppFonts, Colors, XStyleSheet } from '@/Theme'
 import { getHitSlop, isAndroid } from '@/Utils'
 import { useLocalObservable } from 'mobx-react-lite'
@@ -11,7 +12,7 @@ import Box from './Box'
 interface MessageInputProps extends TextInputProps {
   onSendPress: (
     message: object | string,
-    isImage?: boolean,
+    messageType?: MessageType,
     retryId?: string,
   ) => void
   edittingMessage?: string
@@ -41,12 +42,12 @@ const MessageInput = forwardRef(
       if (response?.assets?.[0]) {
         state.setMessage('')
         const url = `data:${response.assets[0].type};base64,${response.assets[0].base64}`
-        onSendPress && onSendPress(url, true)
+        onSendPress && onSendPress(url, MessageType.Image)
       }
     }, [])
     const onSendMessage = useCallback(() => {
       if (state.isCommentEmpty) return
-      onSendPress && onSendPress(state.message, false)
+      onSendPress && onSendPress(state.message, MessageType.Text)
       state.setMessage('')
     }, [onSendPress])
     return (
