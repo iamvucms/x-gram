@@ -10,7 +10,6 @@ import {
   TrashBinSvg,
 } from '@/Assets/Svg'
 import {
-  AppBottomSheet,
   AppButton,
   AppGradientText,
   AppText,
@@ -21,14 +20,13 @@ import {
   Obx,
   Position,
   Row,
+  StickerPickerSheet,
 } from '@/Components'
-import { useAppTheme } from '@/Hooks'
 import {
   CreateType,
   DrawColors,
   DrawGradientColors,
   DrawStrokeColors,
-  getStickerPacks,
   TextAlignType,
   TextType,
 } from '@/Models'
@@ -42,10 +40,8 @@ import {
   XStyleSheet,
 } from '@/Theme'
 import { getHitSlop, isIOS } from '@/Utils'
-import { BottomSheetFlatList } from '@gorhom/bottom-sheet'
-import { BlurView } from '@react-native-community/blur'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { Fragment, memo, useCallback, useMemo, useRef } from 'react'
+import React, { Fragment, memo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Image, ImageBackground, TouchableOpacity, View } from 'react-native'
 import {
@@ -75,22 +71,14 @@ const ImageEditor = ({ route }) => {
   const viewShotRefs = useRef([]).current
   const sheetRef = useRef()
   const listRef = useRef()
-  const { Images } = useAppTheme()
   const { top } = useSafeAreaInsets()
   const trashY = useSharedValue(0)
   const trashAnim = useSharedValue(0)
-  const stickerPacks = useMemo(
-    () =>
-      getStickerPacks({
-        imageSource: Images,
-      }),
-    [Images],
-  )
+
   const state = useLocalObservable(() => ({
     index: 0,
     backgroundBlurs: medias.map(() => 10),
     drawables: medias.map(() => false),
-    packId: 1,
     stickers: medias.map(() => []),
     editText: false,
     texts: medias.map(() => []),
@@ -107,15 +95,11 @@ const ImageEditor = ({ route }) => {
         stickers.splice(stickerIndex, 1)
       }
     },
-    setPackId: value => (state.packId = value),
     setEditText: value => (state.editText = value),
     addText: text =>
       (state.texts[state.index] = [...state.texts[state.index], text]),
     removeText: index => state.texts[state.index].splice(index, 1),
     setProcessing: value => (state.processing = value),
-    get currentPackStickers() {
-      return stickerPacks.find(item => item.id === this.packId).stickers
-    },
     get toolBarVisible() {
       return state.drawables.every(item => !item) && !state.editText
     },
@@ -201,21 +185,7 @@ const ImageEditor = ({ route }) => {
       </ViewShot>
     )
   }, [])
-  const renderStickerItem = useCallback(({ item, index }) => {
-    const onPress = () => {
-      state.addSticker({ src: item, zIndex: state.lastZIndex + 1 })
-      sheetRef.current?.close()
-    }
-    return (
-      <TouchableOpacity
-        key={`sticker-${index}`}
-        onPress={onPress}
-        style={styles.stickerBtn}
-      >
-        <Image style={styles.stickerImg} source={item} />
-      </TouchableOpacity>
-    )
-  }, [])
+
   const onNextPress = useCallback(async () => {
     state.setProcessing(true)
     try {
@@ -317,20 +287,16 @@ const ImageEditor = ({ route }) => {
           )
         }
       </Obx>
-      <AppBottomSheet
-        backgroundStyle={{ backgroundColor: Colors.transparent }}
+      <StickerPickerSheet
         ref={sheetRef}
-        snapPoints={[screenHeight * 0.55]}
-      >
-        <BlurView style={Layout.fill}>
-          <BottomSheetFlatList
-            numColumns={4}
-            data={state.currentPackStickers.slice()}
-            renderItem={renderStickerItem}
-            keyExtractor={item => item}
-          />
-        </BlurView>
-      </AppBottomSheet>
+        onSelectSticker={sticker => {
+          state.addSticker({
+            src: sticker,
+            zIndex: state.lastZIndex + 1,
+          })
+          sheetRef.current?.close?.()
+        }}
+      />
       <Animated.View style={[styles.trashBar, trashBarStyle]}>
         <Animated.View style={[styles.trashBarBg, trashBgStyle]} />
         <TrashBinSvg color={Colors.white} />
@@ -724,7 +690,7 @@ const Sticker = memo(({ sticker, trashY, trashAnim }) => {
     },
     onEnd: () => {
       trashY.value = withTiming(0)
-      if (trashAnim.value === 1) {
+      if (translateY.value >= activeStickerTrashY) {
         zIndex.value = -99
         trashAnim.value = withTiming(0)
       }

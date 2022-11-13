@@ -28,6 +28,9 @@ export { default as AlignRightSvg } from './Common/AlignRightSvg'
 export { default as AlignCenterSvg } from './Common/AlignCenterSvg'
 export { default as UploadSvg } from './Common/UploadSvg'
 export { default as DotsSvg } from './Common/DotsSvg'
+export { default as ProfileSvg } from './Common/ProfileSvg'
+export { default as BlockSvg } from './Common/BlockSvg'
+export { default as ErrorSvg } from './Common/ErrorSvg'
 //Onboarding
 export { default as BallSvg } from './Onboarding/BallSvg'
 //Home
@@ -55,3 +58,4 @@ export { default as BackSpaceSvg } from './Auth/BackSpaceSvg'
 export { default as GridSvg } from './Profile/GridSvg'
 //Conversations
 export { default as DoubleCheckSvg } from './Conversations/DoubleCheckSvg'
+export { default as InforSvg } from './Conversations/InforSvg'

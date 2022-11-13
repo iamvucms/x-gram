@@ -20,17 +20,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
+import FastImage from 'react-native-fast-image'
+import Animated, { SlideInDown } from 'react-native-reanimated'
 import { AppButtonProps } from './AppButton'
 import AppText from './AppText'
 import Padding from './Padding'
 interface AppDialogProps {
   title?: string
   message?: string
-  dialogIcon?: ImageSourcePropType
+  dialogIcon?: ImageSourcePropType | React.FC
   titleColor?: string
   messageColor?: string
   messageStyle?: TextStyle
   customMessage?: React.ReactNode
+  showCancelButton?: boolean
   buttonText?: string
   buttonProps?: AppButtonProps
   buttonCustom?: React.ReactNode
@@ -58,6 +61,7 @@ const AppDialog = ({
   hideCloseButton = false,
   messageColor,
   backdropForClosing,
+  showCancelButton = false,
 }: AppDialogProps) => {
   const { t } = useTranslation()
 
@@ -84,59 +88,73 @@ const AppDialog = ({
         >
           <BlurView blurType="dark" style={Layout.fill} />
         </Pressable>
-        <View style={styles.container}>
+        <Animated.View entering={SlideInDown} style={styles.container}>
           {!hideCloseButton && (
             <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <CloseSvg />
+              <CloseSvg size={30} />
             </TouchableOpacity>
           )}
-          <Padding top={ResponsiveHeight(50)} />
-          {!!title && (
-            <AppText
+          {typeof dialogIcon === 'number' ? (
+            <FastImage
+              source={dialogIcon}
               style={[
-                styles.titleTxt,
+                styles.dialogIcon,
                 {
-                  color: titleColor,
-                  marginTop: dialogIcon
-                    ? ResponsiveHeight(20)
-                    : ResponsiveHeight(-30),
+                  width: ResponsiveHeight(80),
+                  height: ResponsiveHeight(80),
                 },
               ]}
+            />
+          ) : (
+            typeof dialogIcon === 'function' && (
+              <View style={styles.dialogIcon}>{dialogIcon({})}</View>
+            )
+          )}
+          {!!title && (
+            <AppText
+              fontWeight={700}
+              color={titleColor || Colors.primary}
+              style={styles.titleTxt}
             >
-              {t(title).toUpperCase()}
+              {t(title as any)}
             </AppText>
           )}
           {!!message && (
             <AppText
-              style={[
-                styles.messageTxt,
-                messageStyle,
-                messageColor && { color: messageColor },
-              ]}
+              color={messageColor || Colors.placeholder}
+              style={[styles.messageTxt, messageStyle]}
             >
-              {t(message)}
+              {t(message as any)}
             </AppText>
           )}
           {!!customMessage && customMessage}
-          <Padding vertical={ResponsiveHeight(10)} />
           {footer}
           {!!buttonText && (
             <View style={styles.footerContainer}>
+              {showCancelButton && (
+                <>
+                  <AppButton
+                    onPress={onClose}
+                    style={styles.mainBtn}
+                    textStyle={styles.mainBtnTxt}
+                    backgroundColor={Colors.black50}
+                    text={t('cancel')}
+                  />
+                  <Padding left={12} />
+                </>
+              )}
               <AppButton
                 {...buttonProps}
                 onPress={onPress}
                 style={styles.mainBtn}
                 textStyle={styles.mainBtnTxt}
                 backgroundColor={Colors.primary}
-                text={t(buttonText).toUpperCase()}
+                text={t(buttonText as any)}
               />
             </View>
           )}
           {!!buttonCustom && buttonCustom}
-          {!!dialogIcon && (
-            <Image source={dialogIcon} style={styles.dialogIcon} />
-          )}
-        </View>
+        </Animated.View>
       </View>
     </Modal>
   )
@@ -144,16 +162,9 @@ const AppDialog = ({
 
 const styles = XStyleSheet.create({
   dialogIcon: {
-    width: 98,
-    height: 120,
-    position: 'absolute',
-    top: -60,
     alignSelf: 'center',
     resizeMode: 'contain',
-  },
-  closeIcon: {
-    width: 32,
-    height: 32,
+    marginTop: 16,
   },
   rootContainer: {
     flex: 1,
@@ -167,13 +178,15 @@ const styles = XStyleSheet.create({
     borderRadius: 16,
   },
   footerContainer: {
-    justifyContent: 'flex-end',
+    flexDirection: 'row',
     backgroundColor: Colors.k1D1E22,
-    padding: 20,
+    padding: 16,
     borderBottomEndRadius: 16,
     borderBottomStartRadius: 16,
   },
-  mainBtn: {},
+  mainBtn: {
+    flex: 1,
+  },
   mainBtnTxt: {
     color: Colors.white,
     fontSize: 16,
@@ -181,10 +194,11 @@ const styles = XStyleSheet.create({
   titleTxt: {
     fontSize: 19,
     textAlign: 'center',
+    marginTop: 12,
   },
   messageTxt: {
     fontSize: 13,
-    marginTop: 20,
+    marginTop: 8,
     marginHorizontal: 10,
     textAlign: 'center',
   },

@@ -1,4 +1,12 @@
-import { ChevronRightSvg, DotsSvg, ReportSvg } from '@/Assets/Svg'
+import {
+  ChevronRightSvg,
+  CloseSvg,
+  CopySvg,
+  DotsSvg,
+  EyeOffSvg,
+  InforSvg,
+  ReportSvg,
+} from '@/Assets/Svg'
 import {
   AppBottomSheet,
   AppImage,
@@ -10,8 +18,9 @@ import {
   Padding,
   Row,
 } from '@/Components'
+import { PageName } from '@/Config'
 import { MessageStatus, MessageType } from '@/Models'
-import { goBack } from '@/Navigators'
+import { goBack, navigate } from '@/Navigators'
 import { chatStore, userStore } from '@/Stores'
 import {
   Colors,
@@ -21,11 +30,14 @@ import {
   XStyleSheet,
 } from '@/Theme'
 import { getHitSlop } from '@/Utils'
+import Clipboard from '@react-native-clipboard/clipboard'
 import { autorun, toJS } from 'mobx'
+import { useLocalObservable } from 'mobx-react-lite'
 import moment from 'moment'
 import React, { memo, useCallback, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FlatList, Pressable, TouchableOpacity, View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -36,10 +48,14 @@ import Animated, {
 
 const ConversationDetailScreen = () => {
   const { t } = useTranslation()
-  const sheetRef = useRef()
+  const optionSheetRef = useRef()
   const conversation = chatStore.getConversationById()
+  const state = useLocalObservable(() => ({
+    selectedMessage: null,
+    setSelectedMessage: message => (state.selectedMessage = message),
+  }))
   useEffect(() => {
-    return () => chatStore.resetMessages()
+    // return () => chatStore.resetMessages()
   }, [])
   const onBackPress = () => {
     goBack()
@@ -55,12 +71,16 @@ const ConversationDetailScreen = () => {
     chatStore.sendMessage(conversation.conversation_id, msg, retryId)
   }, [])
   const renderMessageItem = useCallback(({ item }) => {
-    return <MessageItem message={item} />
+    const onOpenOption = () => {
+      optionSheetRef.current?.snapTo(0)
+      state.setSelectedMessage(item)
+    }
+    return <MessageItem onOpenOption={onOpenOption} message={item} />
   }, [])
   return (
     <Container style={styles.rootView}>
       <Box
-        height={100}
+        height={80}
         row
         align="center"
         justify="space-between"
@@ -82,7 +102,7 @@ const ConversationDetailScreen = () => {
                     styles.statusPoint,
                     {
                       backgroundColor: chatStore.getIsOnline(
-                        conversation.user.user_id,
+                        conversation?.user?.user_id,
                       )
                         ? Colors.k54B435
                         : Colors.gray,
@@ -99,7 +119,7 @@ const ConversationDetailScreen = () => {
             <AppText fontSize={12} color={Colors.white50}>
               <Obx>
                 {() =>
-                  chatStore.getIsOnline(conversation.user.user_id)
+                  chatStore.getIsOnline(conversation?.user?.user_id)
                     ? t('conversations.active_now')
                     : t('conversations.inactive')
                 }
@@ -108,10 +128,10 @@ const ConversationDetailScreen = () => {
           </Padding>
         </Row>
         <TouchableOpacity
-          onPress={() => sheetRef.current?.snapTo?.(0)}
+          onPress={() => navigate(PageName.ConverstionInforScreen)}
           hitSlop={getHitSlop(16)}
         >
-          <DotsSvg color={Colors.white} />
+          <InforSvg color={Colors.white} />
         </TouchableOpacity>
       </Box>
       <Box
@@ -136,14 +156,15 @@ const ConversationDetailScreen = () => {
           )}
         </Obx>
         <MessageInput
+          allowStickers
           onSendPress={onSendPress}
           placeholder={t('message_placeholder')}
         />
       </Box>
       <AppBottomSheet
         backgroundStyle={styles.sheetHeader}
-        ref={sheetRef}
-        snapPoints={[0.3 * screenHeight]}
+        ref={optionSheetRef}
+        snapPoints={[0.35 * screenHeight]}
       >
         <Box
           paddingVertical={16}
@@ -152,31 +173,87 @@ const ConversationDetailScreen = () => {
           borderBottomColor={Colors.border}
         >
           <AppText fontSize={16} fontWeight={700}>
-            {t('conversations.conversation_options')}
+            {t('conversations.message_actions')}
           </AppText>
         </Box>
         <Box fill padding={16}>
-          <TouchableOpacity style={styles.optionBtn}>
-            <ReportSvg size={20} />
+          <Obx>
+            {() =>
+              state.selectedMessage?.status === MessageStatus.ERROR && (
+                <TouchableOpacity style={styles.optionBtn}>
+                  <CloseSvg size={20} />
+                  <Padding left={14} />
+                  <AppText fontSize={16} fontWeight={500}>
+                    {t('conversations.cancel_message')}
+                  </AppText>
+                </TouchableOpacity>
+              )
+            }
+          </Obx>
+          <Obx>
+            {() =>
+              state.selectedMessage?.type === MessageType.Text && (
+                <TouchableOpacity
+                  onPress={() => {
+                    Clipboard.setString(state.selectedMessage.message)
+                    optionSheetRef.current?.close?.()
+                  }}
+                  style={styles.optionBtn}
+                >
+                  <CopySvg size={20} />
+                  <Padding left={14} />
+                  <AppText fontSize={16} fontWeight={500}>
+                    {t('conversations.copy_message')}
+                  </AppText>
+                </TouchableOpacity>
+              )
+            }
+          </Obx>
+          <TouchableOpacity
+            onPress={() => {
+              if (
+                userStore.isHiddenMessage(state.selectedMessage?.message_id)
+              ) {
+                userStore.removeHiddenMessage(state.selectedMessage?.message_id)
+              } else {
+                userStore.addHiddenMessage(state.selectedMessage?.message_id)
+              }
+              optionSheetRef.current?.close?.()
+            }}
+            style={styles.optionBtn}
+          >
+            <EyeOffSvg size={20} />
             <Padding left={14} />
             <AppText fontSize={16} fontWeight={500}>
-              {t('conversations.view_profile')}
+              <Obx>
+                {() =>
+                  userStore.isHiddenMessage(state.selectedMessage?.message_id)
+                    ? t('conversations.unhide_message')
+                    : t('conversations.hide_message')
+                }
+              </Obx>
             </AppText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.optionBtn}>
-            <ReportSvg size={20} />
-            <Padding left={14} />
-            <AppText fontSize={16} fontWeight={500}>
-              {t('conversations.report_user')}
-            </AppText>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.optionBtn}>
-            <ReportSvg size={20} />
-            <Padding left={14} />
-            <AppText fontSize={16} fontWeight={500}>
-              {t('conversations.block_user')}
-            </AppText>
-          </TouchableOpacity>
+          <Obx>
+            {() =>
+              state.selectedMessage?.sent_by?.user_id !==
+                userStore.userInfo?.user_id && (
+                <TouchableOpacity
+                  onPress={() => {
+                    //TODO send report
+                    optionSheetRef.current?.close?.()
+                  }}
+                  style={styles.optionBtn}
+                >
+                  <ReportSvg size={20} />
+                  <Padding left={14} />
+                  <AppText fontSize={16} fontWeight={500}>
+                    {t('conversations.report_message')}
+                  </AppText>
+                </TouchableOpacity>
+              )
+            }
+          </Obx>
         </Box>
       </AppBottomSheet>
     </Container>
@@ -185,7 +262,7 @@ const ConversationDetailScreen = () => {
 
 export default ConversationDetailScreen
 
-const MessageItem = memo(({ message }) => {
+const MessageItem = memo(({ message, onOpenOption }) => {
   const { t } = useTranslation()
   const infoAnim = useSharedValue(0)
   const isUser = message.sent_by.user_id === userStore.userInfo.user_id
@@ -213,7 +290,7 @@ const MessageItem = memo(({ message }) => {
         },
         message.message_id,
       )
-    } else {
+    } else if (message.status !== MessageStatus.SENDING) {
       infoAnim.value = withTiming(infoAnim.value === 0 ? 1 : 0)
     }
   }
@@ -224,89 +301,106 @@ const MessageItem = memo(({ message }) => {
   }))
 
   return (
-    <Pressable onPress={onPress}>
-      <Box row justify={justify} paddingHorizontal={16} marginBottom={16}>
-        <View>
-          <Animated.View style={[styles.msgTime, infoStyle]}>
-            <AppText fontSize={10} fontWeight={700} color={Colors.black50}>
-              {moment(message.created_at).format('HH:mm')}
-            </AppText>
-          </Animated.View>
-          <Row align="flex-start">
-            {!isUser && (
-              <AppImage
-                source={{
-                  uri: message.sent_by.avatar_url,
-                }}
-                containerStyle={styles.msgUserAvatar}
-              />
-            )}
-            {isSticker && (
-              <AppImage source={21} containerStyle={styles.msgSticker} />
-            )}
-            {isImage && (
-              <AppImage
-                source={{ uri: message.message }}
-                containerStyle={styles.msgImage}
-                lightbox
-              />
-            )}
-            {isText && (
-              <Obx>
-                {() => (
-                  <Box
-                    opacity={
-                      message.status === MessageStatus.SENDING ||
-                      message.status === MessageStatus.ERROR
-                        ? 0.5
-                        : 1
-                    }
-                    marginLeft={16}
-                    padding={10}
-                    radius={16}
-                    maxWidth={0.6 * screenWidth}
-                    minWidth={40}
-                    center
-                    backgroundColor={isUser ? Colors.primary : Colors.gray}
-                  >
-                    <AppText color={Colors.white}>{message.message}</AppText>
-                  </Box>
-                )}
-              </Obx>
-            )}
-          </Row>
-          <Animated.View
-            style={[
-              infoStyle,
-              {
-                marginLeft: isUser ? ResponsiveWidth(24) : ResponsiveWidth(64),
-              },
-            ]}
+    <Pressable onLongPress={onOpenOption} onPress={onPress}>
+      <Obx>
+        {() => (
+          <Box
+            opacity={userStore.isHiddenMessage(message.message_id) ? 0.5 : 1}
+            row
+            justify={justify}
+            paddingHorizontal={16}
+            marginBottom={16}
           >
-            <Obx>
-              {() => (
-                <AppText
-                  fontSize={10}
-                  fontWeight={700}
-                  color={
-                    message.status === MessageStatus.ERROR
-                      ? Colors.error
-                      : Colors.black50
-                  }
-                >
-                  {message.status === MessageStatus.SENDING
-                    ? t('conversations.sending')
-                    : message.status === MessageStatus.SENT
-                    ? t('conversations.sent')
-                    : message.status === MessageStatus.ERROR
-                    ? t('conversations.error')
-                    : t('conversations.seen')}
+            <View>
+              <Animated.View style={[styles.msgTime, infoStyle]}>
+                <AppText fontSize={10} fontWeight={700} color={Colors.black50}>
+                  {moment(message.created_at).format('HH:mm')}
                 </AppText>
-              )}
-            </Obx>
-          </Animated.View>
-        </View>
-      </Box>
+              </Animated.View>
+              <Row align="flex-start">
+                {!isUser && (
+                  <AppImage
+                    source={{
+                      uri: message.sent_by.avatar_url,
+                    }}
+                    containerStyle={styles.msgUserAvatar}
+                  />
+                )}
+                {isSticker && (
+                  <FastImage
+                    source={parseInt(message.message, 10)}
+                    style={styles.msgSticker}
+                  />
+                )}
+                {isImage && (
+                  <AppImage
+                    source={{ uri: message.message }}
+                    containerStyle={styles.msgImage}
+                    lightbox
+                  />
+                )}
+                {isText && (
+                  <Obx>
+                    {() => (
+                      <Box
+                        opacity={
+                          message.status === MessageStatus.SENDING ||
+                          message.status === MessageStatus.ERROR
+                            ? 0.5
+                            : 1
+                        }
+                        marginLeft={16}
+                        padding={10}
+                        radius={16}
+                        maxWidth={0.6 * screenWidth}
+                        minWidth={40}
+                        center
+                        backgroundColor={isUser ? Colors.primary : Colors.gray}
+                      >
+                        <AppText color={Colors.white}>
+                          {message.message}
+                        </AppText>
+                      </Box>
+                    )}
+                  </Obx>
+                )}
+              </Row>
+              <Animated.View
+                style={[
+                  infoStyle,
+                  {
+                    marginLeft: isUser
+                      ? ResponsiveWidth(24)
+                      : ResponsiveWidth(64),
+                  },
+                ]}
+              >
+                <Obx>
+                  {() => (
+                    <AppText
+                      fontSize={10}
+                      fontWeight={700}
+                      color={
+                        message.status === MessageStatus.ERROR
+                          ? Colors.error
+                          : Colors.black50
+                      }
+                    >
+                      {message.status === MessageStatus.SENDING
+                        ? t('conversations.sending')
+                        : message.status === MessageStatus.SENT
+                        ? t('conversations.sent')
+                        : message.status === MessageStatus.ERROR
+                        ? t('conversations.error')
+                        : t('conversations.seen')}
+                    </AppText>
+                  )}
+                </Obx>
+              </Animated.View>
+            </View>
+          </Box>
+        )}
+      </Obx>
     </Pressable>
   )
 })

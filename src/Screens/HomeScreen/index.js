@@ -12,7 +12,7 @@ import { navigate } from '@/Navigators'
 import { homeStore, initData } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
@@ -22,14 +22,14 @@ import { HomeMenu, StoryBar } from './HomeScreenComponents'
 const SheetType = {
   COMMENT: 'COMMENT',
   SHARE: 'SHARE',
+  NONE: 'NONE',
 }
 
 const HomeScreen = () => {
-  const commentSheetRef = useRef()
   const scrollY = useSharedValue(0)
   const state = useLocalObservable(() => ({
     selectedPost: null,
-    sheetType: null,
+    sheetType: SheetType.NONE,
     setType(type) {
       this.sheetType = type
     },
@@ -76,7 +76,6 @@ const HomeScreen = () => {
   return (
     <Container
       safeAreaColor={Colors.k222222}
-      disableTop={false}
       style={styles.rootView}
       statusBarProps={{ barStyle: 'light-content' }}
     >
@@ -100,8 +99,7 @@ const HomeScreen = () => {
         {() =>
           state.sheetType === SheetType.COMMENT && (
             <CommentBottomSheet
-              onClose={() => state.setType(null)}
-              ref={commentSheetRef}
+              onClose={() => state.setType(SheetType.NONE)}
               post={state?.selectedPost}
             />
           )
@@ -112,7 +110,7 @@ const HomeScreen = () => {
           state.sheetType === SheetType.SHARE && (
             <ShareBottomSheet
               type={ShareType.Post}
-              onClose={() => state.setType(null)}
+              onClose={() => state.setType(SheetType.NONE)}
               data={state?.selectedPost}
             />
           )

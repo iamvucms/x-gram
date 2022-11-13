@@ -1,15 +1,25 @@
 import { mockUsers } from '@/Models'
-import { getUserInfo, getUserPosts } from '@/Services/Api'
+import {
+  blockUser,
+  getBlockedUsers,
+  getUserInfo,
+  getUserPosts,
+  unblockUser,
+} from '@/Services/Api'
 import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable, toJS } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
+import { diaLogStore } from '.'
 export default class UserStore {
   isLogged = false
   userInfo = {}
   passcode = '123456'
   passcodeEnabled = true
   bookmarkPosts = []
+  blockedUsers = []
   hiddenCommentIds = {}
+  hiddenMessageIds = {}
+  mutedMessageNotificationIds = {}
   posts = []
   postPage = 1
   loadingPosts = false
@@ -57,6 +67,26 @@ export default class UserStore {
   isHiddenComment(commentId) {
     return !!this.hiddenCommentIds[commentId]
   }
+  addHiddenMessage(messageId) {
+    this.hiddenMessageIds[messageId] = true
+  }
+  removeHiddenMessage(messageId) {
+    delete this.hiddenMessageIds[messageId]
+  }
+  isHiddenMessage(messageId) {
+    return !!this.hiddenMessageIds[messageId]
+  }
+  muteMessageNotification(userId) {
+    //TODO: call localnotification api to mute
+    this.mutedMessageNotificationIds[userId] = true
+  }
+  unmuteMessageNotification(userId) {
+    //TODO: call localnotification api to unmute
+    delete this.mutedMessageNotificationIds[userId]
+  }
+  isMutedMessageNotification(userId) {
+    return !!this.mutedMessageNotificationIds[userId]
+  }
   *fetchUserInfo() {
     try {
       // fetch user info
@@ -88,6 +118,67 @@ export default class UserStore {
         fetchPosts: e,
       })
     }
+  }
+  *fetchBlockedUsers() {
+    try {
+      const response = yield getBlockedUsers()
+      if (response.status === 'OK') {
+        this.blockedUsers = response.data
+      }
+    } catch (e) {
+      console.log({
+        fetchBlockedUsers: e,
+      })
+    }
+  }
+  *blockUser(user) {
+    try {
+      this.blockedUsers = [...this.blockedUsers, user]
+      const response = yield blockUser(user.user_id)
+      if (response?.status !== 'OK') {
+        this.blockedUsers = this.blockedUsers.filter(
+          blockedUser => blockedUser.user_id !== user.user_id,
+        )
+        diaLogStore.showDiaLog({
+          title: 'oops',
+          message: 'wrong',
+        })
+      }
+    } catch (e) {
+      console.log({
+        blockUser: e,
+      })
+      diaLogStore.showDiaLog({
+        title: 'oops',
+        message: 'wrong',
+      })
+    }
+  }
+  *unblockUser(user) {
+    try {
+      this.blockedUsers = this.blockedUsers.filter(
+        blockedUser => blockedUser.user_id !== user.user_id,
+      )
+      const response = yield unblockUser(user.user_id)
+      if (response?.status !== 'OK') {
+        this.blockedUsers = [...this.blockedUsers, user]
+        diaLogStore.showDiaLog({
+          title: 'oops',
+          message: 'wrong',
+        })
+      }
+    } catch (e) {
+      console.log({
+        blockUser: e,
+      })
+      diaLogStore.showDiaLog({
+        title: 'oops',
+        message: 'wrong',
+      })
+    }
+  }
+  isBlocked(userId) {
+    return this.blockedUsers.some(user => user.user_id === userId)
   }
   findPostById(postId) {
     return this.posts.find(post => post.post_id === postId)

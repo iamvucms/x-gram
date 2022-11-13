@@ -1,6 +1,6 @@
 import BottomSheet, { BottomSheetProps } from '@gorhom/bottom-sheet'
 import { Portal } from '@gorhom/portal'
-import React, { forwardRef, useImperativeHandle, useRef } from 'react'
+import React, { forwardRef, useImperativeHandle, useMemo, useRef } from 'react'
 import { StyleSheet } from 'react-native'
 interface AppBottomSheetProps extends BottomSheetProps {
   snapPoints: (`${number}%` | number)[]
@@ -11,6 +11,7 @@ const AppBottomSheet = forwardRef(
     { snapPoints = ['50%'], children, ...restProps }: AppBottomSheetProps,
     ref,
   ) => {
+    const portalName = useMemo(() => `bottom-sheet-${Math.random()}`, [])
     const sheetRef = useRef<BottomSheet>()
     useImperativeHandle(
       ref,
@@ -30,7 +31,7 @@ const AppBottomSheet = forwardRef(
       [snapPoints],
     )
     return (
-      <Portal name="AppBottomSheet">
+      <Portal name={portalName}>
         <BottomSheet
           {...restProps}
           index={isNaN(restProps.index) ? -1 : restProps.index}

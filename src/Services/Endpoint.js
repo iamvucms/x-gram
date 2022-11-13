@@ -43,6 +43,9 @@ export default () => {
     updateUserInfo: `${apiUrl}/user`,
     updatePassword: `${apiUrl}/user/password`,
     getUserInfo: id => `${apiUrl}/users/${id}`,
+    getBlockedUsers: `${apiUrl}/user/blocked-users`,
+    blockUser: id => `${apiUrl}/user/blocked-users/${id}`,
+    unBlockUser: id => `${apiUrl}/user/blocked-users/${id}/unblock`,
     //chat
     getConversations: `${apiUrl}/conversations`,
     getMessages: id => `${apiUrl}/conversations/${id}/messages`,

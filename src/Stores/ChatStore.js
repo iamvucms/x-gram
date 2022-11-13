@@ -9,6 +9,7 @@ import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
 import { io } from 'socket.io-client'
+import { userStore } from '.'
 export default class ChatStore {
   conversations = []
   messages = []
@@ -207,7 +208,13 @@ export default class ChatStore {
     this.messages = []
     this.messagePage = 1
   }
-
+  get unreadConversationCount() {
+    return this.conversations.filter(
+      item =>
+        item.last_message?.sent_by?.user_id !== userStore.userInfo?.user_id &&
+        item.status !== MessageStatus.READ,
+    ).length
+  }
   // check for hydration (required)
   get isHydrated() {
     return isHydrated(this)

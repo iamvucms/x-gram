@@ -610,7 +610,7 @@ export const mockMessages = [
   },
   {
     message_id: '8',
-    message: 2,
+    message: '22',
     status: MessageStatus.READ,
     created_at: new Date().getTime(),
     type: 'sticker',

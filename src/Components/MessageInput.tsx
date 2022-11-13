@@ -1,12 +1,19 @@
-import { PhotoSvg, SendSvg } from '@/Assets/Svg'
+import { PhotoSvg, SendSvg, StickerSvg } from '@/Assets/Svg'
 import { MessageType } from '@/Models'
 import { AppFonts, Colors, XStyleSheet } from '@/Theme'
 import { getHitSlop, isAndroid } from '@/Utils'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { forwardRef, Fragment, useCallback, useEffect } from 'react'
+import React, {
+  forwardRef,
+  Fragment,
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+} from 'react'
 import { TextInput, TextInputProps, TouchableOpacity, View } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker'
-import { Obx } from '.'
+import { Obx, Padding, Row, StickerPickerSheet } from '.'
 import Box from './Box'
 
 interface MessageInputProps extends TextInputProps {
@@ -16,12 +23,19 @@ interface MessageInputProps extends TextInputProps {
     retryId?: string,
   ) => void
   edittingMessage?: string
+  allowStickers?: boolean
 }
 const MessageInput = forwardRef(
   (
-    { onSendPress, edittingMessage, ...textInputProps }: MessageInputProps,
+    {
+      onSendPress,
+      edittingMessage,
+      allowStickers,
+      ...textInputProps
+    }: MessageInputProps,
     ref: React.ForwardedRef<TextInput>,
   ) => {
+    const stickerRef = useRef<any>()
     const state = useLocalObservable(() => ({
       message: '',
       setMessage: (message: string) => (state.message = message),
@@ -61,13 +75,27 @@ const MessageInput = forwardRef(
           align="center"
           margin={16}
         >
-          <TouchableOpacity
-            onPress={onImagePickerPress}
-            hitSlop={getHitSlop(10)}
-            style={styles.photoBtn}
-          >
-            <PhotoSvg />
-          </TouchableOpacity>
+          <Row>
+            <TouchableOpacity
+              onPress={onImagePickerPress}
+              hitSlop={getHitSlop(10)}
+              style={styles.photoBtn}
+            >
+              <PhotoSvg color={Colors.primary} />
+            </TouchableOpacity>
+            {allowStickers && (
+              <>
+                <Padding left={8} />
+                <TouchableOpacity
+                  onPress={() => stickerRef.current?.snapTo?.(0)}
+                  hitSlop={getHitSlop(10)}
+                  style={styles.photoBtn}
+                >
+                  <StickerSvg color={Colors.primary} />
+                </TouchableOpacity>
+              </>
+            )}
+          </Row>
           <Obx>
             {() => (
               <TextInput
@@ -97,12 +125,21 @@ const MessageInput = forwardRef(
             )}
           </Obx>
         </Box>
+        {allowStickers && (
+          <StickerPickerSheet
+            ref={stickerRef}
+            onSelectSticker={sticker => {
+              onSendPress && onSendPress(sticker, MessageType.Sticker)
+              stickerRef.current?.close?.()
+            }}
+          />
+        )}
       </Fragment>
     )
   },
 )
 
-export default MessageInput
+export default memo(MessageInput)
 
 const styles = XStyleSheet.create({
   separator: {

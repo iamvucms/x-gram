@@ -52,6 +52,7 @@ export const initData = () => {
   homeStore.fetchPosts()
   homeStore.fetchStories()
   userStore.fetchUserInfo()
+  userStore.fetchBlockedUsers()
   chatStore.initSocket()
 }
 //Async Action

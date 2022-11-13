@@ -1,10 +1,5 @@
-import React from 'react'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { NavigationContainer } from '@react-navigation/native'
-import { navigationRef, screenOptions } from './NavigationUtils'
-import { useAppTheme } from '@/Hooks'
 import { PageName } from '@/Config'
-import BottomTab from './BottomTab'
+import { useAppTheme } from '@/Hooks'
 import {
   AuthPassCodeScreen,
   CaptureScreen,
@@ -21,7 +16,13 @@ import {
   RegisterScreen,
   StoryScreen,
   UserPostsScreen,
+  ConverstionInforScreen,
 } from '@/Screens'
+import { NavigationContainer } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import React from 'react'
+import BottomTab from './BottomTab'
+import { navigationRef, screenOptions } from './NavigationUtils'
 const Stack = createNativeStackNavigator()
 const Application = () => {
   const { NavigationTheme } = useAppTheme()
@@ -94,6 +95,10 @@ const AuthStack = () => {
       <Stack.Screen
         name={PageName.ConversationDetailScreen}
         component={ConversationDetailScreen}
+      />
+      <Stack.Screen
+        name={PageName.ConverstionInforScreen}
+        component={ConverstionInforScreen}
       />
     </Stack.Navigator>
   )

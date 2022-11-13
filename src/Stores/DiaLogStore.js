@@ -16,6 +16,7 @@ export default class DiaLogStore {
   showTime = 0
   titleColor = ''
   backdropForClosing = false
+  showCancelButton = false
   onClose = () => {}
   onPress = () => {}
 
@@ -33,11 +34,12 @@ export default class DiaLogStore {
     customMessage = null,
     footer = null,
     hideCloseButton = false,
-    messageColor = '',
-    messageStyle = '',
+    messageColor,
+    messageStyle,
     showTime = 0,
-    titleColor = '',
+    titleColor,
     backdropForClosing = false,
+    showCancelButton = false,
     onClose = () => {},
     onPress = () => {},
   }) {
@@ -58,6 +60,7 @@ export default class DiaLogStore {
     this.backdropForClosing = backdropForClosing
     this.onPress = onPress
     this.onClose = onClose
+    this.showCancelButton = showCancelButton
   }
 
   closeDiaLog() {
@@ -81,6 +84,7 @@ export default class DiaLogStore {
     this.showTime = 0
     this.titleColor = ''
     this.backdropForClosing = false
+    this.showCancelButton = false
     this.onClose = () => {}
     this.onPress = () => {}
   }

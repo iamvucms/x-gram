@@ -61,6 +61,7 @@ const App = () => {
                   showTime={diaLogStore.showTime}
                   backdropForClosing={diaLogStore.backdropForClosing}
                   titleColor={diaLogStore.titleColor}
+                  showCancelButton={diaLogStore.showCancelButton}
                   onClose={() => diaLogStore.closeDiaLog()}
                 />
               )
