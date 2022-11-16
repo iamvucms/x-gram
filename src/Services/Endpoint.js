@@ -49,7 +49,11 @@ export default () => {
     //chat
     getConversations: `${apiUrl}/conversations`,
     getMessages: id => `${apiUrl}/conversations/${id}/messages`,
+    getMediaMessages: id => `${apiUrl}/conversations/${id}/media-messages`,
     createConversation: `${apiUrl}/conversations`,
     deleteConversation: id => `${apiUrl}/conversations/${id}`,
+    //upload
+    uploadImage: `${apiUrl}/upload/image`,
+    uploadVideo: `${apiUrl}/upload/video`,
   }
 }

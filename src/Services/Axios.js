@@ -41,7 +41,19 @@ export const request = async (url, method = Method.GET, data, onError) => {
     handleError(e)
   }
 }
-
+export const uploadRequest = async (url, data, onError) => {
+  try {
+    const respose = await API.post(url, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return respose.data
+  } catch (e) {
+    onError && onError(e)
+    handleError(e)
+  }
+}
 const handleError = error => {
   console.log(error)
 }

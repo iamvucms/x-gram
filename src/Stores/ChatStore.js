@@ -1,5 +1,10 @@
 import { Config } from '@/Config'
-import { MessageStatus, mockConversations, mockMessages } from '@/Models'
+import {
+  DrawColors,
+  MessageStatus,
+  mockConversations,
+  mockMessages,
+} from '@/Models'
 import {
   deleteConversation,
   getConversations,
@@ -22,6 +27,8 @@ export default class ChatStore {
   messagePage = 1
   conversationId = null
   socket = null
+  themeColorIdx = 0
+  themeBackgroundIdx = -1
   constructor() {
     makeAutoObservable(this)
     makePersistExcept(this, 'ChatStore', [
@@ -165,6 +172,9 @@ export default class ChatStore {
       })
     }
   }
+  deleteUnSentMessages(msgId) {
+    this.messages = this.messages.filter(item => item.message_id !== msgId)
+  }
   getConversationById(conversationId) {
     return this.conversations.find(
       item => item.conversation_id === (conversationId || this.conversationId),
@@ -208,12 +218,22 @@ export default class ChatStore {
     this.messages = []
     this.messagePage = 1
   }
+  setThemeColorIndex(index) {
+    this.themeColorIdx = index
+  }
+  setThemeBackgroundIndex(index) {
+    this.themeBackgroundIdx = index
+  }
   get unreadConversationCount() {
     return this.conversations.filter(
       item =>
         item.last_message?.sent_by?.user_id !== userStore.userInfo?.user_id &&
         item.status !== MessageStatus.READ,
     ).length
+  }
+  get themeColors() {
+    const color = DrawColors[this.themeColorIdx]
+    return Array.isArray(color) ? color : [color, color]
   }
   // check for hydration (required)
   get isHydrated() {

@@ -17,6 +17,7 @@ import {
   StoryScreen,
   UserPostsScreen,
   ConverstionInforScreen,
+  CreateConversationScreen,
 } from '@/Screens'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -99,6 +100,10 @@ const AuthStack = () => {
       <Stack.Screen
         name={PageName.ConverstionInforScreen}
         component={ConverstionInforScreen}
+      />
+      <Stack.Screen
+        name={PageName.CreateConversationScreen}
+        component={CreateConversationScreen}
       />
     </Stack.Navigator>
   )

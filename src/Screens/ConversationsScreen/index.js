@@ -71,6 +71,7 @@ const ConversationsScreen = () => {
   return (
     <Container style={styles.rootView}>
       <TouchableOpacity
+        onPress={() => navigate(PageName.CreateConversationScreen)}
         style={[
           styles.newConversationBtn,
           {
@@ -95,9 +96,6 @@ const ConversationsScreen = () => {
             {t('conversations.conversations')}
           </AppText>
         </Row>
-        <TouchableOpacity hitSlop={getHitSlop(20)}>
-          <SearchSvg size={20} />
-        </TouchableOpacity>
       </Box>
       <Animated.View style={[Layout.fill]}>
         <Obx>

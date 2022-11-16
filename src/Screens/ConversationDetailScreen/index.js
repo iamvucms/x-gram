@@ -2,7 +2,6 @@ import {
   ChevronRightSvg,
   CloseSvg,
   CopySvg,
-  DotsSvg,
   EyeOffSvg,
   InforSvg,
   ReportSvg,
@@ -19,7 +18,8 @@ import {
   Row,
 } from '@/Components'
 import { PageName } from '@/Config'
-import { MessageStatus, MessageType } from '@/Models'
+import { useAppTheme } from '@/Hooks'
+import { getBackgrounds, MessageStatus, MessageType } from '@/Models'
 import { goBack, navigate } from '@/Navigators'
 import { chatStore, userStore } from '@/Stores'
 import {
@@ -34,10 +34,11 @@ import Clipboard from '@react-native-clipboard/clipboard'
 import { autorun, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import moment from 'moment'
-import React, { memo, useCallback, useEffect, useRef } from 'react'
+import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FlatList, Pressable, TouchableOpacity, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
+import LinearGradient from 'react-native-linear-gradient'
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -49,11 +50,16 @@ import Animated, {
 const ConversationDetailScreen = () => {
   const { t } = useTranslation()
   const optionSheetRef = useRef()
+  const { Images } = useAppTheme()
   const conversation = chatStore.getConversationById()
   const state = useLocalObservable(() => ({
     selectedMessage: null,
     setSelectedMessage: message => (state.selectedMessage = message),
   }))
+  const backgrounds = useMemo(
+    () => getBackgrounds({ imageSource: Images }),
+    [Images],
+  )
   useEffect(() => {
     // return () => chatStore.resetMessages()
   }, [])
@@ -78,17 +84,35 @@ const ConversationDetailScreen = () => {
     return <MessageItem onOpenOption={onOpenOption} message={item} />
   }, [])
   return (
-    <Container style={styles.rootView}>
+    <Container disableTop>
       <Box
-        height={80}
+        height={124}
         row
         align="center"
         justify="space-between"
         paddingRight={16}
       >
+        <Obx>
+          {() => (
+            <LinearGradient
+              colors={chatStore.themeColors}
+              style={styles.msgBackground}
+            />
+          )}
+        </Obx>
         <Row>
           <TouchableOpacity onPress={onBackPress} style={styles.backBtn}>
-            <ChevronRightSvg color={Colors.white} />
+            <Obx>
+              {() => (
+                <ChevronRightSvg
+                  color={
+                    chatStore.themeColors.every(c => c === Colors.white)
+                      ? Colors.black
+                      : Colors.white
+                  }
+                />
+              )}
+            </Obx>
           </TouchableOpacity>
           <View>
             <AppImage
@@ -112,26 +136,54 @@ const ConversationDetailScreen = () => {
               )}
             </Obx>
           </View>
-          <Padding left={10}>
-            <AppText fontWeight={700} color={Colors.white}>
-              {conversation?.user?.full_name}
-            </AppText>
-            <AppText fontSize={12} color={Colors.white50}>
-              <Obx>
-                {() =>
-                  chatStore.getIsOnline(conversation?.user?.user_id)
-                    ? t('conversations.active_now')
-                    : t('conversations.inactive')
-                }
-              </Obx>
-            </AppText>
-          </Padding>
+          <Obx>
+            {() => (
+              <Padding left={10}>
+                <AppText
+                  fontWeight={700}
+                  color={
+                    chatStore.themeColors.every(c => c === Colors.white)
+                      ? Colors.black
+                      : Colors.white
+                  }
+                >
+                  {conversation?.user?.full_name}
+                </AppText>
+                <AppText
+                  fontSize={12}
+                  color={
+                    chatStore.themeColors.every(c => c === Colors.white)
+                      ? Colors.black50
+                      : Colors.white
+                  }
+                >
+                  <Obx>
+                    {() =>
+                      chatStore.getIsOnline(conversation?.user?.user_id)
+                        ? t('conversations.active_now')
+                        : t('conversations.inactive')
+                    }
+                  </Obx>
+                </AppText>
+              </Padding>
+            )}
+          </Obx>
         </Row>
         <TouchableOpacity
           onPress={() => navigate(PageName.ConverstionInforScreen)}
           hitSlop={getHitSlop(16)}
         >
-          <InforSvg color={Colors.white} />
+          <Obx>
+            {() => (
+              <InforSvg
+                color={
+                  chatStore.themeColors.every(c => c === Colors.white)
+                    ? Colors.black
+                    : Colors.white
+                }
+              />
+            )}
+          </Obx>
         </TouchableOpacity>
       </Box>
       <Box
@@ -139,7 +191,22 @@ const ConversationDetailScreen = () => {
         backgroundColor={Colors.white}
         topLeftRadius={24}
         topRightRadius={24}
+        marginTop={-24}
+        borderColor={Colors.border}
+        borderWidth={0.5}
+        marginHorizontal={-0.5}
+        overflow="hidden"
       >
+        <Obx>
+          {() =>
+            chatStore.themeBackgroundIdx !== -1 && (
+              <FastImage
+                style={styles.backgroundImg}
+                source={backgrounds[chatStore.themeBackgroundIdx]}
+              />
+            )
+          }
+        </Obx>
         <Obx>
           {() => (
             <FlatList
@@ -155,6 +222,7 @@ const ConversationDetailScreen = () => {
             />
           )}
         </Obx>
+
         <MessageInput
           allowStickers
           onSendPress={onSendPress}
@@ -180,7 +248,15 @@ const ConversationDetailScreen = () => {
           <Obx>
             {() =>
               state.selectedMessage?.status === MessageStatus.ERROR && (
-                <TouchableOpacity style={styles.optionBtn}>
+                <TouchableOpacity
+                  onPress={() => {
+                    chatStore.deleteUnSentMessages(
+                      state.selectedMessage.message_id,
+                    )
+                    optionSheetRef.current?.close?.()
+                  }}
+                  style={styles.optionBtn}
+                >
                   <CloseSvg size={20} />
                   <Padding left={14} />
                   <AppText fontSize={16} fontWeight={500}>
@@ -313,9 +389,21 @@ const MessageItem = memo(({ message, onOpenOption }) => {
           >
             <View>
               <Animated.View style={[styles.msgTime, infoStyle]}>
-                <AppText fontSize={10} fontWeight={700} color={Colors.black50}>
-                  {moment(message.created_at).format('HH:mm')}
-                </AppText>
+                <Obx>
+                  {() => (
+                    <AppText
+                      fontSize={10}
+                      fontWeight={700}
+                      color={
+                        chatStore.themeBackgroundIdx !== -1
+                          ? Colors.white50
+                          : Colors.black50
+                      }
+                    >
+                      {moment(message.created_at).format('HH:mm')}
+                    </AppText>
+                  )}
+                </Obx>
               </Animated.View>
               <Row align="flex-start">
                 {!isUser && (
@@ -355,11 +443,42 @@ const MessageItem = memo(({ message, onOpenOption }) => {
                         maxWidth={0.6 * screenWidth}
                         minWidth={40}
                         center
-                        backgroundColor={isUser ? Colors.primary : Colors.gray}
+                        borderColor={isUser ? Colors.black50 : ''}
+                        borderWidth={
+                          isUser &&
+                          chatStore.themeColors.every(c => c === Colors.white)
+                            ? 0.5
+                            : 0
+                        }
+                        overflow="hidden"
+                        backgroundColor={isUser ? null : Colors.gray}
                       >
-                        <AppText color={Colors.white}>
-                          {message.message}
-                        </AppText>
+                        <Obx>
+                          {() =>
+                            isUser && (
+                              <LinearGradient
+                                colors={chatStore.themeColors}
+                                style={styles.msgBackground}
+                              />
+                            )
+                          }
+                        </Obx>
+                        <Obx>
+                          {() => (
+                            <AppText
+                              color={
+                                isUser &&
+                                chatStore.themeColors.every(
+                                  c => c === Colors.white,
+                                )
+                                  ? Colors.black
+                                  : Colors.white
+                              }
+                            >
+                              {message.message}
+                            </AppText>
+                          )}
+                        </Obx>
                       </Box>
                     )}
                   </Obx>
@@ -383,6 +502,8 @@ const MessageItem = memo(({ message, onOpenOption }) => {
                       color={
                         message.status === MessageStatus.ERROR
                           ? Colors.error
+                          : chatStore.themeBackgroundIdx !== -1
+                          ? Colors.white50
                           : Colors.black50
                       }
                     >
@@ -467,5 +588,13 @@ const styles = XStyleSheet.create({
     borderColor: Colors.border,
     borderBottomWidth: 0,
     marginHorizontal: -0.5,
+  },
+  msgBackground: {
+    ...XStyleSheet.absoluteFillObject,
+    zIndex: -1,
+  },
+  backgroundImg: {
+    ...XStyleSheet.absoluteFillObject,
+    zIndex: -1,
   },
 })

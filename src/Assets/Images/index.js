@@ -106,6 +106,16 @@ export const getImages = () => ({
   pack6_14: require('./Stickers/Pack6/in_this_together_13.png'),
   pack6_15: require('./Stickers/Pack6/in_this_together_14.png'),
   pack6_16: require('./Stickers/Pack6/in_this_together_15.png'),
+  //conversation
+  conversation_bg_1: require('./Conversation/conversation_bg_1.jpg'),
+  conversation_bg_2: require('./Conversation/conversation_bg_2.jpg'),
+  conversation_bg_3: require('./Conversation/conversation_bg_3.jpg'),
+  conversation_bg_4: require('./Conversation/conversation_bg_4.jpg'),
+  conversation_bg_5: require('./Conversation/conversation_bg_5.jpg'),
+  conversation_bg_6: require('./Conversation/conversation_bg_6.jpg'),
+  conversation_bg_7: require('./Conversation/conversation_bg_7.jpg'),
+  conversation_bg_8: require('./Conversation/conversation_bg_8.jpg'),
+  conversation_bg_9: require('./Conversation/conversation_bg_9.jpg'),
 })
 
 export const getDarkImages = () => ({

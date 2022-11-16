@@ -15,6 +15,7 @@ export const DrawGradientColors = [
 ]
 
 export const DrawColors = [
+  Colors.primary,
   Colors.white,
   Colors.black,
   Colors.k5BB318,
@@ -30,6 +31,7 @@ export const DrawColors = [
   ...DrawGradientColors,
 ]
 export const DrawStrokeColors = [
+  Colors.primary,
   Colors.white,
   Colors.black,
   Colors.k5BB318,

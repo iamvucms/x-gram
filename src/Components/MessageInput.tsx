@@ -11,7 +11,13 @@ import React, {
   useEffect,
   useRef,
 } from 'react'
-import { TextInput, TextInputProps, TouchableOpacity, View } from 'react-native'
+import {
+  TextInput,
+  TextInputProps,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker'
 import { Obx, Padding, Row, StickerPickerSheet } from '.'
 import Box from './Box'
@@ -24,6 +30,7 @@ interface MessageInputProps extends TextInputProps {
   ) => void
   edittingMessage?: string
   allowStickers?: boolean
+  containerStyle?: ViewStyle
 }
 const MessageInput = forwardRef(
   (
@@ -31,6 +38,7 @@ const MessageInput = forwardRef(
       onSendPress,
       edittingMessage,
       allowStickers,
+      containerStyle,
       ...textInputProps
     }: MessageInputProps,
     ref: React.ForwardedRef<TextInput>,
@@ -71,9 +79,12 @@ const MessageInput = forwardRef(
           row
           padding={10}
           radius={99}
-          backgroundColor={Colors.border}
+          backgroundColor={Colors.white}
           align="center"
           margin={16}
+          style={containerStyle}
+          borderColor={Colors.border}
+          borderWidth={0.5}
         >
           <Row>
             <TouchableOpacity
@@ -153,6 +164,8 @@ const styles = XStyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.white,
     borderRadius: 99,
+    borderColor: Colors.border,
+    borderWidth: 0.5,
   },
   textInput: {
     fontFamily: AppFonts['400'],

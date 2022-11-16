@@ -28,4 +28,5 @@ export const PageName = {
   ConversationsScreen: 'ConversationsScreen',
   ConversationDetailScreen: 'ConversationDetailScreen',
   ConverstionInforScreen: 'ConverstionInforScreen',
+  CreateConversationScreen: 'CreateConversationScreen',
 }

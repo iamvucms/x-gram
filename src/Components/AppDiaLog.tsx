@@ -86,7 +86,7 @@ const AppDialog = ({
           onPress={onClose}
           style={styles.blurView}
         >
-          <BlurView blurType="dark" style={Layout.fill} />
+          <BlurView blurRadius={2} blurType="dark" style={Layout.fill} />
         </Pressable>
         <Animated.View entering={SlideInDown} style={styles.container}>
           {!hideCloseButton && (

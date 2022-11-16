@@ -22,6 +22,9 @@ export default {
   create: 'Create',
   cancel: 'Cancel',
   confirm: 'Confirm',
+  other: 'Other',
+  recommended: 'Recommended',
+  results: 'Results',
   onboarding: {
     description: 'Sharing your moments with your friends and family',
     description1: 'XGram is a social network for sharing photos and videos',
@@ -119,6 +122,15 @@ export default {
     error: 'Error!',
     turn_on_notification: 'Turn on notifications',
     turn_off_notification: 'Turn off notifications',
+    conversation_theme: 'Conversation Theme',
+    conversation_background: 'Conversation Background',
+    share_contact: 'Share Contact',
+    delete_conversation: 'Delete Conversation',
+    delete_conversation_confirm:
+      'Are you sure you want to delete this conversation?',
+    new_conversation: 'New Conversation',
+    to: 'To',
+    user_name_placeholder: 'Enter name or username',
   },
   account: {
     unblock_user: 'Unblock User',

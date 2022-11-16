@@ -33,4 +33,5 @@ export enum MessageType {
   Text = 'text',
   Image = 'image',
   Sticker = 'sticker',
+  Video = 'video',
 }

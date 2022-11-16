@@ -720,7 +720,7 @@ const TextEditor = memo(({ onDone, onClose }) => {
   const state = useLocalObservable(() => ({
     text: '',
     align: TextAlignType.Center,
-    colorIndex: 1,
+    colorIndex: 0,
     type: TextType.WhiteBox,
     setText: text => (state.text = text),
     setAlign: align => (state.align = align),

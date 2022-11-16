@@ -97,7 +97,12 @@ const LightBox = ({ visible, source, onRequestClose }: LightBoxProps) => {
     opacity: 1 - translateY.value / screenHeight,
   }))
   return (
-    <Modal visible={visible} animationType="none" transparent>
+    <Modal
+      statusBarTranslucent
+      visible={visible}
+      animationType="none"
+      transparent
+    >
       <GestureHandlerRootView style={Layout.fill}>
         <Animated.View style={[styles.backdrop, backdropStyle]} />
 
