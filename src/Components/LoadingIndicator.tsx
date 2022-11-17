@@ -31,7 +31,12 @@ const LoadingIndicator = ({
   }
   const Container = overlay ? Modal : View
   return (
-    <Container onRequestClose={onRequestClose} visible={true} transparent>
+    <Container
+      statusBarTranslucent
+      onRequestClose={onRequestClose}
+      visible={true}
+      transparent
+    >
       <Pressable
         disabled={!backdropPressToClose}
         onPress={onRequestClose}

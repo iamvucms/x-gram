@@ -112,6 +112,7 @@ const MessageInput = forwardRef(
               <TextInput
                 style={styles.textInput}
                 placeholderTextColor={Colors.placeholder}
+                placeholder="Type a message"
                 {...textInputProps}
                 value={state.message}
                 onChangeText={txt => state.setMessage(txt)}

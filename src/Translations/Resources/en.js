@@ -131,6 +131,7 @@ export default {
     new_conversation: 'New Conversation',
     to: 'To',
     user_name_placeholder: 'Enter name or username',
+    send_to: 'Send to',
   },
   account: {
     unblock_user: 'Unblock User',

@@ -9,6 +9,7 @@ import {
   deleteConversation,
   getConversations,
   getMessages,
+  createConversation,
 } from '@/Services/Api'
 import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
@@ -109,6 +110,29 @@ export default class ChatStore {
     }
     this[loadMore ? 'loadingMoreMessages' : 'loadingMessages'] = false
   }
+  *createNewConversation(userId, message) {
+    try {
+      const response = yield createConversation(userId, message)
+      if (response.status === 'OK') {
+        this.conversations = [response.data, ...this.conversations]
+      }
+    } catch (e) {
+      const fakeConversation = {
+        ...mockConversations[0],
+        last_message: {
+          ...message,
+          message_id: Math.random(),
+          status: MessageStatus.SENT,
+        },
+        user: { ...mockConversations[0].user, user_id: userId },
+        conversation_id: Math.random(),
+      }
+      this.conversations = [fakeConversation, ...this.conversations]
+      console.log({
+        createNewConversation: e,
+      })
+    }
+  }
   *sendMessage(conversationId, message, retryId) {
     if (!this.socket) {
       // yield this.initSocket()
@@ -172,6 +196,17 @@ export default class ChatStore {
       })
     }
   }
+  addEmptyConversation(user) {
+    this.conversations.unshift({
+      conversation_id: Math.random(),
+      last_message: {
+        message_id: Math.random(),
+        message: '',
+        status: MessageStatus.SENDING,
+      },
+      user,
+    })
+  }
   deleteUnSentMessages(msgId) {
     this.messages = this.messages.filter(item => item.message_id !== msgId)
   }
@@ -179,6 +214,9 @@ export default class ChatStore {
     return this.conversations.find(
       item => item.conversation_id === (conversationId || this.conversationId),
     )
+  }
+  getConversationByUserId(userId) {
+    return this.conversations.find(item => item.user.user_id === userId)
   }
   addMessage(conversationId, message) {
     if (this.conversationId === conversationId) {

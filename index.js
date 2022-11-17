@@ -12,4 +12,5 @@ LogBox.ignoreLogs(['Require cycle:'])
 AppRegistry.registerComponent(appName, () => App)
 configure({
   useProxies: 'always',
+  enforceActions: 'never',
 })
