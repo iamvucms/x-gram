@@ -139,4 +139,9 @@ export default {
     confirm_block: 'Are you sure you want to block this user?',
     confirm_unblock: 'Are you sure you want to unblock this user?',
   },
+  capture: {
+    camera_permission_title: 'Camera Permission',
+    camera_permission_description: 'XGram needs access to your camera',
+    go_to_settings: 'Go to Settings',
+  },
 }

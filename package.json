@@ -69,6 +69,7 @@
     "react-native-svg": "^12.4.1",
     "react-native-video": "5.2.1",
     "react-native-view-shot": "^3.4.0",
+    "react-native-vision-camera": "^2.15.2",
     "socket.io-client": "^4.5.3"
   },
   "devDependencies": {

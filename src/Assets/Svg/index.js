@@ -59,3 +59,8 @@ export { default as GridSvg } from './Profile/GridSvg'
 //Conversations
 export { default as DoubleCheckSvg } from './Conversations/DoubleCheckSvg'
 export { default as InforSvg } from './Conversations/InforSvg'
+//Capture
+export { default as FlashOnSvg } from './Capture/FlashOnSvg'
+export { default as FlashOffSvg } from './Capture/FlashOffSvg'
+export { default as RotateCameraSvg } from './Capture/RotateCameraSvg'
+export { default as HdrSvg } from './Capture/HdrSvg'

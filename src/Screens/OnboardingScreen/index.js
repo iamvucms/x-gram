@@ -116,7 +116,7 @@ const OnboardingScreen = () => {
   }
   setTimeout(() => {
     navigate(PageName.AuthStack)
-  }, 1000)
+  }, 500)
   const { top: paddingTop } = useSafeAreaInsets()
   return (
     <Container statusBarProps={{ barStyle: 'light-content' }} disableTop>
