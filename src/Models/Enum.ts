@@ -7,7 +7,10 @@ export enum Gender {
   Male = 0,
   Female = 1,
 }
-
+export enum MediaType {
+  Photo = 'photo',
+  Video = 'video',
+}
 export enum CreateType {
   Post,
   Story,

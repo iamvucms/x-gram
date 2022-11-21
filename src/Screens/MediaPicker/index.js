@@ -1,6 +1,7 @@
 import { CameraSvg, CheckSvg, CloseSvg, VideoSvg } from '@/Assets/Svg'
 import { AppBar, AppText, Container, Obx } from '@/Components'
 import { PageName } from '@/Config'
+import { MediaType } from '@/Models'
 import { navigate } from '@/Navigators'
 import { Colors, ResponsiveHeight, screenWidth, XStyleSheet } from '@/Theme'
 import { isAndroid } from '@/Utils'
@@ -14,13 +15,12 @@ import { Image, PermissionsAndroid, TouchableOpacity, View } from 'react-native'
 
 const MediaPicker = ({ route }) => {
   const {
-    type = 'photo',
-    onNext = () => {},
+    type = MediaType.Photo,
     multiple = true,
     editable,
-    editorProps = {},
+    editorProps,
   } = route.params || {}
-  const isPickingPhoto = type === 'photo'
+  const isPickingPhoto = type === MediaType.Photo
   const { t } = useTranslation()
   const state = useLocalObservable(() => ({
     medias: [],
@@ -85,9 +85,7 @@ const MediaPicker = ({ route }) => {
 
   const onCapturePress = useCallback(() => {
     navigate(PageName.CaptureScreen, {
-      type,
-      onNext,
-      multiple,
+      ...(route.params || {}),
     })
   }, [])
 
@@ -106,7 +104,7 @@ const MediaPicker = ({ route }) => {
         ...editorProps,
       })
     } else {
-      onNext(files)
+      editorProps?.onNext?.(files)
     }
   }, [])
   const renderMediaItem = React.useCallback(
@@ -116,8 +114,10 @@ const MediaPicker = ({ route }) => {
         if (multiple) {
           state.toggleSelect(item.image.uri)
         } else {
-          onNext &&
-            onNext([{ ...item, uri: item.image.uri, mimeType: item.mimeType }])
+          editorProps?.onNext &&
+            editorProps?.onNext?.([
+              { ...item, uri: item.image.uri, mimeType: item.mimeType },
+            ])
         }
       }
       return (

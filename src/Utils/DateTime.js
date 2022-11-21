@@ -20,3 +20,14 @@ export const format_DDMM = 'DD-MM'
 export function formatDate({ dateTime, format = 'HH:mm DD/MM/yyyy' }) {
   return Moment(dateTime).format(format)
 }
+
+export function secondToTime(second) {
+  const hours = Math.floor(second / 3600)
+  const minutes = Math.floor((second - hours * 3600) / 60)
+  const seconds = second - hours * 3600 - minutes * 60
+  return {
+    hours: hours < 10 ? `0${hours}` : hours,
+    minutes: minutes < 10 ? `0${minutes}` : minutes,
+    seconds: seconds < 10 ? `0${seconds}` : seconds,
+  }
+}

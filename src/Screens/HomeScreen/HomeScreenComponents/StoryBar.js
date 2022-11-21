@@ -8,7 +8,7 @@ import {
   Padding,
 } from '@/Components'
 import { PageName } from '@/Config'
-import { CreateType, mockStories } from '@/Models'
+import { CreateType, MediaType, mockStories } from '@/Models'
 import { navigate } from '@/Navigators'
 import { Colors, XStyleSheet } from '@/Theme'
 import { useLocalObservable } from 'mobx-react-lite'
@@ -91,6 +91,7 @@ const StoryBar = ({ stories = mockStories, scrollY }) => {
       navigate(PageName.MediaPicker, {
         multiple: true,
         editable: true,
+        type: MediaType.Photo,
         editorProps: {
           type: CreateType.Story,
           onNext,
@@ -116,7 +117,7 @@ const StoryBar = ({ stories = mockStories, scrollY }) => {
                           state.uploadingMedias.length > 2 ? '50%' : '100%'
                         return state.uploadingMedias
                           .slice(0, 4)
-                          .map((uri, index) => (
+                          .map((media, index) => (
                             <Image
                               key={index}
                               // eslint-disable-next-line react-native/no-inline-styles
@@ -129,7 +130,7 @@ const StoryBar = ({ stories = mockStories, scrollY }) => {
                                 height,
                               }}
                               source={{
-                                uri,
+                                uri: media.uri,
                               }}
                             />
                           ))

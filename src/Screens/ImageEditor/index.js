@@ -192,7 +192,10 @@ const ImageEditor = ({ route }) => {
       const processMedias = []
       for (let i = 0; i < viewShotRefs.length; i++) {
         const uri = await viewShotRefs[i].capture()
-        processMedias.push(uri)
+        processMedias.push({
+          uri,
+          mimeType: 'image/png',
+        })
         if (i < viewShotRefs.length - 1) {
           listRef.current?.scrollToIndex({ index: i + 1, animated: true })
           await new Promise(resolve => setTimeout(resolve, 300))
@@ -205,7 +208,7 @@ const ImageEditor = ({ route }) => {
     state.setProcessing(false)
   }, [])
   return (
-    <Container style={styles.rootView}>
+    <Container disableTop style={styles.rootView}>
       <Obx>
         {() => (
           <FlatList
