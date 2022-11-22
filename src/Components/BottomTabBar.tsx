@@ -66,7 +66,7 @@ const BottomTabBar = ({ state }: BottomTabBarProps) => {
                 onPress={() => navigate(tab.routeName)}
                 size={24}
                 color={
-                  tab.index === state.index ? Colors.primary : Colors.kC2C2C2
+                  tab.index === state.index ? Colors.kC4BCFF : Colors.white
                 }
               />
             </TouchableOpacity>
@@ -93,7 +93,7 @@ const styles = XStyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: Colors.white95,
+    backgroundColor: Colors.kFF7A51,
     zIndex: 99,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,

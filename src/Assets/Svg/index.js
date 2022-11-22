@@ -31,6 +31,7 @@ export { default as DotsSvg } from './Common/DotsSvg'
 export { default as ProfileSvg } from './Common/ProfileSvg'
 export { default as BlockSvg } from './Common/BlockSvg'
 export { default as ErrorSvg } from './Common/ErrorSvg'
+export { default as FullScreenSvg } from './Common/FullScreenSvg'
 //Onboarding
 export { default as BallSvg } from './Onboarding/BallSvg'
 //Home

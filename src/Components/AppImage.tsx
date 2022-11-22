@@ -36,7 +36,7 @@ interface AppImageProps {
 }
 const AppImage = ({
   source,
-  blurHashEnabled = true,
+  blurHashEnabled = false,
   enablePinchZoom = false,
   resizeMode = 'cover',
   style,
@@ -59,7 +59,7 @@ const AppImage = ({
   }))
 
   useEffect(() => {
-    if (source['uri']) {
+    if (source['uri'] && blurHashEnabled) {
       Blurhash.encode(source['uri'], 4, 3).then(hash => {
         state.setHash(hash)
       })

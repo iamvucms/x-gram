@@ -2,6 +2,7 @@ import {
   BookMarkedSvg,
   BookMarkSvg,
   CommentSvg,
+  FullScreenSvg,
   HeartSvg,
   SendSvg,
   StoryGradientBorderSvg,
@@ -34,6 +35,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
+import Video from 'react-native-video'
 import { Expanded, Obx } from '.'
 import AppImage from './AppImage'
 import AppText from './AppText'
@@ -60,6 +62,8 @@ const PostItem = ({
   const state = useLocalObservable(() => ({
     imageIndex: 0,
     setImageIndex: (index: number) => (state.imageIndex = index),
+    fullscreen: false,
+    setFullscreen: (value: boolean) => (state.fullscreen = value),
   }))
   useEffect(() => {
     if (post.medias.length > 1) {
@@ -126,22 +130,53 @@ const PostItem = ({
     <Box marginHorizontal={16} marginTop={16}>
       <View style={styles.rootView}>
         <Obx>
-          {() => (
-            <AppImage
-              enablePinchZoom
-              onPress={onImagePress}
-              source={{
-                uri: post.medias[state.imageIndex].url,
-              }}
-              containerStyle={styles.imageContainer}
-            />
-          )}
+          {() =>
+            post.medias[state.imageIndex].is_video ? (
+              <Obx>
+                {() => (
+                  <Video
+                    source={{
+                      uri: post.medias[state.imageIndex].url,
+                    }}
+                    style={styles.imageContainer}
+                    resizeMode="cover"
+                    fullscreenOrientation="portrait"
+                    fullscreen={state.fullscreen}
+                    onVideoFullscreenPlayerDidDismiss={() =>
+                      state.setFullscreen(false)
+                    }
+                  />
+                )}
+              </Obx>
+            ) : (
+              <AppImage
+                enablePinchZoom
+                onPress={onImagePress}
+                source={{
+                  uri: post.medias[state.imageIndex].url,
+                }}
+                containerStyle={styles.imageContainer}
+              />
+            )
+          }
         </Obx>
         {post.medias.length > 1 && (
           <View style={styles.indicatorView}>
             {post.medias.map(renderIndicatorItem)}
           </View>
         )}
+        <Obx>
+          {() =>
+            post.medias[state.imageIndex].is_video && (
+              <TouchableOpacity
+                onPress={() => state.setFullscreen(true)}
+                style={styles.fullscreenBtn}
+              >
+                <FullScreenSvg color={Colors.primary50} size={18} />
+              </TouchableOpacity>
+            )
+          }
+        </Obx>
         <Box padding={16} row align="center" justify="space-between">
           <Box row align="center">
             <View style={styles.avatarView}>
@@ -394,5 +429,16 @@ const styles = XStyleSheet.create({
     marginTop: ResponsiveHeight(14),
     borderRadius: moderateScale(16),
     skipResponsive: true,
+  },
+  fullscreenBtn: {
+    height: 36,
+    width: 36,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.white50,
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
   },
 })

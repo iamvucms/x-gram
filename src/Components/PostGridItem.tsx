@@ -1,13 +1,15 @@
 import {
   Colors,
+  Layout,
   moderateScale,
   ResponsiveWidth,
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
-import React, { useCallback, useRef } from 'react'
+import React, { memo, useCallback, useRef } from 'react'
 import { Pressable, View } from 'react-native'
-import AppImage from './AppImage'
+import FastImage from 'react-native-fast-image'
+import Animated, { FadeIn } from 'react-native-reanimated'
 interface PostGridItemProps {
   post: any
   enablePreview?: boolean
@@ -52,17 +54,19 @@ const PostGridItem = ({
       onPressOut={_onClosePreview}
       style={styles.rootView}
     >
-      <AppImage
-        disabled
-        source={{
-          uri: post.medias[0].url,
-        }}
-      />
+      <Animated.View style={Layout.fill} entering={FadeIn}>
+        <FastImage
+          source={{
+            uri: post.medias[0].url,
+          }}
+          style={Layout.fill}
+        />
+      </Animated.View>
     </Pressable>
   )
 }
 
-export default PostGridItem
+export default memo(PostGridItem)
 
 const styles = XStyleSheet.create({
   rootView: {

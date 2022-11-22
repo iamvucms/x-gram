@@ -5,6 +5,7 @@ import { BlurView } from '@react-native-community/blur'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useEffect, useRef } from 'react'
 import { View } from 'react-native'
+import FastImage from 'react-native-fast-image'
 import Animated, {
   FadeIn,
   interpolate,
@@ -80,8 +81,8 @@ const PostPreviewModal = ({
             <Animated.View style={[styles.modalView, modalStyle]}>
               <BlurView style={styles.blurView} />
               <Animated.View style={[styles.postView, containerStyle]}>
-                <AppImage
-                  containerStyle={styles.imageView}
+                <FastImage
+                  style={styles.imageView}
                   source={{
                     uri: post?.medias?.[0]?.url,
                   }}

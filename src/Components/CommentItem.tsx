@@ -54,6 +54,7 @@ const CommentItem = ({
         >
           <Box paddingHorizontal={16} marginTop={20} row>
             <AppImage
+              blurHashEnabled={false}
               source={{
                 uri: comment.commented_by.avatar_url,
               }}

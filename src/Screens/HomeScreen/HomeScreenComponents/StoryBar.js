@@ -206,6 +206,7 @@ const StoryItem = memo(({ story, index, scrollY, onPress }) => {
       >
         <StoryGradientBorderSvg size={84} />
         <AppImage
+          blurHashEnabled={false}
           onPress={onPress}
           containerStyle={styles.avatarImg}
           source={{ uri: story.posted_by.avatar_url }}

@@ -43,7 +43,7 @@ const RecordState = {
   PAUSED: 3,
 }
 const CaptureScreen = ({ route }) => {
-  const { type, editable, editorProps } = route.params || {}
+  const { type, editable, editorProps, disableVideo } = route.params || {}
   const { Images } = useAppTheme()
   const { t } = useTranslation()
   const cameraRef = useRef()
@@ -314,12 +314,21 @@ const CaptureScreen = ({ route }) => {
                   radius={99}
                   center
                 >
-                  <CameraSvg solid />
+                  <CameraSvg color={Colors.placeholder} solid />
                 </Box>
               </TouchableOpacity>
             </Animated.View>
-            <Animated.View style={[styles.captureBtn, recordBtnStyle]}>
-              <TouchableOpacity onPress={onRecordPress}>
+            <Animated.View
+              style={[
+                styles.captureBtn,
+                recordBtnStyle,
+                // eslint-disable-next-line react-native/no-inline-styles
+                disableVideo && {
+                  opacity: 0,
+                },
+              ]}
+            >
+              <TouchableOpacity disabled={disableVideo} onPress={onRecordPress}>
                 <Box
                   center
                   size={60}
@@ -347,7 +356,7 @@ const CaptureScreen = ({ route }) => {
                           <PauseSvg color={Colors.error} />
                         )
                       ) : (
-                        <RecordSvg />
+                        <RecordSvg color={Colors.placeholder} />
                       )
                     }
                   </Obx>

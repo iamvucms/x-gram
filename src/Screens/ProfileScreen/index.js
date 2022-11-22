@@ -1,11 +1,9 @@
 import {
-  BookMarkedSvg,
   BookMarkSvg,
   CameraSvg,
   ChevronRightSvg,
+  DotsSvg,
   GridSvg,
-  MenuSvg,
-  ReelSvg,
   SettingSvg,
   VideoSvg,
 } from '@/Assets/Svg'
@@ -23,12 +21,13 @@ import {
 import { PageName } from '@/Config'
 import { mockPosts } from '@/Models'
 import { navigate } from '@/Navigators'
+import { userStore } from '@/Stores'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
 import { BlurView } from '@react-native-community/blur'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, TouchableOpacity, View } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -37,9 +36,9 @@ import Animated, {
 } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
 const PostType = {
-  post: 'post',
-  bookmark: 'bookmark',
-  reel: 'reel',
+  Post: 'post',
+  Bookmark: 'bookmark',
+  Video: 'video',
 }
 const ProfileScreen = () => {
   const { t } = useTranslation()
@@ -48,14 +47,28 @@ const ProfileScreen = () => {
 
   const state = useLocalObservable(() => ({
     posts: mockPosts,
-    postType: PostType.post,
+    postType: PostType.Post,
     previewPost: null,
     setPreviewPost: (post, specs) => (state.previewPost = { post, specs }),
     hidePreviewPost: () => (state.previewPost = null),
     setPosts: posts => (state.posts = posts),
     setPostType: postType => (state.postType = postType),
     get filteredPosts() {
-      return [...PostTabs, ...this.posts]
+      const photoPosts = state.posts
+        .filter(post => !post.medias[0].is_video)
+        .slice()
+      const videoPosts = state.posts
+        .filter(post => post.medias[0].is_video)
+        .slice()
+      const bookmarkPosts = userStore.bookmarkPosts.slice()
+      return [
+        ...PostTabs,
+        ...(state.postType === PostType.Post
+          ? photoPosts
+          : state.postType === PostType.Bookmark
+          ? bookmarkPosts
+          : videoPosts),
+      ]
     },
   }))
 
@@ -77,13 +90,13 @@ const ProfileScreen = () => {
   const PostTabs = useMemo(
     () => [
       {
-        type: PostType.post,
+        type: PostType.Post,
         icon: (
           <Obx>
             {() => (
               <GridSvg
                 color={
-                  state.postType === PostType.post
+                  state.postType === PostType.Post
                     ? Colors.secondary
                     : Colors.gray
                 }
@@ -94,13 +107,13 @@ const ProfileScreen = () => {
         ),
       },
       {
-        type: PostType.bookmark,
+        type: PostType.Bookmark,
         icon: (
           <Obx>
             {() => (
               <BookMarkSvg
                 color={
-                  state.postType === PostType.bookmark
+                  state.postType === PostType.Bookmark
                     ? Colors.secondary
                     : Colors.gray
                 }
@@ -110,13 +123,13 @@ const ProfileScreen = () => {
         ),
       },
       {
-        type: PostType.reel,
+        type: PostType.Video,
         icon: (
           <Obx>
             {() => (
-              <ReelSvg
+              <VideoSvg
                 color={
-                  state.postType === PostType.reel
+                  state.postType === PostType.Video
                     ? Colors.secondary
                     : Colors.gray
                 }
@@ -135,8 +148,13 @@ const ProfileScreen = () => {
       navigate(PageName.MediaPicker, {
         type: 'photo',
         multiple: false,
-        onNext: medias => {
-          console.log(medias)
+        disableVideo: true,
+        editable: true,
+        editorProps: {
+          onNext: medias => {
+            console.log(medias)
+            navigate(PageName.ProfileScreen)
+          },
         },
       })
     } catch (e) {
@@ -161,12 +179,17 @@ const ProfileScreen = () => {
             <AppText color={Colors.black75}>Followers</AppText>
           </TouchableOpacity>
           <View>
-            <AppImage
-              containerStyle={styles.avatar}
-              source={{
-                uri: 'https://picsum.photos/1000/1000',
-              }}
-            />
+            <Obx>
+              {() => (
+                <AppImage
+                  containerStyle={styles.avatar}
+                  source={{
+                    uri: userStore.userInfo.avatar_url,
+                  }}
+                  lightbox
+                />
+              )}
+            </Obx>
             <TouchableOpacity
               onPress={onUpdateAvatarPress}
               style={styles.updateAvatarBtn}
@@ -180,9 +203,12 @@ const ProfileScreen = () => {
             <AppText color={Colors.black75}>Following</AppText>
           </TouchableOpacity>
         </Box>
-        <Box paddingHorizontal={50} marginTop={16} center>
+        <Box paddingHorizontal={50} marginTop={0} center>
           <AppText fontWeight={700} fontSize={16}>
-            @username
+            {userStore.userInfo.full_name}
+          </AppText>
+          <AppText fontWeight={600} color={Colors.placeholder} fontSize={12}>
+            @{userStore.userInfo.user_id}
           </AppText>
           <AppText align="center" color={Colors.k6C7A9C} lineHeight={20}>
             This is a description of the user. This is a description of the
@@ -202,7 +228,7 @@ const ProfileScreen = () => {
             </AppText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.settingBtn}>
-            <MenuSvg size={16} color={Colors.white} />
+            <DotsSvg size={16} color={Colors.white} />
           </TouchableOpacity>
         </Box>
       </Box>
@@ -243,6 +269,9 @@ const ProfileScreen = () => {
       if (index <= 2) {
         state.setPostType(item.type)
       } else {
+        navigate(PageName.PostDetailScreen, {
+          postId: item.post_id,
+        })
       }
     }
     return index <= 2 ? (
@@ -260,16 +289,20 @@ const ProfileScreen = () => {
     )
   }, [])
   return (
-    <Container style={styles.rootView}>
+    <Container disableTop style={styles.rootView}>
       <Position top={0} left={0} right={0} zIndex={-1}>
         <Box height={250}>
-          <AppImage
-            source={{
-              uri: 'https://picsum.photos/1024/1024',
-            }}
-            resizeMode="cover"
-            containerStyle={styles.coverPhoto}
-          />
+          <Obx>
+            {() => (
+              <AppImage
+                source={{
+                  uri: userStore.userInfo.cover_url,
+                }}
+                resizeMode="cover"
+                containerStyle={styles.coverPhoto}
+              />
+            )}
+          </Obx>
           <Animated.View style={[Layout.fill, headerOverlayStyle]}>
             <BlurView style={Layout.fill} />
           </Animated.View>
@@ -303,7 +336,7 @@ const ProfileScreen = () => {
       </Position>
       <Obx>
         {() => (
-          <FlatList
+          <Animated.FlatList
             ListHeaderComponent={ListHeader}
             ListFooterComponent={
               <Box height={90} backgroundColor={Colors.kE6EEFA} />
@@ -315,7 +348,9 @@ const ProfileScreen = () => {
             data={state.filteredPosts.slice()}
             stickyHeaderIndices={[1]}
             renderItem={renderPostItem}
-            keyExtractor={(item, index) => item.post_id || index}
+            keyExtractor={item => item.post_id}
+            initialNumToRender={9}
+            showsVerticalScrollIndicator={false}
           />
         )}
       </Obx>
@@ -337,7 +372,6 @@ export default ProfileScreen
 const styles = XStyleSheet.create({
   rootView: {
     flex: 1,
-    backgroundColor: Colors.white,
   },
   listView: {
     backgroundColor: Colors.white,
@@ -395,7 +429,7 @@ const styles = XStyleSheet.create({
     aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.gray,
+    backgroundColor: Colors.kC2C2C2,
     borderRadius: 5,
     marginLeft: 16,
   },

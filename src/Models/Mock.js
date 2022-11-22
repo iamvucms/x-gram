@@ -8,6 +8,10 @@ export const mockUsers = [
       300,
       500,
     )}/${generateRandomIntegerInRange(300, 500)}`,
+    cover_url: `https://picsum.photos/${generateRandomIntegerInRange(
+      1000,
+      2000,
+    )}/${generateRandomIntegerInRange(300, 500)}`,
     bio: 'This is a bio',
     followers: [],
     following: [],
@@ -19,6 +23,10 @@ export const mockUsers = [
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
       500,
+    )}/${generateRandomIntegerInRange(300, 500)}`,
+    cover_url: `https://picsum.photos/${generateRandomIntegerInRange(
+      1000,
+      2000,
     )}/${generateRandomIntegerInRange(300, 500)}`,
     bio: 'This is a bio',
     followers: [],
@@ -32,6 +40,10 @@ export const mockUsers = [
       300,
       500,
     )}/${generateRandomIntegerInRange(300, 500)}`,
+    cover_url: `https://picsum.photos/${generateRandomIntegerInRange(
+      1000,
+      2000,
+    )}/${generateRandomIntegerInRange(300, 500)}`,
     bio: 'This is a bio',
     followers: [],
     following: [],
@@ -43,6 +55,10 @@ export const mockUsers = [
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
       500,
+    )}/${generateRandomIntegerInRange(300, 500)}`,
+    cover_url: `https://picsum.photos/${generateRandomIntegerInRange(
+      1000,
+      2000,
     )}/${generateRandomIntegerInRange(300, 500)}`,
     bio: 'This is a bio',
     followers: [],
@@ -56,6 +72,10 @@ export const mockUsers = [
       300,
       500,
     )}/${generateRandomIntegerInRange(300, 500)}`,
+    cover_url: `https://picsum.photos/${generateRandomIntegerInRange(
+      1000,
+      2000,
+    )}/${generateRandomIntegerInRange(300, 500)}`,
     bio: 'This is a bio',
     followers: [],
     following: [],
@@ -67,6 +87,10 @@ export const mockUsers = [
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
       500,
+    )}/${generateRandomIntegerInRange(300, 500)}`,
+    cover_url: `https://picsum.photos/${generateRandomIntegerInRange(
+      1000,
+      2000,
     )}/${generateRandomIntegerInRange(300, 500)}`,
     bio: 'This is a bio',
     followers: [],
@@ -80,6 +104,10 @@ export const mockUsers = [
       300,
       500,
     )}/${generateRandomIntegerInRange(300, 500)}`,
+    cover_url: `https://picsum.photos/${generateRandomIntegerInRange(
+      1000,
+      2000,
+    )}/${generateRandomIntegerInRange(300, 500)}`,
     bio: 'This is a bio',
     followers: [],
     following: [],
@@ -91,6 +119,10 @@ export const mockUsers = [
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
       500,
+    )}/${generateRandomIntegerInRange(300, 500)}`,
+    cover_url: `https://picsum.photos/${generateRandomIntegerInRange(
+      1000,
+      2000,
     )}/${generateRandomIntegerInRange(300, 500)}`,
     bio: 'This is a bio',
     followers: [],
@@ -104,6 +136,10 @@ export const mockUsers = [
       300,
       500,
     )}/${generateRandomIntegerInRange(300, 500)}`,
+    cover_url: `https://picsum.photos/${generateRandomIntegerInRange(
+      1000,
+      2000,
+    )}/${generateRandomIntegerInRange(300, 500)}`,
     bio: 'This is a bio',
     followers: [],
     following: [],
@@ -115,6 +151,10 @@ export const mockUsers = [
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
       500,
+    )}/${generateRandomIntegerInRange(300, 500)}`,
+    cover_url: `https://picsum.photos/${generateRandomIntegerInRange(
+      1000,
+      2000,
     )}/${generateRandomIntegerInRange(300, 500)}`,
     bio: 'This is a bio',
     followers: [],
@@ -214,6 +254,29 @@ export const mockPosts = [
           generateRandomIntegerInRange(800, 2000) +
           '',
         is_video: false,
+      },
+    ],
+    reactions: [
+      {
+        reacted_by: mockUsers[0],
+      },
+      {
+        reacted_by: mockUsers[1],
+      },
+    ],
+    comments: mockComments,
+  },
+  {
+    post_id: '15',
+    posted_by: mockUsers[0],
+    created_at: new Date().getTime(),
+    updated_at: new Date().getTime(),
+    message: 'This is a post by John Doe',
+    medias: [
+      {
+        media_id: '1',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        is_video: true,
       },
     ],
     reactions: [
