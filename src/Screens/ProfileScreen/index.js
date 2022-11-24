@@ -1,17 +1,18 @@
 import {
   BookMarkSvg,
   CameraSvg,
-  ChevronRightSvg,
   DotsSvg,
   GridSvg,
   SettingSvg,
   VideoSvg,
 } from '@/Assets/Svg'
 import {
+  AppBottomSheet,
   AppImage,
   AppText,
   Box,
   Container,
+  LoadingIndicator,
   Obx,
   Padding,
   Position,
@@ -19,45 +20,54 @@ import {
   PostPreviewModal,
 } from '@/Components'
 import { PageName } from '@/Config'
-import { mockPosts } from '@/Models'
+import { useAppTheme } from '@/Hooks'
 import { navigate } from '@/Navigators'
+import { EditProfileNavigator } from '@/Navigators/Application'
 import { userStore } from '@/Stores'
-import { Colors, Layout, XStyleSheet } from '@/Theme'
+import { Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
 import { BlurView } from '@react-native-community/blur'
+import { createNavigationContainerRef } from '@react-navigation/native'
+import { flowResult } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TouchableOpacity, View } from 'react-native'
+import { Image, TouchableOpacity, View } from 'react-native'
 import Animated, {
   interpolate,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 const PostType = {
   Post: 'post',
   Bookmark: 'bookmark',
   Video: 'video',
 }
+
 const ProfileScreen = () => {
   const { t } = useTranslation()
+  const { Images } = useAppTheme()
   const scrollY = useSharedValue(0)
   const headerButtonAnim = useSharedValue(0)
-
+  const editSheetRef = useRef()
+  const editNavigatorRef = createNavigationContainerRef()
   const state = useLocalObservable(() => ({
-    posts: mockPosts,
     postType: PostType.Post,
     previewPost: null,
+    updatingCover: false,
+    updatingAvatar: false,
     setPreviewPost: (post, specs) => (state.previewPost = { post, specs }),
     hidePreviewPost: () => (state.previewPost = null),
-    setPosts: posts => (state.posts = posts),
     setPostType: postType => (state.postType = postType),
+    setUpdatingCover: updatingCover => (state.updatingCover = updatingCover),
+    setUpdatingAvatar: updatingAvatar =>
+      (state.updatingAvatar = updatingAvatar),
     get filteredPosts() {
-      const photoPosts = state.posts
+      const photoPosts = userStore.posts
         .filter(post => !post.medias[0].is_video)
         .slice()
-      const videoPosts = state.posts
+      const videoPosts = userStore.posts
         .filter(post => post.medias[0].is_video)
         .slice()
       const bookmarkPosts = userStore.bookmarkPosts.slice()
@@ -142,8 +152,7 @@ const ProfileScreen = () => {
     ],
     [],
   )
-
-  const onUpdateAvatarPress = useCallback(async () => {
+  const updateProfileImage = onNext => {
     try {
       navigate(PageName.MediaPicker, {
         type: 'photo',
@@ -152,16 +161,31 @@ const ProfileScreen = () => {
         editable: true,
         editorProps: {
           onNext: medias => {
-            console.log(medias)
             navigate(PageName.ProfileScreen)
+            onNext(medias)
           },
         },
       })
     } catch (e) {
-      console.log(e)
+      console.log({ updateProfileImage })
     }
+  }
+  const onUpdateAvatarPress = useCallback(() => {
+    updateProfileImage(async medias => {
+      state.setUpdatingAvatar(true)
+      await flowResult(userStore.updateProfileImage(medias[0]))
+      state.setUpdatingAvatar(false)
+    })
   }, [])
-  const onUpdateCoverPress = useCallback(() => {}, [])
+  const onUpdateCoverPress = useCallback(() => {
+    updateProfileImage(async medias => {
+      if (medias.length > 0) {
+        state.setUpdatingCover(true)
+        await flowResult(userStore.updateProfileImage(medias[0], true))
+        state.setUpdatingCover(false)
+      }
+    })
+  }, [])
 
   const ListHeader = useMemo(
     () => (
@@ -181,13 +205,24 @@ const ProfileScreen = () => {
           <View>
             <Obx>
               {() => (
-                <AppImage
-                  containerStyle={styles.avatar}
-                  source={{
-                    uri: userStore.userInfo.avatar_url,
-                  }}
-                  lightbox
-                />
+                <Box overflow="hidden" radius={99} center marginTop={-50}>
+                  <AppImage
+                    containerStyle={styles.avatar}
+                    source={{
+                      uri: userStore.userInfo.avatar_url,
+                    }}
+                    lightbox
+                  />
+                  <Obx>
+                    {() =>
+                      state.updatingAvatar && (
+                        <View style={styles.uploadingView}>
+                          <LoadingIndicator size={16} color={Colors.white} />
+                        </View>
+                      )
+                    }
+                  </Obx>
+                </Box>
               )}
             </Obx>
             <TouchableOpacity
@@ -204,25 +239,22 @@ const ProfileScreen = () => {
           </TouchableOpacity>
         </Box>
         <Box paddingHorizontal={50} marginTop={0} center>
-          <AppText fontWeight={700} fontSize={16}>
+          <AppText fontWeight={700} fontSize={20}>
             {userStore.userInfo.full_name}
           </AppText>
           <AppText fontWeight={600} color={Colors.placeholder} fontSize={12}>
             @{userStore.userInfo.user_id}
           </AppText>
+          <Padding top={8} />
           <AppText align="center" color={Colors.k6C7A9C} lineHeight={20}>
-            This is a description of the user. This is a description of the
-            user. This is a description of the user.
+            {userStore.userInfo.bio}
           </AppText>
         </Box>
         <Box marginTop={16} paddingHorizontal={16} row align="center">
-          {/* <TouchableOpacity style={styles.optionBtn}>
-                <AppText fontWeight={700} color={Colors.white}>
-                  Follow
-                </AppText>
-              </TouchableOpacity>
-              <Padding left={16} /> */}
-          <TouchableOpacity style={styles.optionBtn}>
+          <TouchableOpacity
+            onPress={() => editSheetRef.current.snapTo(0)}
+            style={styles.optionBtn}
+          >
             <AppText fontWeight={700} color={Colors.white}>
               {t('profile.edit_profile')}
             </AppText>
@@ -235,6 +267,50 @@ const ProfileScreen = () => {
     ),
     [],
   )
+  const ListFooterComponent = useMemo(() => {
+    return (
+      <Obx>
+        {() =>
+          state.filteredPosts.length === 3 && (
+            <Box height={250} center backgroundColor={Colors.white}>
+              <>
+                <Image
+                  style={styles.emptyIcon}
+                  resizeMode="contain"
+                  source={Images.pack4_15}
+                />
+                {state.postType === PostType.Post ? (
+                  <AppText
+                    fontSize={16}
+                    fontWeight={600}
+                    color={Colors.placeholder}
+                  >
+                    {t('profile.you_have_not_photo_yet')}
+                  </AppText>
+                ) : state.postType === PostType.Bookmark ? (
+                  <AppText
+                    fontSize={16}
+                    fontWeight={600}
+                    color={Colors.placeholder}
+                  >
+                    {t('profile.you_have_not_bookmark_yet')}
+                  </AppText>
+                ) : (
+                  <AppText
+                    fontSize={16}
+                    fontWeight={600}
+                    color={Colors.placeholder}
+                  >
+                    {t('profile.you_have_not_video_yet')}
+                  </AppText>
+                )}
+              </>
+            </Box>
+          )
+        }
+      </Obx>
+    )
+  }, [])
 
   const headerOverlayStyle = useAnimatedStyle(
     () => ({
@@ -243,14 +319,6 @@ const ProfileScreen = () => {
     [],
   )
 
-  const headerLeftButtonStyle = useAnimatedStyle(() => ({
-    opacity: 1 - headerButtonAnim.value,
-    transform: [
-      {
-        translateX: headerButtonAnim.value * -100,
-      },
-    ],
-  }))
   const headerRightButtonStyle = useAnimatedStyle(() => ({
     opacity: 1 - headerButtonAnim.value,
     transform: [
@@ -288,6 +356,7 @@ const ProfileScreen = () => {
       />
     )
   }, [])
+  const { top } = useSafeAreaInsets()
   return (
     <Container disableTop style={styles.rootView}>
       <Position top={0} left={0} right={0} zIndex={-1}>
@@ -316,18 +385,15 @@ const ProfileScreen = () => {
             justify="space-between"
             paddingHorizontal={16}
           >
-            <Animated.View style={headerLeftButtonStyle}>
-              <TouchableOpacity style={styles.headerBtn}>
-                <View style={{ transform: [{ rotate: '180deg' }] }}>
-                  <ChevronRightSvg />
-                </View>
-              </TouchableOpacity>
-            </Animated.View>
+            <View />
             <Animated.View style={headerRightButtonStyle}>
               <TouchableOpacity style={styles.headerBtn}>
                 <SettingSvg />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.headerBtn}>
+              <TouchableOpacity
+                onPress={onUpdateCoverPress}
+                style={styles.headerBtn}
+              >
                 <CameraSvg strokeWidth={2} />
               </TouchableOpacity>
             </Animated.View>
@@ -338,9 +404,7 @@ const ProfileScreen = () => {
         {() => (
           <Animated.FlatList
             ListHeaderComponent={ListHeader}
-            ListFooterComponent={
-              <Box height={90} backgroundColor={Colors.kE6EEFA} />
-            }
+            ListFooterComponent={ListFooterComponent}
             columnWrapperStyle={styles.listView}
             onScroll={scrollHandler}
             scrollEventThrottle={16}
@@ -363,6 +427,13 @@ const ProfileScreen = () => {
           />
         )}
       </Obx>
+      <AppBottomSheet
+        backgroundStyle={{ backgroundColor: Colors.transparent }}
+        snapPoints={[screenHeight * 0.8, screenHeight - top]}
+        ref={editSheetRef}
+      >
+        <EditProfileNavigator ref={editNavigatorRef} />
+      </AppBottomSheet>
     </Container>
   )
 }
@@ -390,7 +461,6 @@ const styles = XStyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    marginTop: -50,
     borderColor: Colors.white,
     borderWidth: 4,
     backgroundColor: Colors.white,
@@ -444,5 +514,17 @@ const styles = XStyleSheet.create({
     marginBottom: 10,
     borderBottomColor: Colors.border,
     borderBottomWidth: 0.5,
+  },
+  uploadingView: {
+    ...XStyleSheet.absoluteFillObject,
+    zIndex: 99,
+    backgroundColor: Colors.black50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyIcon: {
+    width: 100,
+    height: 100,
+    marginBottom: 16,
   },
 })

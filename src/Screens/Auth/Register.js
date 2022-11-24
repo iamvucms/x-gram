@@ -266,10 +266,8 @@ const RegisterScreen = () => {
                 radius={10}
                 text={t('auth.signIn')}
                 onPress={onRegisterPress}
-                textProps={{
-                  fontWeight: 700,
-                  fontSize: 19,
-                }}
+                textSize={19}
+                textWeight={700}
                 style={styles.registerBtn}
               />
             )}

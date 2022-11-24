@@ -1,5 +1,6 @@
 import { CloseSvg } from '@/Assets/Svg'
 import { AppButton } from '@/Components'
+import { useAppTheme } from '@/Hooks'
 import {
   Colors,
   Layout,
@@ -64,7 +65,7 @@ const AppDialog = ({
   showCancelButton = false,
 }: AppDialogProps) => {
   const { t } = useTranslation()
-
+  const { Images } = useAppTheme()
   useEffect(() => {
     if (showTime) {
       const action = setTimeout(() => {
@@ -94,9 +95,11 @@ const AppDialog = ({
               <CloseSvg size={30} />
             </TouchableOpacity>
           )}
-          {typeof dialogIcon === 'number' ? (
+          {typeof dialogIcon === 'number' || typeof dialogIcon === 'string' ? (
             <FastImage
-              source={dialogIcon}
+              source={
+                typeof dialogIcon === 'string' ? Images[dialogIcon] : dialogIcon
+              }
               style={[
                 styles.dialogIcon,
                 {

@@ -29,4 +29,7 @@ export const PageName = {
   ConversationDetailScreen: 'ConversationDetailScreen',
   ConverstionInforScreen: 'ConverstionInforScreen',
   CreateConversationScreen: 'CreateConversationScreen',
+  EditProfileScreen: 'EditProfileScreen',
+  PersonalInformationScreen: 'PersonalInformationScreen',
+  SettingScreen: 'SettingScreen',
 }

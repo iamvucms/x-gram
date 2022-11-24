@@ -5,23 +5,27 @@ import {
   CaptureScreen,
   ConversationDetailScreen,
   ConversationsScreen,
+  ConverstionInforScreen,
+  CreateConversationScreen,
+  EditProfileScreen,
   ImageEditor,
   InAppUpdateScreen,
   LoginScreen,
   MediaPicker,
   OnboardingScreen,
+  PersonalInformationScreen,
   PostDetailScreen,
   ProfileOther,
   RecoveryPasswordScreen,
   RegisterScreen,
+  SettingScreen,
   StoryScreen,
   UserPostsScreen,
-  ConverstionInforScreen,
-  CreateConversationScreen,
 } from '@/Screens'
+import { Colors } from '@/Theme'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import React from 'react'
+import React, { forwardRef } from 'react'
 import BottomTab from './BottomTab'
 import { navigationRef, screenOptions } from './NavigationUtils'
 const Stack = createNativeStackNavigator()
@@ -105,6 +109,30 @@ const AuthStack = () => {
         name={PageName.CreateConversationScreen}
         component={CreateConversationScreen}
       />
+      <Stack.Screen name={PageName.SettingScreen} component={SettingScreen} />
     </Stack.Navigator>
   )
 }
+export const EditProfileNavigator = forwardRef(({}, ref) => {
+  return (
+    <NavigationContainer ref={ref}>
+      <Stack.Navigator
+        screenOptions={{
+          ...screenOptions,
+          contentStyle: {
+            backgroundColor: Colors.transparent,
+          },
+        }}
+      >
+        <Stack.Screen
+          name={PageName.EditProfileScreen}
+          component={EditProfileScreen}
+        />
+        <Stack.Screen
+          name={PageName.PersonalInformationScreen}
+          component={PersonalInformationScreen}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
+})

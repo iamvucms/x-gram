@@ -71,9 +71,9 @@ const CreateButton = () => {
         ref={ref}
         style={styles.container}
       >
-        <Animated.View entering={BounceIn.delay(1200)}>
+        <View>
           <PlusCircleSvg size={58} />
-        </Animated.View>
+        </View>
       </TouchableOpacity>
       <Observer>
         {() => {

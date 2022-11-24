@@ -88,7 +88,13 @@ export default class DiaLogStore {
     this.onClose = () => {}
     this.onPress = () => {}
   }
-
+  showErrorDiaLog(title = 'oops', message = 'wrong') {
+    this.showDiaLog({
+      title,
+      message,
+      dialogIcon: 'pack1_3',
+    })
+  }
   // check for hydration (required)
   get isHydrated() {
     return isHydrated(this)

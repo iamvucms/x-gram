@@ -113,7 +113,11 @@ const PostDetailScreen = ({ route }) => {
     () => (
       <Obx>
         {() =>
-          !state.loading && (
+          state.loading ? (
+            <Box height={screenHeight} center>
+              <LoadingIndicator />
+            </Box>
+          ) : (
             <Fragment>
               <PostItem
                 onCommentPress={() => {

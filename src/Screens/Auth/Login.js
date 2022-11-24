@@ -217,10 +217,8 @@ const LoginScreen = () => {
               disabledBackgroundColor={Colors.disabled}
               radius={10}
               text={t('auth.signIn')}
-              textProps={{
-                fontWeight: 700,
-                fontSize: 19,
-              }}
+              textWeight={700}
+              textSize={19}
               onPress={onLoginPress}
               style={styles.loginBtn}
             />

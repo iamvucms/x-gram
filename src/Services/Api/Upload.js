@@ -5,7 +5,7 @@ export const uploadImage = (uri, mimeType) => {
   const data = new FormData()
   data.append('image', {
     uri,
-    name: 'image.jpg',
+    name: uri.split('/').pop(),
     type: mimeType,
   })
   return uploadRequest(Endpoint().uploadImage, data)

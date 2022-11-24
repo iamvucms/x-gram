@@ -13,3 +13,6 @@ export const blockUser = id => request(Endpoint().blockUser(id), Method.POST)
 
 export const unblockUser = id =>
   request(Endpoint().unBlockUser(id), Method.POST)
+
+export const updateUserInfo = data =>
+  request(Endpoint().updateUserInfo, Method.POST, data)

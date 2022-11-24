@@ -114,10 +114,17 @@ const MediaPicker = ({ route }) => {
         if (multiple) {
           state.toggleSelect(item.image.uri)
         } else {
-          editorProps?.onNext &&
-            editorProps?.onNext?.([
-              { ...item, uri: item.image.uri, mimeType: item.mimeType },
-            ])
+          const files = [
+            { ...item, uri: item.image.uri, mimeType: item.mimeType },
+          ]
+          if (editable) {
+            navigate(PageName.ImageEditor, {
+              medias: files,
+              ...editorProps,
+            })
+          } else {
+            editorProps?.onNext?.(files)
+          }
         }
       }
       return (

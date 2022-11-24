@@ -23,6 +23,7 @@ export default {
   cancel: 'Cancel',
   confirm: 'Confirm',
   other: 'Other',
+  save: 'Save',
   recommended: 'Recommended',
   results: 'Results',
   onboarding: {
@@ -92,6 +93,10 @@ export default {
     setting: 'Setting',
     logout: 'Logout',
     logout_confirm: 'Are you sure you want to logout?',
+    you_have_not_photo_yet: 'You have not photo yet!',
+    you_have_not_bookmark_yet: 'You have not bookmark yet!',
+    you_have_not_video_yet: 'You have not video yet!',
+    edit_personal_info: 'Edit Personal Information',
   },
   conversations: {
     conversations: 'Conversations',

@@ -13,6 +13,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient'
 import AppText, { AppTextProps } from './AppText'
 import Padding from './Padding'
+
 export interface AppButtonProps {
   text?: string
   icon?: ImageSourcePropType
@@ -26,26 +27,30 @@ export interface AppButtonProps {
   disabledBackgroundColor?: string
   disabledTextColor?: string
   textColor?: string
+  textSize?: number
+  textWeight?: AppTextProps['fontWeight']
+  textLineHeight?: number
   textStyle?: StyleProp<TextStyle>
   iconStyle?: StyleProp<ImageStyle>
   opacity?: number
   iconDirection?: 'left' | 'right'
-  textProps?: Omit<AppTextProps, 'children'>
+  spaceBetween?: boolean
   style?: StyleProp<ViewStyle> | ViewStyle
   radius?: number
-  spaceBetween?: number
+  spacing?: number
   shadowColor?: string
   shadowOpacity?: number
   shadowSize?: number
   center?: boolean
 }
+
 const AppButton = ({
   radius = 8,
   backgroundColor = Colors.primary,
   colors,
   disabled,
-  disabledBackgroundColor = Colors.gray,
-  disabledTextColor = Colors.white,
+  disabledBackgroundColor = Colors.k353638,
+  disabledTextColor = Colors.kA5A6A7,
   icon,
   svgIcon,
   iconStyle,
@@ -56,20 +61,27 @@ const AppButton = ({
   text,
   textStyle,
   iconDirection = 'right',
-  textColor = Colors.white,
+  textColor = Colors.background,
+  spaceBetween,
   style,
-  spaceBetween = 10,
+  spacing = 10,
   center = true,
-  textProps: { style: extraTextStyle, ...restTextProps } = {},
+  textSize = 16,
+  textWeight = 600,
+  textLineHeight = 24,
   ...restProps
 }: AppButtonProps) => {
   const styles = XStyleSheet.create({
     baseBtn: {
       flexDirection: iconDirection === 'right' ? 'row' : 'row-reverse',
       alignItems: 'center',
-      justifyContent: center ? 'center' : 'flex-start',
+      justifyContent: spaceBetween
+        ? 'space-between'
+        : center
+        ? 'center'
+        : 'flex-start',
       paddingHorizontal: 16,
-      height: 44,
+      height: 48,
       borderRadius: radius,
       backgroundColor: disabled ? disabledBackgroundColor : backgroundColor,
       overflow: 'hidden',
@@ -107,15 +119,17 @@ const AppButton = ({
         />
       )}
       <AppText
-        {...restTextProps}
-        style={[styles.baseTxt, textStyle, extraTextStyle]}
+        lineHeight={textLineHeight}
+        fontSize={textSize}
+        fontWeight={textWeight}
+        style={[styles.baseTxt, textStyle]}
       >
         {text}
       </AppText>
       {(!!icon || !!svgIcon) && (
         <>
-          <Padding left={ResponsiveWidth(spaceBetween)} />
-          {!!svgIcon ? (
+          <Padding left={ResponsiveWidth(spacing)} />
+          {svgIcon ? (
             svgIcon
           ) : (
             <Image source={icon} style={[styles.baseIc, iconStyle]} />
