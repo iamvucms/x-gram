@@ -60,6 +60,12 @@ export default {
     passlock_title: 'Enter your passcode',
     passlock_description: 'Enter your passcode to unlock your account',
     passcode_error: 'Passcode is not correct',
+    user_name_placeholder: 'Enter your username',
+    bio_placeholder: 'Enter your bio',
+    website_placeholder: 'Enter your website',
+    bio_max_length: 'Bio must be at most 150 characters',
+    website_format_error: 'Website is not valid',
+    website_max_length: 'Website must be at most 100 characters',
   },
   home: {
     create_story: 'Create Story',
@@ -97,6 +103,10 @@ export default {
     you_have_not_bookmark_yet: 'You have not bookmark yet!',
     you_have_not_video_yet: 'You have not video yet!',
     edit_personal_info: 'Edit Personal Information',
+    full_name: 'Full Name',
+    username: 'Username',
+    bio: 'Bio',
+    website: 'Website',
   },
   conversations: {
     conversations: 'Conversations',

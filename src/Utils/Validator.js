@@ -93,13 +93,20 @@ export function validateFullName(value) {
   }
 }
 
-export function validateWithdrawMoney(value) {
-  if (value.trim().length === 0) {
-    return translation('withdrawBank.errorMoneyEmpty')
-  } else if (value.trim() < 100) {
-    return translation('withdrawBank.errorMoneyMin')
-  } else if (value.trim() > 1000000) {
-    return translation('withdrawBank.errorMoneyMax')
+export function validateBio(value) {
+  if (value.trim().length > 150) {
+    return translation('auth.bio_max_length')
+  } else {
+    return ''
+  }
+}
+export function validateWebsite(value) {
+  const regexDisplayString =
+    /((http|https):\/\/)?(www.)?[a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
+  if (value.trim().length > 100) {
+    return translation('auth.website_max_length')
+  } else if (!regexDisplayString.test(value.trim())) {
+    return translation('auth.website_format_error')
   } else {
     return ''
   }

@@ -11,10 +11,10 @@ interface ErrorLabelProps {
 const ErrorLabel = ({ text, containerStyle, textStyle }: ErrorLabelProps) => {
   return (
     <Animated.View
-      style={[{ paddingTop: ResponsiveHeight(10) }, containerStyle]}
+      style={[{ paddingTop: ResponsiveHeight(6) }, containerStyle]}
       entering={FadeIn}
     >
-      <AppText color={Colors.error} style={textStyle}>
+      <AppText fontSize={12} color={Colors.error} style={textStyle}>
         {text}
       </AppText>
     </Animated.View>

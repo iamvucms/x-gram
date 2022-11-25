@@ -21,7 +21,7 @@ const PersonalInformationScreen = ({ navigation }) => {
         row
         justify="space-between"
         align="center"
-        height={44}
+        height={50}
         borderBottomColor={Colors.border}
         borderBottomWidth={0.3}
       >

@@ -7,7 +7,7 @@ export const roundNumber = (money, precision = 0, isRoundDown = false) => {
   return roundFunc(money * Math.pow(10, precision)) / Math.pow(10, precision)
 }
 
-export const formatAmount = amount => {
+export const formatAmount = (amount = 0) => {
   if (amount > 999999) {
     return `${roundNumber(amount / 1000000, 1)}m`
   }

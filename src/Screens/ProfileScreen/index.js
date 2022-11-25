@@ -25,6 +25,7 @@ import { navigate } from '@/Navigators'
 import { EditProfileNavigator } from '@/Navigators/Application'
 import { userStore } from '@/Stores'
 import { Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
+import { formatAmount } from '@/Utils'
 import { BlurView } from '@react-native-community/blur'
 import { createNavigationContainerRef } from '@react-navigation/native'
 import { flowResult } from 'mobx'
@@ -198,7 +199,13 @@ const ProfileScreen = () => {
       >
         <Box row paddingHorizontal={20}>
           <TouchableOpacity style={styles.infoBtn}>
-            <AppText fontWeight={700}>1k</AppText>
+            <Obx>
+              {() => (
+                <AppText fontWeight={700}>
+                  {formatAmount(userStore.userInfo.followers.length)}
+                </AppText>
+              )}
+            </Obx>
             <Padding top={4} />
             <AppText color={Colors.black75}>Followers</AppText>
           </TouchableOpacity>
@@ -269,46 +276,49 @@ const ProfileScreen = () => {
   )
   const ListFooterComponent = useMemo(() => {
     return (
-      <Obx>
-        {() =>
-          state.filteredPosts.length === 3 && (
-            <Box height={250} center backgroundColor={Colors.white}>
-              <>
-                <Image
-                  style={styles.emptyIcon}
-                  resizeMode="contain"
-                  source={Images.pack4_15}
-                />
-                {state.postType === PostType.Post ? (
-                  <AppText
-                    fontSize={16}
-                    fontWeight={600}
-                    color={Colors.placeholder}
-                  >
-                    {t('profile.you_have_not_photo_yet')}
-                  </AppText>
-                ) : state.postType === PostType.Bookmark ? (
-                  <AppText
-                    fontSize={16}
-                    fontWeight={600}
-                    color={Colors.placeholder}
-                  >
-                    {t('profile.you_have_not_bookmark_yet')}
-                  </AppText>
-                ) : (
-                  <AppText
-                    fontSize={16}
-                    fontWeight={600}
-                    color={Colors.placeholder}
-                  >
-                    {t('profile.you_have_not_video_yet')}
-                  </AppText>
-                )}
-              </>
-            </Box>
-          )
-        }
-      </Obx>
+      <>
+        <Obx>
+          {() =>
+            state.filteredPosts.length === 3 && (
+              <Box height={190} center backgroundColor={Colors.white}>
+                <>
+                  <Image
+                    style={styles.emptyIcon}
+                    resizeMode="contain"
+                    source={Images.pack4_15}
+                  />
+                  {state.postType === PostType.Post ? (
+                    <AppText
+                      fontSize={16}
+                      fontWeight={600}
+                      color={Colors.placeholder}
+                    >
+                      {t('profile.you_have_not_photo_yet')}
+                    </AppText>
+                  ) : state.postType === PostType.Bookmark ? (
+                    <AppText
+                      fontSize={16}
+                      fontWeight={600}
+                      color={Colors.placeholder}
+                    >
+                      {t('profile.you_have_not_bookmark_yet')}
+                    </AppText>
+                  ) : (
+                    <AppText
+                      fontSize={16}
+                      fontWeight={600}
+                      color={Colors.placeholder}
+                    >
+                      {t('profile.you_have_not_video_yet')}
+                    </AppText>
+                  )}
+                </>
+              </Box>
+            )
+          }
+        </Obx>
+        <Box height={90} backgroundColor={Colors.kE6EEFA} />
+      </>
     )
   }, [])
 
