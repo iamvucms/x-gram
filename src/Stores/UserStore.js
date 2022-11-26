@@ -122,6 +122,7 @@ export default class UserStore {
       const response = yield updateUserInfo(userInfo)
       if (response?.status !== 'OK') {
         this.userInfo = preUserInfo
+        diaLogStore.showErrorDiaLog()
       }
     } catch (e) {
       console.log({

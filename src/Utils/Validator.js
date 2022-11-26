@@ -81,7 +81,7 @@ export function validateEmail(value) {
 
 export function validateFullName(value) {
   const regexDisplayString =
-    /[ !@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]+/
+    /[!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]+/
   if (value.trim().length === 0) {
     return translation('auth.fullname_empty')
   } else if (value.trim().length < 6) {
@@ -102,7 +102,7 @@ export function validateBio(value) {
 }
 export function validateWebsite(value) {
   const regexDisplayString =
-    /((http|https):\/\/)?(www.)?[a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/
+    /((http|https):\/\/)?(www.)?[a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/
   if (value.trim().length > 100) {
     return translation('auth.website_max_length')
   } else if (!regexDisplayString.test(value.trim())) {

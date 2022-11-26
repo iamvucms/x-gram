@@ -26,3 +26,17 @@ export const getHitSlop = (size = 20) => ({
   left: moderateScale(size),
   right: moderateScale(size),
 })
+
+export const compareTwoStringArray = (arr1, arr2) => {
+  arr1 = arr1.sort()
+  arr2 = arr2.sort()
+  if (arr1.length !== arr2.length) {
+    return false
+  }
+  for (let i = 0; i < arr1.length; i += 1) {
+    if (arr1[i] !== arr2[i]) {
+      return false
+    }
+  }
+  return true
+}

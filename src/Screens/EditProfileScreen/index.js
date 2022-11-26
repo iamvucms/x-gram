@@ -1,4 +1,4 @@
-import { ArrowRightSvg, ChevronRightSvg, CloseSvg } from '@/Assets/Svg'
+import { ArrowRightSvg, ChevronRightSvg, CloseSvg, PlusSvg } from '@/Assets/Svg'
 import {
   AppButton,
   AppInput,
@@ -6,13 +6,15 @@ import {
   Box,
   Container,
   ErrorLabel,
+  LoadingIndicator,
   Obx,
 } from '@/Components'
 import { PageName } from '@/Config'
 import { navigate } from '@/Navigators'
 import { userStore } from '@/Stores'
-import { Colors } from '@/Theme'
+import { Colors, Layout } from '@/Theme'
 import {
+  compareTwoStringArray,
   getHitSlop,
   validateBio,
   validateFullName,
@@ -24,6 +26,7 @@ import {
   TouchableOpacity,
   useBottomSheet,
 } from '@gorhom/bottom-sheet'
+import { flowResult, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -33,17 +36,18 @@ import FastImage from 'react-native-fast-image'
 const EditProfileScreen = ({ navigation }) => {
   const { t } = useTranslation()
   const bottomSheet = useBottomSheet()
-  const onSavePress = useCallback(() => {}, [])
+
   const state = useLocalObservable(() => ({
     fullName: userStore.userInfo.full_name,
     userId: userStore.userInfo.user_id,
     bio: userStore.userInfo.bio,
     website: '',
-    websites: userStore.userInfo.websites || [],
+    websites: toJS(userStore.userInfo.websites) || [],
     errorFullName: '',
     errorBio: '',
     errorWebsite: '',
     errorUserId: '',
+    updating: false,
     setFullName: value => (state.fullName = value),
     setBio: value => (state.bio = value),
     setWebsite: value => (state.website = value),
@@ -53,12 +57,14 @@ const EditProfileScreen = ({ navigation }) => {
     setErrorWebsite: value => (state.errorWebsite = value),
     setErrorUserId: value => (state.errorUserId = value),
     setWebsites: value => (state.websites = value),
+    setUpdating: value => (state.updating = value),
     addWebsite: () => {
       if (
         state.website &&
+        !state.errorWebsite &&
         !state.websites.some(item => item === state.website)
       ) {
-        state.websites.push(state.website)
+        state.websites.push(state.website.toLowerCase())
         state.setWebsite('')
       }
     },
@@ -69,7 +75,7 @@ const EditProfileScreen = ({ navigation }) => {
       state.setFullName(userStore.userInfo.full_name)
       state.setBio(userStore.userInfo.bio)
       state.setWebsite('')
-      state.setWebsites(userStore.userInfo.websites || [])
+      state.setWebsites(toJS(userStore.userInfo.websites) || [])
       state.setErrorFullName('')
       state.setErrorBio('')
       state.setErrorWebsite('')
@@ -79,19 +85,21 @@ const EditProfileScreen = ({ navigation }) => {
       return (
         state.errorFullName === '' &&
         state.errorBio === '' &&
-        state.errorWebsite === '' &&
         state.errorUserId === '' &&
         state.fullName !== '' &&
         state.bio !== '' &&
-        state.website !== '' &&
         state.userId !== '' &&
-        state.userId !== userStore.userInfo.user_id &&
-        state.fullName !== userStore.userInfo.full_name &&
-        state.bio !== userStore.userInfo.bio &&
-        state.website !== userStore.userInfo.website
+        (state.userId !== userStore.userInfo.user_id ||
+          state.fullName !== userStore.userInfo.full_name ||
+          state.bio !== userStore.userInfo.bio ||
+          !compareTwoStringArray(
+            toJS(state.websites),
+            toJS(userStore.userInfo.websites),
+          ))
       )
     },
   }))
+
   const renderWebsiteItem = useCallback(site => {
     return (
       <TouchableOpacity
@@ -118,6 +126,21 @@ const EditProfileScreen = ({ navigation }) => {
         </Box>
       </TouchableOpacity>
     )
+  }, [])
+
+  const onSavePress = useCallback(async () => {
+    if (state.updating) {
+      return
+    }
+    state.setUpdating(true)
+    const updateData = {
+      full_name: state.fullName,
+      bio: state.bio,
+      user_id: state.userId,
+      websites: state.websites,
+    }
+    await flowResult(userStore.updateUserInfo(updateData))
+    state.setUpdating(false)
   }, [])
   return (
     <Container
@@ -149,17 +172,25 @@ const EditProfileScreen = ({ navigation }) => {
         <AppText fontSize={16} fontWeight={600}>
           {t('profile.edit_profile')}
         </AppText>
-        <TouchableOpacity
-          hitSlop={getHitSlop(10)}
-          onPress={onSavePress}
-          style={[styles.headerBtn, styles.saveBtn]}
-        >
-          <AppText color={Colors.primary} fontWeight={500}>
-            {t('save')}
-          </AppText>
-        </TouchableOpacity>
+        <Obx>
+          {() => (
+            <TouchableOpacity
+              disabled={!state.isValid}
+              hitSlop={getHitSlop(10)}
+              onPress={onSavePress}
+              style={[styles.headerBtn, styles.saveBtn]}
+            >
+              <AppText
+                color={state.isValid ? Colors.primary : Colors.gray}
+                fontWeight={500}
+              >
+                {t('save')}
+              </AppText>
+            </TouchableOpacity>
+          )}
+        </Obx>
       </Box>
-      <BottomSheetScrollView>
+      <BottomSheetScrollView keyboardShouldPersistTaps="handled">
         <Box margin={16}>
           <FastImage
             source={{
@@ -254,7 +285,7 @@ const EditProfileScreen = ({ navigation }) => {
           </AppText>
           <Box
             marginTop={8}
-            marginBottom={4}
+            marginBottom={-4}
             marginHorizontal={-4}
             row
             flexWrap="wrap"
@@ -266,6 +297,7 @@ const EditProfileScreen = ({ navigation }) => {
             <Obx>
               {() => (
                 <AppInput
+                  style={Layout.fill}
                   fontWeight={500}
                   value={state.website}
                   onChangeText={txt => {
@@ -274,6 +306,7 @@ const EditProfileScreen = ({ navigation }) => {
                   }}
                   placeholder={t('auth.website_placeholder')}
                   placeholderTextColor={Colors.placeholder}
+                  onSubmitEditing={() => state.addWebsite()}
                 />
               )}
             </Obx>
@@ -309,6 +342,7 @@ const EditProfileScreen = ({ navigation }) => {
         />
         <Box height={300} />
       </BottomSheetScrollView>
+      <Obx>{() => state.updating && <LoadingIndicator overlay />}</Obx>
     </Container>
   )
 }
@@ -371,5 +405,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary50,
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 8,
   },
 })
