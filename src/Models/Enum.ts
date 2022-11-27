@@ -6,6 +6,7 @@ export enum ShareType {
 export enum Gender {
   Male = 0,
   Female = 1,
+  PreferNotToSay = 2,
 }
 export enum MediaType {
   Photo = 'photo',

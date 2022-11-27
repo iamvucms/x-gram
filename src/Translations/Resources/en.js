@@ -66,6 +66,13 @@ export default {
     bio_max_length: 'Bio must be at most 150 characters',
     website_format_error: 'Website is not valid',
     website_max_length: 'Website must be at most 100 characters',
+    phone_placeholder: 'Enter your phone number',
+    phone_format_error: 'Phone number is not valid',
+    phone_empty: 'Phone number is required',
+    phone_min_Length: 'Phone number must be at least 10 characters',
+    phone_start_with: 'Phone number must start with 0',
+    phone_special_characters:
+      'Phone number must not contain special characters',
   },
   home: {
     create_story: 'Create Story',
@@ -107,6 +114,15 @@ export default {
     username: 'Username',
     bio: 'Bio',
     website: 'Website',
+    email_address: 'Email Address',
+    phone_number: 'Phone Number',
+    gender: 'Gender',
+    male: 'Male',
+    female: 'Female',
+    prefer_not_to_say: 'Prefer not to say',
+    date_of_birth: 'Date of Birth',
+    update_personal_info_note:
+      "You can update your personal information here. This information won't be shared with anyone.",
   },
   conversations: {
     conversations: 'Conversations',

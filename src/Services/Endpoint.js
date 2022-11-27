@@ -39,10 +39,10 @@ export default () => {
     getNotifications: `${apiUrl}/notifications`,
     deleteNotification: `${apiUrl}/notifications/{id}`,
     //users
-    searchUsers: `${apiUrl}/search/users`,
+    searchUsers: `${apiUrl}/search/user`,
     updateUserInfo: `${apiUrl}/user`,
     updatePassword: `${apiUrl}/user/password`,
-    getUserInfo: id => `${apiUrl}/users/${id}`,
+    getUserInfo: id => `${apiUrl}/user/${id}`,
     getBlockedUsers: `${apiUrl}/user/blocked-users`,
     blockUser: id => `${apiUrl}/user/blocked-users/${id}`,
     unBlockUser: id => `${apiUrl}/user/blocked-users/${id}/unblock`,

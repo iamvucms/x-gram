@@ -1,4 +1,4 @@
-import { ArrowRightSvg, ChevronRightSvg, CloseSvg, PlusSvg } from '@/Assets/Svg'
+import { ArrowRightSvg, ChevronRightSvg, CloseSvg } from '@/Assets/Svg'
 import {
   AppButton,
   AppInput,
@@ -12,7 +12,7 @@ import {
 import { PageName } from '@/Config'
 import { navigate } from '@/Navigators'
 import { userStore } from '@/Stores'
-import { Colors, Layout } from '@/Theme'
+import { Colors, Layout, XStyleSheet } from '@/Theme'
 import {
   compareTwoStringArray,
   getHitSlop,
@@ -30,7 +30,7 @@ import { flowResult, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { StyleSheet, View } from 'react-native'
+import { View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 
 const EditProfileScreen = ({ navigation }) => {
@@ -349,7 +349,7 @@ const EditProfileScreen = ({ navigation }) => {
 
 export default EditProfileScreen
 
-const styles = StyleSheet.create({
+const styles = XStyleSheet.create({
   rootView: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

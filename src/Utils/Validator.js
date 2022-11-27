@@ -51,18 +51,18 @@ export function validateConfirmPass(pass, confirmPass) {
     return ''
   }
 }
-
+//VALIDATE VIETNAMESE PHONE NUMBER
 export function validateUserPhone(value) {
   const regexDisplayString =
     /[ !@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]+/
   if (value.trim().length === 0) {
-    return translation('authPage.errorRequirePhone')
+    return translation('auth.phone_empty')
   } else if (value.trim().length < 10) {
-    return translation('authPage.errorRequireUserPhoneMin10')
+    return translation('auth.phone_min_Length')
   } else if (value.trim().charAt(0) !== '0') {
-    return translation('authPage.errorRequireUserPhoneStart0')
+    return translation('auth.phone_start_with')
   } else if (regexDisplayString.test(value.trim())) {
-    return translation('authPage.errorRequireUserPhoneSymbol')
+    return translation('auth.phone_special_characters')
   } else {
     return ''
   }
