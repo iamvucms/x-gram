@@ -1,4 +1,4 @@
-import { mockPosts, mockUsers } from '@/Models'
+import { mockPosts, mockUsers, User } from '@/Models'
 import {
   blockUser,
   getBlockedUsers,
@@ -14,7 +14,7 @@ import { hydrateStore, isHydrated } from 'mobx-persist-store'
 import { diaLogStore } from '.'
 export default class UserStore {
   isLogged = false
-  userInfo = {}
+  userInfo: User = {} as User
   passcode = '123456'
   passcodeEnabled = true
   bookmarkPosts = []
@@ -113,12 +113,12 @@ export default class UserStore {
     }
   }
   *updateUserInfo(userInfo) {
+    const preUserInfo = toJS(this.userInfo)
+    this.userInfo = {
+      ...this.userInfo,
+      ...userInfo,
+    }
     try {
-      const preUserInfo = toJS(this.userInfo)
-      this.userInfo = {
-        ...this.userInfo,
-        ...userInfo,
-      }
       const response = yield updateUserInfo(userInfo)
       if (response?.status !== 'OK') {
         this.userInfo = preUserInfo
@@ -128,14 +128,15 @@ export default class UserStore {
       console.log({
         updateUserInfo: e,
       })
+      this.userInfo = preUserInfo
       diaLogStore.showErrorDiaLog()
     }
   }
   *updateProfileImage(image, isCover = false) {
+    const preImage = isCover
+      ? this.userInfo.cover_url
+      : this.userInfo.avatar_url
     try {
-      const preImage = isCover
-        ? this.userInfo.cover_url
-        : this.userInfo.avatar_url
       if (isCover) {
         this.userInfo.cover_url = image.uri
       } else {
@@ -157,6 +158,12 @@ export default class UserStore {
         }
       }
     } catch (e) {
+      // revert
+      if (isCover) {
+        this.userInfo.cover_url = preImage
+      } else {
+        this.userInfo.avatar_url = preImage
+      }
       console.log({
         updateProfileImage: e,
       })
@@ -168,7 +175,7 @@ export default class UserStore {
     this.isLogged = isLogged
   }
   logout() {
-    this.userInfo = {}
+    this.userInfo = {} as User
     this.isLogged = false
   }
   setPasscode(passcode) {

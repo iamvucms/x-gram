@@ -1,13 +1,14 @@
-import { mockPosts } from '@/Models'
+import { mockPosts, Post } from '@/Models'
 import { getPostDetail, getPosts, getStories } from '@/Services/Api'
 import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable, toJS } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
 import { userStore } from '.'
+
 export default class HomeStore {
   stories = []
-  posts = []
-  additionalPosts = []
+  posts: Post[] = []
+  additionalPosts: Post[] = []
   storyPage = 1
   postPage = 1
   loadingStories = false

@@ -1,5 +1,6 @@
 import { ArrowRightSvg, ChevronRightSvg, InforSvg } from '@/Assets/Svg'
 import {
+  AppCalendar,
   AppInput,
   AppText,
   Box,
@@ -15,6 +16,7 @@ import { getHitSlop, validateEmail, validateUserPhone } from '@/Utils'
 import { useBottomSheet } from '@gorhom/bottom-sheet'
 import { flowResult } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
+import moment from 'moment'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TouchableOpacity, View } from 'react-native'
@@ -419,6 +421,26 @@ const PersonalInformationScreen = ({ navigation }) => {
                     {t('profile.prefer_not_to_say')}
                   </AppText>
                 </TouchableOpacity>
+              </Box>
+            </Animated.View>
+          )
+        }
+      </Obx>
+      <Obx>
+        {() =>
+          state.type === UpdateType.DOB && (
+            <Animated.View entering={FadeInRight} style={Layout.fill}>
+              <Box marginTop={16}>
+                <Obx>
+                  {() => (
+                    <AppCalendar
+                      onDateChange={from => {
+                        state.setDob(moment(from).format('YYYY-MM-DD'))
+                      }}
+                      fromDate={state.dob ? new Date(state.dob) : new Date()}
+                    />
+                  )}
+                </Obx>
               </Box>
             </Animated.View>
           )

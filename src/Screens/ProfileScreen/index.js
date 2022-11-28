@@ -24,7 +24,7 @@ import { useAppTheme } from '@/Hooks'
 import { navigate } from '@/Navigators'
 import { EditProfileNavigator } from '@/Navigators/Application'
 import { userStore } from '@/Stores'
-import { Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
+import { Colors, Layout, screenHeight, screenWidth, XStyleSheet } from '@/Theme'
 import { formatAmount } from '@/Utils'
 import { BlurView } from '@react-native-community/blur'
 import { createNavigationContainerRef } from '@react-navigation/native'
@@ -33,6 +33,7 @@ import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Image, TouchableOpacity, View } from 'react-native'
+import InAppBrowser from 'react-native-inappbrowser-reborn'
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -206,8 +207,9 @@ const ProfileScreen = () => {
                 </AppText>
               )}
             </Obx>
-            <Padding top={4} />
-            <AppText color={Colors.black75}>Followers</AppText>
+            <AppText color={Colors.black75} fontWeight={600}>
+              {t('profile.followers')}
+            </AppText>
           </TouchableOpacity>
           <View>
             <Obx>
@@ -240,9 +242,13 @@ const ProfileScreen = () => {
             </TouchableOpacity>
           </View>
           <TouchableOpacity style={styles.infoBtn}>
-            <AppText fontWeight={700}>1k</AppText>
-            <Padding top={4} />
-            <AppText color={Colors.black75}>Following</AppText>
+            <AppText fontWeight={700}>
+              {' '}
+              {formatAmount(userStore.userInfo.following.length)}
+            </AppText>
+            <AppText color={Colors.black75} fontWeight={600}>
+              {t('profile.followings')}
+            </AppText>
           </TouchableOpacity>
         </Box>
         <Box paddingHorizontal={50} marginTop={0} center>
@@ -253,13 +259,46 @@ const ProfileScreen = () => {
             @{userStore.userInfo.user_id}
           </AppText>
           <Padding top={8} />
-          <AppText align="center" color={Colors.k6C7A9C} lineHeight={20}>
+          <AppText
+            align="center"
+            color={Colors.primary}
+            fontWeight={600}
+            lineHeight={20}
+          >
             {userStore.userInfo.bio}
           </AppText>
+          <Box
+            width={screenWidth}
+            paddingHorizontal={20}
+            row
+            flexWrap="wrap"
+            justify="center"
+            marginTop={8}
+          >
+            <Obx>
+              {() =>
+                userStore.userInfo.websites.map((web, index) => (
+                  <TouchableOpacity
+                    onPress={() => InAppBrowser.open(web)}
+                    style={styles.webBtn}
+                    key={index}
+                  >
+                    <AppText
+                      color={Colors.secondary}
+                      fontWeight={600}
+                      fontSize={10}
+                    >
+                      {web}
+                    </AppText>
+                  </TouchableOpacity>
+                ))
+              }
+            </Obx>
+          </Box>
         </Box>
         <Box marginTop={16} paddingHorizontal={16} row align="center">
           <TouchableOpacity
-            onPress={() => editSheetRef.current.snapTo(0)}
+            onPress={() => editSheetRef.current.snapTo(1)}
             style={styles.optionBtn}
           >
             <AppText fontWeight={700} color={Colors.white}>
@@ -536,5 +575,13 @@ const styles = XStyleSheet.create({
     width: 100,
     height: 100,
     marginBottom: 16,
+  },
+  webBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 99,
+    borderColor: Colors.secondary,
+    borderWidth: 1,
+    marginHorizontal: 4,
   },
 })

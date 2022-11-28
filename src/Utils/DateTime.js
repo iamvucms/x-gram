@@ -31,3 +31,30 @@ export function secondToTime(second) {
     seconds: seconds < 10 ? `0${seconds}` : seconds,
   }
 }
+export function getWeekdays(t) {
+  return [
+    t('date.mon'),
+    t('date.tue'),
+    t('date.wed'),
+    t('date.thu'),
+    t('date.fri'),
+    t('date.sat'),
+    t('date.sun'),
+  ]
+}
+export function getMonths(t) {
+  return [
+    t('date.jan'),
+    t('date.feb'),
+    t('date.mar'),
+    t('date.apr'),
+    t('date.may'),
+    t('date.jun'),
+    t('date.jul'),
+    t('date.aug'),
+    t('date.sep'),
+    t('date.oct'),
+    t('date.nov'),
+    t('date.dec'),
+  ]
+}

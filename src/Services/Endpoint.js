@@ -15,7 +15,7 @@ export default () => {
     forgotPassword: `${apiUrl}/forgot-password`,
     resetPassword: `${apiUrl}/reset-password`,
     //posts
-    getHomePosts: `${apiUrl}/posts`,
+    getHomePosts: page => `${apiUrl}/posts?page=${page}`,
     getPostDetail: id => `${apiUrl}/posts/${id}`,
     getProfile: `${apiUrl}/users/{id}`,
     getProfilePosts: (id, page) => `${apiUrl}/users/${id}/posts?page=${page}`,

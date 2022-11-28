@@ -281,7 +281,11 @@ dependencies {
         implementation jscFlavor
     }
 }
-
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.browser:browser:1.4.0'
+    }
+}
 if (isNewArchitectureEnabled()) {
     // If new architecture is enabled, we let you build RN from source
     // Otherwise we fallback to a prebuilt .aar bundled in the NPM package.
