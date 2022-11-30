@@ -1,4 +1,4 @@
-import { mockPosts, mockUsers, User } from '@/Models'
+import { mockPosts, mockUsers, Post, User } from '@/Models'
 import {
   blockUser,
   getBlockedUsers,
@@ -6,8 +6,8 @@ import {
   getUserPosts,
   unblockUser,
   updateUserInfo,
+  uploadImage,
 } from '@/Services/Api'
-import { uploadImage } from '@/Services/Api/Upload'
 import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable, toJS } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
@@ -17,12 +17,12 @@ export default class UserStore {
   userInfo: User = {} as User
   passcode = '123456'
   passcodeEnabled = true
-  bookmarkPosts = []
-  blockedUsers = []
+  bookmarkPosts: Post[] = []
+  blockedUsers: User[] = []
   hiddenCommentIds = {}
   hiddenMessageIds = {}
   mutedMessageNotificationIds = {}
-  posts = []
+  posts: Post[] = []
   postPage = 1
   loadingPosts = false
   loadingMorePosts = false

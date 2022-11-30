@@ -15,6 +15,7 @@ import Padding from './Padding'
 interface CommentItemProps {
   comment: any
   insideBottomSheet?: boolean
+  highlight?: boolean
   onShowOptions?: () => void
   onRetry?: () => void
   onRetryUpdate?: () => void
@@ -22,6 +23,7 @@ interface CommentItemProps {
 const CommentItem = ({
   comment,
   onShowOptions,
+  highlight,
   insideBottomSheet = false,
   onRetry,
   onRetryUpdate,
@@ -52,7 +54,12 @@ const CommentItem = ({
           onLongPress={onShowOptions}
           style={userStore.isHiddenComment(comment.comment_id) ? opacity20 : {}}
         >
-          <Box paddingHorizontal={16} marginTop={20} row>
+          <Box
+            backgroundColor={highlight ? Colors.primary25 : Colors.white}
+            paddingHorizontal={16}
+            paddingVertical={10}
+            row
+          >
             <AppImage
               blurHashEnabled={false}
               source={{

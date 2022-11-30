@@ -7,7 +7,7 @@ import {
   updateComment,
 } from '@/Services/Api'
 import { toJS } from 'mobx'
-import { chatStore, diaLogStore, homeStore, profileStore, userStore } from '.'
+import { chatStore, homeStore, notiStore, profileStore, userStore } from '.'
 
 export const findPostById = postId => {
   return (
@@ -55,6 +55,7 @@ export const initData = () => {
   userStore.fetchBlockedUsers()
   userStore.fetchPosts()
   chatStore.initSocket()
+  notiStore.fetchNotifcations()
 }
 //Async Action
 export const sendCommentRequest = async (postId, message, isImage, retryId) => {

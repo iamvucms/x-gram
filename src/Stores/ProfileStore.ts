@@ -1,12 +1,14 @@
+import { Post, User } from '@/Models'
 import { getUserPosts } from '@/Services/Api'
 import { makeAutoObservable, toJS } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
 import { userStore } from '.'
 export default class ProfileStore {
-  profileInfo = {}
+  profileInfo: User = {} as User
   fetching = false
-  posts = []
+  posts: Post[] = []
   loadingPosts = false
+  loadingMorePosts = false
   postPage = 1
   constructor() {
     makeAutoObservable(this)

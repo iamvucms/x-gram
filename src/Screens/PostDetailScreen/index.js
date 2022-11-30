@@ -41,7 +41,7 @@ import { useTranslation } from 'react-i18next'
 import { Keyboard, TouchableOpacity, View } from 'react-native'
 
 const PostDetailScreen = ({ route }) => {
-  const { postId } = route.params
+  const { postId, commentId } = route.params
   const { t } = useTranslation()
   const optionSheetRef = useRef()
   const listRef = useRef()
@@ -63,10 +63,11 @@ const PostDetailScreen = ({ route }) => {
         const post = findPostById(postId)
         if (post) {
           state.setPost(post)
+
+          state.setLoading(false)
         } else {
           await flowResult(homeStore.fetchAndAddAdditionalPosts(postId))
         }
-        state.setLoading(false)
       })
     })
     return () => dispose()
@@ -102,6 +103,7 @@ const PostDetailScreen = ({ route }) => {
       updateCommentRequest(postId, item.comment_id, item.comment)
     return (
       <CommentItem
+        highlight={item.comment_id === commentId}
         onRetry={onRetry}
         onRetryUpdate={onRetryUpdate}
         onShowOptions={onShowOptions}
@@ -128,7 +130,7 @@ const PostDetailScreen = ({ route }) => {
                 post={state.post}
               />
               <View style={styles.separator} />
-              <Padding horizontal={16}>
+              <Padding horizontal={16} paddingBottom={10}>
                 <AppText fontWeight={800}>
                   {t('home.comments')} ({state.post.comments.length})
                 </AppText>
@@ -140,6 +142,21 @@ const PostDetailScreen = ({ route }) => {
     ),
     [],
   )
+  const onRefReady = async ref => {
+    listRef.current = ref
+    if (commentId) {
+      const commentIndex = state.post.comments.findIndex(
+        x => x.comment_id === commentId,
+      )
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      if (commentIndex > -1) {
+        ref?.scrollToIndex?.({
+          index: commentIndex,
+          animated: true,
+        })
+      }
+    }
+  }
   return (
     <Container style={styles.rootView} disableTop={false}>
       <AppBar title={t('home.post')} />
@@ -153,7 +170,7 @@ const PostDetailScreen = ({ route }) => {
             <Obx>
               {() => (
                 <FlashList
-                  ref={listRef}
+                  ref={onRefReady}
                   ListHeaderComponent={ListHeaderComponent}
                   data={state.post.comments.slice()}
                   renderItem={renderCommentItem}

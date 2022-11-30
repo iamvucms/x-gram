@@ -1,5 +1,5 @@
 import { generateRandomIntegerInRange } from '@/Utils'
-import { Gender, MessageStatus } from './Enum'
+import { Gender, MessageStatus, NotificationType } from './Enum'
 export const mockUsers = [
   {
     user_id: 'username01',
@@ -828,8 +828,96 @@ export const mockConversations = [
     user: mockUsers[6],
   },
 ]
+export const mockNotifications = [
+  {
+    notification_id: '1',
+    created_at: new Date().getTime(),
+    type: NotificationType.COMMENT,
+    user: mockUsers[1],
+    reference: mockComments[0],
+    post_id: mockPosts[0].post_id,
+  },
+  {
+    notification_id: '2',
+    created_at: new Date().getTime(),
+    type: NotificationType.REACT,
+    user: mockUsers[1],
+    reference: mockPosts[0],
+    post_id: mockPosts[0].post_id,
+  },
+  {
+    notification_id: '3',
+    created_at: new Date().getTime(),
+    type: NotificationType.FOLLOW,
+    user: mockUsers[1],
+    reference: mockUsers[1],
+  },
+  {
+    notification_id: '4',
+    created_at: new Date().getTime(),
+    type: NotificationType.COMMENT,
+    user: mockUsers[1],
+    reference: mockComments[0],
+    post_id: mockPosts[0].post_id,
+  },
+  {
+    notification_id: '5',
+    created_at: new Date().getTime(),
+    type: NotificationType.REACT,
+    user: mockUsers[1],
+    reference: mockPosts[0],
+    post_id: mockPosts[0].post_id,
+  },
+  {
+    notification_id: '6',
+    created_at: new Date().getTime(),
+    type: NotificationType.FOLLOW,
+    user: mockUsers[1],
+    reference: mockUsers[1],
+  },
+  {
+    notification_id: '7',
+    created_at: new Date().getTime(),
+    type: NotificationType.MENTION_IN_COMMENT,
+    user: mockUsers[1],
+    reference: mockComments[0],
+    post_id: mockPosts[0].post_id,
+  },
+  {
+    notification_id: '8',
+    created_at: new Date('2020-01-01').getTime(),
+    type: NotificationType.MENTION_IN_POST,
+    user: mockUsers[1],
+    reference: mockPosts[0],
+    post_id: mockPosts[0].post_id,
+  },
+  {
+    notification_id: '9',
+    created_at: new Date('2020-02-01').getTime(),
+    type: NotificationType.FOLLOW,
+    user: mockUsers[1],
+    reference: mockUsers[1],
+  },
+]
 export type Post = typeof mockPosts[0]
 export type Message = typeof mockMessages[0]
 export type Conversation = typeof mockConversations[0]
 export type User = typeof mockUsers[0]
 export type Comment = typeof mockComments[0]
+type PreNotification = typeof mockNotifications[0]
+export type Notification = PreNotification &
+  (
+    | {
+        type: NotificationType.COMMENT | NotificationType.MENTION_IN_COMMENT
+        reference: Comment
+      }
+    | {
+        type: NotificationType.REACT | NotificationType.MENTION_IN_POST
+        reference: Post
+      }
+    | {
+        type: NotificationType.FOLLOW
+        reference?: undefined
+        post_id?: undefined
+      }
+  )

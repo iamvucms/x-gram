@@ -200,4 +200,15 @@ export default {
     camera_permission_description: 'XGram needs access to your camera',
     go_to_settings: 'Go to Settings',
   },
+  notifications: {
+    notifications: 'Notifications',
+    no_notifications: 'No notifications yet',
+    so_loved_your_post: '{{full_name}} loved your post',
+    so_commented_your_post: '{{full_name}} commented your post: "{{comment}}"',
+    so_followed_you: '{{full_name}} started following you',
+    so_mention_you_in_comment:
+      '{{full_name}} mention you in comment: "{{comment}}"',
+    so_mention_you_in_post:
+      '{{full_name}} mention you in post: "{{post_message}}"',
+  },
 }

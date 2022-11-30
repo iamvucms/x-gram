@@ -36,8 +36,8 @@ export default () => {
     createStory: `${apiUrl}/stories`,
     deleteStoryMedia: `${apiUrl}/stories/{id}/medias/{media_id}`,
     //notifications
-    getNotifications: `${apiUrl}/notifications`,
-    deleteNotification: `${apiUrl}/notifications/{id}`,
+    getNotifications: page => `${apiUrl}/notifications?page=${page}`,
+    deleteNotification: id => `${apiUrl}/notifications/${id}`,
     //users
     searchUsers: `${apiUrl}/search/user`,
     updateUserInfo: `${apiUrl}/user`,

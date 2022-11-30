@@ -66,7 +66,7 @@ const BottomTabBar = ({ state }: BottomTabBarProps) => {
                 onPress={() => navigate(tab.routeName)}
                 size={24}
                 color={
-                  tab.index === state.index ? Colors.kC4BCFF : Colors.white
+                  tab.index === state.index ? Colors.primary : Colors.white
                 }
               />
             </TouchableOpacity>

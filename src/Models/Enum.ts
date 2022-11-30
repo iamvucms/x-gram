@@ -39,3 +39,10 @@ export enum MessageType {
   Sticker = 'sticker',
   Video = 'video',
 }
+export enum NotificationType {
+  FOLLOW = 'follow',
+  REACT = 'react',
+  COMMENT = 'comment',
+  MENTION_IN_COMMENT = 'mention_in_comment',
+  MENTION_IN_POST = 'mention_in_post',
+}

@@ -256,7 +256,7 @@ const PostItem = ({
               <Obx>
                 {() => (
                   <Animated.View
-                    key={isReactedPost(post.post_id)}
+                    key={`${isReactedPost(post.post_id)}`}
                     entering={BounceIn}
                   >
                     <HeartSvg color={Colors.white} />
