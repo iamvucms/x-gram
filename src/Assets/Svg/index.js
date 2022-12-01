@@ -33,6 +33,7 @@ export { default as BlockSvg } from './Common/BlockSvg'
 export { default as ErrorSvg } from './Common/ErrorSvg'
 export { default as FullScreenSvg } from './Common/FullScreenSvg'
 export { default as PlusSvg } from './Common/PlusSvg'
+export { default as BellOffSvg } from './Common/BellOffSvg'
 //Onboarding
 export { default as BallSvg } from './Onboarding/BallSvg'
 //Home
@@ -52,6 +53,7 @@ export { default as BookMarkSvg } from './Home/BookMarkSvg'
 export { default as CopySvg } from './Home/CopySvg'
 export { default as RemoveSvg } from './Home/RemoveSvg'
 export { default as ReportSvg } from './Home/ReportSvg'
+export { default as StackSvg } from './Home/StackSvg'
 //Auth
 export { default as LockSvg } from './Auth/LockSvg'
 export { default as FingerPrintSvg } from './Auth/FingerPrintSvg'

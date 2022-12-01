@@ -1,15 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const CreatePost = ({ route }) => {
-  const { medias } = route?.params
+const CreateFeatureScreen = () => {
   return (
     <View>
-      <Text>CreatePost</Text>
+      <Text>CreateFeatureScreen</Text>
     </View>
   )
 }
 
-export default CreatePost
+export default CreateFeatureScreen
 
 const styles = StyleSheet.create({})

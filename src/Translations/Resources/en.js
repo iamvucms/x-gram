@@ -210,5 +210,11 @@ export default {
       '{{full_name}} mention you in comment: "{{comment}}"',
     so_mention_you_in_post:
       '{{full_name}} mention you in post: "{{post_message}}"',
+    notification_options: "Notification's Options",
+    delete_notification: 'Delete Notification',
+    turn_off_notification: 'Turn Off Notifications',
+    turn_on_notification: 'Turn On Notifications',
+    mark_as_read: 'Mark as Read',
+    mark_as_unread: 'Mark as Unread',
   },
 }

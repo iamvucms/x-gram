@@ -32,4 +32,5 @@ export const PageName = {
   EditProfileScreen: 'EditProfileScreen',
   PersonalInformationScreen: 'PersonalInformationScreen',
   SettingScreen: 'SettingScreen',
+  CreateFeatureScreen: 'CreateFeatureScreen',
 }

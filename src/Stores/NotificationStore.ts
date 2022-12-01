@@ -1,12 +1,13 @@
 import { mockNotifications, Notification } from '@/Models'
-import { getNotifications } from '@/Services/Api'
+import { getNotifications, deleteNotification } from '@/Services/Api'
 import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
+import { diaLogStore } from '.'
 export default class NotificationStore {
   notifications: Notification[] = []
   seenIds: { [key: string]: boolean } = {}
-  hiddenIds: { [key: string]: boolean } = {}
+
   constructor() {
     makeAutoObservable(this)
     makePersistExcept(this, 'NotificationStore', [])
@@ -22,23 +23,39 @@ export default class NotificationStore {
       })
     }
   }
+  *deleteNotification(id: string) {
+    try {
+      this.removeNotification(id)
+      const response = yield deleteNotification(id)
+      if (response.status !== 'OK') {
+        diaLogStore.showErrorDiaLog()
+        //
+      }
+    } catch (e) {
+      diaLogStore.showErrorDiaLog()
+      console.log({
+        deleteNotification: e,
+      })
+    }
+  }
+  removeNotification(id: string) {
+    this.notifications = this.notifications.filter(
+      n => n.notification_id !== id,
+    )
+  }
   addSeenId(id: string) {
     this.seenIds[id] = true
   }
   removeSeenId(id: string) {
     delete this.seenIds[id]
   }
+  markAllAsSeen() {
+    this.notifications.forEach(n => {
+      this.addSeenId(n.notification_id)
+    })
+  }
   getIsSeen(id: string) {
     return this.seenIds[id]
-  }
-  getIsHidden(id: string) {
-    return this.hiddenIds[id]
-  }
-  addHiddenId(id: string) {
-    this.hiddenIds[id] = true
-  }
-  removeHiddenId(id: string) {
-    delete this.hiddenIds[id]
   }
   get isHydrated() {
     return isHydrated(this)

@@ -7,6 +7,7 @@ import {
   ConversationsScreen,
   ConverstionInforScreen,
   CreateConversationScreen,
+  CreatePost,
   EditProfileScreen,
   ImageEditor,
   InAppUpdateScreen,
@@ -21,6 +22,7 @@ import {
   SettingScreen,
   StoryScreen,
   UserPostsScreen,
+  CreateFeatureScreen,
 } from '@/Screens'
 import { Colors } from '@/Theme'
 import { NavigationContainer } from '@react-navigation/native'
@@ -110,6 +112,11 @@ const AuthStack = () => {
         component={CreateConversationScreen}
       />
       <Stack.Screen name={PageName.SettingScreen} component={SettingScreen} />
+      <Stack.Screen name={PageName.CreatePost} component={CreatePost} />
+      <Stack.Screen
+        name={PageName.CreateFeatureScreen}
+        component={CreateFeatureScreen}
+      />
     </Stack.Navigator>
   )
 }
