@@ -50,7 +50,9 @@ interface BoxProps {
   width?: number | string
   size?: number
   maxHeight?: number | string
+  minHeight?: number | string
   maxWidth?: number | string
+  minWidth?: number | string
   radius?: number
   topLeftRadius?: number
   topRightRadius?: number
@@ -101,7 +103,9 @@ const Box = forwardRef(
       backgroundColor,
       height,
       maxHeight,
+      minHeight,
       maxWidth,
+      minWidth,
       width,
       opacity,
       size,
@@ -162,11 +166,23 @@ const Box = forwardRef(
                 ? maxHeight
                 : ResponsiveHeight(maxHeight),
           },
+          minHeight && {
+            minHeight:
+              typeof minHeight === 'string'
+                ? minHeight
+                : ResponsiveHeight(minHeight),
+          },
           maxWidth && {
             maxWidth:
               typeof maxWidth === 'string'
                 ? maxWidth
                 : ResponsiveWidth(maxWidth),
+          },
+          minWidth && {
+            minWidth:
+              typeof minWidth === 'string'
+                ? minWidth
+                : ResponsiveWidth(minWidth),
           },
           backgroundColor && { backgroundColor },
           align && { alignItems: align },

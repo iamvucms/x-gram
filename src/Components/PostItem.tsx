@@ -47,6 +47,7 @@ interface PostItemProps {
   onPress?: () => void
   post: any
   showDetail?: boolean
+  preview?: boolean
 }
 const PostItem = ({
   post,
@@ -54,6 +55,7 @@ const PostItem = ({
   onSharePress,
   onPress,
   showDetail = false,
+  preview = false,
 }: PostItemProps) => {
   const reactAnim = useSharedValue(0)
   const bookmarkAnim = useSharedValue(0)
@@ -184,7 +186,7 @@ const PostItem = ({
               <AppImage
                 containerStyle={styles.avatarImg}
                 source={{
-                  uri: 'https://picsum.photos/500/500',
+                  uri: post.posted_by.avatar_url,
                 }}
               />
             </View>
@@ -204,101 +206,110 @@ const PostItem = ({
               </AppText>
             </View>
           </Box>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() =>
-              userStore.isBookmarked(post.post_id)
-                ? userStore.removeBookmarkPost(post.post_id)
-                : userStore.addBookmarkPost(post)
-            }
-            style={styles.bookMarkBtn}
-          >
-            <Animated.View
-              style={[Layout.fill, Layout.center, bookmarkButtonStyle]}
+          {!preview && (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() =>
+                userStore.isBookmarked(post.post_id)
+                  ? userStore.removeBookmarkPost(post.post_id)
+                  : userStore.addBookmarkPost(post)
+              }
+              style={styles.bookMarkBtn}
             >
-              <Obx>
-                {() =>
-                  userStore.isBookmarked(post.post_id) ? (
-                    <BookMarkedSvg color={Colors.white} />
-                  ) : (
-                    <BookMarkSvg color={Colors.white} />
-                  )
-                }
-              </Obx>
-            </Animated.View>
-          </TouchableOpacity>
+              <Animated.View
+                style={[Layout.fill, Layout.center, bookmarkButtonStyle]}
+              >
+                <Obx>
+                  {() =>
+                    userStore.isBookmarked(post.post_id) ? (
+                      <BookMarkedSvg color={Colors.white} />
+                    ) : (
+                      <BookMarkSvg color={Colors.white} />
+                    )
+                  }
+                </Obx>
+              </Animated.View>
+            </TouchableOpacity>
+          )}
         </Box>
-        <View style={styles.sideBarView}>
-          <TouchableOpacity onPress={onSharePress} style={styles.sideBarBtn}>
-            <SendSvg color={Colors.white} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onCommentPress} style={styles.sideBarBtn}>
-            <CommentSvg color={Colors.white} />
-            <Padding top={4} />
-            <Obx>
-              {() => (
-                <AppText fontWeight={700} color={Colors.white}>
-                  {formatAmount(post.comments.length)}
-                </AppText>
-              )}
-            </Obx>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() =>
-              reactRequest(post.post_id, isReactedPost(post.post_id))
-            }
-            style={[styles.reactBtn]}
-          >
-            <Animated.View
-              style={[Layout.fill, Layout.center, reactButtonStyle]}
+        {!preview && (
+          <View style={styles.sideBarView}>
+            <TouchableOpacity onPress={onSharePress} style={styles.sideBarBtn}>
+              <SendSvg color={Colors.white} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={onCommentPress}
+              style={styles.sideBarBtn}
             >
+              <CommentSvg color={Colors.white} />
+              <Padding top={4} />
               <Obx>
                 {() => (
-                  <Animated.View
-                    key={`${isReactedPost(post.post_id)}`}
-                    entering={BounceIn}
-                  >
-                    <HeartSvg color={Colors.white} />
-                  </Animated.View>
+                  <AppText fontWeight={700} color={Colors.white}>
+                    {formatAmount(post.comments.length)}
+                  </AppText>
                 )}
               </Obx>
-              <Padding top={4} />
-              <AppText fontWeight={700} color={Colors.white}>
-                <Obx>{() => formatAmount(post.reactions.length)}</Obx>
-              </AppText>
-            </Animated.View>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <Pressable onPress={onPress}>
-        <Box marginTop={14}>
-          <AppText lineHeight={18}>
-            <AppText lineHeight={18} fontWeight={700}>
-              {post.posted_by.user_id}
-            </AppText>{' '}
-            {post.message}
-          </AppText>
-          <Padding top={8} />
-          {!showDetail &&
-            post.comments.length > 0 &&
-            post.comments.slice(-2).map(comment => (
-              <AppText
-                key={comment.comment_id}
-                regexMetion
-                onMentionPress={onMentionPress}
-                numberOfLines={1}
-                lineHeight={18}
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() =>
+                reactRequest(post.post_id, isReactedPost(post.post_id))
+              }
+              style={[styles.reactBtn]}
+            >
+              <Animated.View
+                style={[Layout.fill, Layout.center, reactButtonStyle]}
               >
-                <AppText numberOfLines={1} lineHeight={18} fontWeight={700}>
-                  {comment.commented_by.user_id}
-                </AppText>{' '}
-                {comment.comment}
-              </AppText>
-            ))}
-        </Box>
-      </Pressable>
-      {!showDetail && (
+                <Obx>
+                  {() => (
+                    <Animated.View
+                      key={`${isReactedPost(post.post_id)}`}
+                      entering={BounceIn}
+                    >
+                      <HeartSvg color={Colors.white} />
+                    </Animated.View>
+                  )}
+                </Obx>
+                <Padding top={4} />
+                <AppText fontWeight={700} color={Colors.white}>
+                  <Obx>{() => formatAmount(post.reactions.length)}</Obx>
+                </AppText>
+              </Animated.View>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+      {!preview && (
+        <Pressable onPress={onPress}>
+          <Box marginTop={14}>
+            <AppText lineHeight={18}>
+              <AppText lineHeight={18} fontWeight={700}>
+                {post.posted_by.user_id}
+              </AppText>{' '}
+              {post.message}
+            </AppText>
+            <Padding top={8} />
+            {!showDetail &&
+              post.comments.length > 0 &&
+              post.comments.slice(-2).map(comment => (
+                <AppText
+                  key={comment.comment_id}
+                  regexMetion
+                  onMentionPress={onMentionPress}
+                  numberOfLines={1}
+                  lineHeight={18}
+                >
+                  <AppText numberOfLines={1} lineHeight={18} fontWeight={700}>
+                    {comment.commented_by.user_id}
+                  </AppText>{' '}
+                  {comment.comment}
+                </AppText>
+              ))}
+          </Box>
+        </Pressable>
+      )}
+      {!preview && !showDetail && (
         <TouchableOpacity onPress={onCommentPress} style={styles.commentBar}>
           <AppImage
             source={{

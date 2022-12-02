@@ -217,4 +217,8 @@ export default {
     mark_as_read: 'Mark as Read',
     mark_as_unread: 'Mark as Unread',
   },
+  createPost: {
+    create_post: 'Create Post',
+    caption_placeholder: 'Write a caption...',
+  },
 }

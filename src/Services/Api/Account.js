@@ -9,6 +9,10 @@ export const getUserInfo = id => request(Endpoint().getUserInfo(id), Method.GET)
 export const getBlockedUsers = () =>
   request(Endpoint().getBlockedUsers, Method.GET)
 
+export const searchUsers = q => {
+  return request(Endpoint().searchUsers(q), Method.GET)
+}
+
 export const blockUser = id => request(Endpoint().blockUser(id), Method.POST)
 
 export const unblockUser = id =>

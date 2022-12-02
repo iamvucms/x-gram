@@ -39,7 +39,7 @@ export default () => {
     getNotifications: page => `${apiUrl}/notifications?page=${page}`,
     deleteNotification: id => `${apiUrl}/notifications/${id}`,
     //users
-    searchUsers: `${apiUrl}/search/user`,
+    searchUsers: q => `${apiUrl}/search/user?q=${q}`,
     updateUserInfo: `${apiUrl}/user`,
     updatePassword: `${apiUrl}/user/password`,
     getUserInfo: id => `${apiUrl}/user/${id}`,
