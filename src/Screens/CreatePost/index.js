@@ -1,3 +1,4 @@
+import { NoteSvg } from '@/Assets/Svg'
 import {
   AppBar,
   AppButton,
@@ -6,31 +7,41 @@ import {
   AppText,
   Box,
   Container,
+  ErrorLabel,
+  LoadingIndicator,
   Obx,
   Padding,
   PostItem,
 } from '@/Components'
+import { PageName } from '@/Config'
 import { mockUsers } from '@/Models'
+import { navigate } from '@/Navigators'
 import { searchUsers } from '@/Services/Api'
-import { userStore } from '@/Stores'
-import { Colors, screenHeight, XStyleSheet } from '@/Theme'
-import { autorun, toJS } from 'mobx'
+import { createPost, userStore } from '@/Stores'
+import { Colors, XStyleSheet } from '@/Theme'
+import { autorun, flowResult, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TouchableOpacity } from 'react-native'
+import { TouchableOpacity, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Animated, { FadeIn } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const CreatePost = ({ route }) => {
   const { medias } = route?.params
+  const processedMedias = medias.map(m => ({ ...m, url: m.uri }))
   const { t } = useTranslation()
   const state = useLocalObservable(() => ({
     message: '',
-    setMessage: value => (state.message = value),
     mentionList: [],
+    creating: false,
+    setMessage: value => (state.message = value),
     setMentionList: value => (state.mentionList = value),
+    setCreating: value => (state.creating = value),
+    get isValid() {
+      return state.message.trim().length > 0
+    },
   }))
   useEffect(() => {
     const regex = /@(\w+)$/
@@ -69,6 +80,13 @@ const CreatePost = ({ route }) => {
   const onMentionUserPress = user => {
     state.setMessage(state.message.replace(/@(\w+)$/, `@${user.user_id} `))
   }
+  const onPostPress = async () => {
+    state.setCreating(true)
+    await createPost(state.message, processedMedias, () =>
+      navigate(PageName.HomeScreen),
+    )
+    state.setCreating(false)
+  }
   const { bottom } = useSafeAreaInsets()
   return (
     <Container style={styles.rootView}>
@@ -82,7 +100,7 @@ const CreatePost = ({ route }) => {
           <PostItem
             preview
             post={{
-              medias: medias.map(m => ({ ...m, url: m.uri })),
+              medias: processedMedias,
               posted_by: userStore.userInfo,
             }}
           />
@@ -94,7 +112,7 @@ const CreatePost = ({ route }) => {
               marginTop={8}
               padding={12}
               radius={6}
-              height={78}
+              height={90}
               backgroundColor={Colors.primary25}
             >
               <Obx>
@@ -105,14 +123,32 @@ const CreatePost = ({ route }) => {
                     placeholder={t('createPost.caption_placeholder')}
                     multiline
                     lineHeight={18}
+                    maxLength={200}
                   />
                 )}
               </Obx>
+              <View style={styles.lengthView}>
+                <AppText
+                  color={Colors.primary}
+                  fontWeight={600}
+                  fontSize={10}
+                  lineHeight={12}
+                >
+                  <Obx>{() => `${state.message.length}`}</Obx>/200
+                </AppText>
+              </View>
             </Box>
+            <Obx>
+              {() =>
+                !state.isValid && (
+                  <ErrorLabel text={t('createPost.caption_required')} />
+                )
+              }
+            </Obx>
 
             <Obx>
               {() =>
-                !!state.mentionList.length && (
+                state.mentionList.length ? (
                   <Animated.View entering={FadeIn}>
                     <Padding top={4} />
                     <AppText fontWeight={700}>{t('results')}</AppText>
@@ -141,6 +177,17 @@ const CreatePost = ({ route }) => {
                       </TouchableOpacity>
                     ))}
                   </Animated.View>
+                ) : (
+                  <Box center paddingVertical={30}>
+                    <NoteSvg size={80} />
+                    <Padding top={8} />
+                    <AppText fontWeight={700}>
+                      {t('createPost.mention_friends')}
+                    </AppText>
+                    <AppText fontSize={12} color={Colors.placeholder}>
+                      {t('createPost.mention_note')}
+                    </AppText>
+                  </Box>
                 )
               }
             </Obx>
@@ -148,13 +195,23 @@ const CreatePost = ({ route }) => {
         </KeyboardAwareScrollView>
       </Box>
       <Box
-        backgroundColor={Colors.primary25}
+        borderTopColor={Colors.border}
+        borderTopWidth={0.5}
         paddingHorizontal={16}
         paddingBottom={bottom || 16}
         paddingTop={16}
       >
-        <AppButton text={t('createPost.create_post')} />
+        <Obx>
+          {() => (
+            <AppButton
+              onPress={onPostPress}
+              disabled={!state.isValid}
+              text={t('createPost.create_post')}
+            />
+          )}
+        </Obx>
       </Box>
+      <Obx>{() => state.creating && <LoadingIndicator overlay />}</Obx>
     </Container>
   )
 }
@@ -178,5 +235,10 @@ const styles = XStyleSheet.create({
     height: 36,
     borderRadius: 14,
     overflow: 'hidden',
+  },
+  lengthView: {
+    position: 'absolute',
+    right: 6,
+    bottom: 4,
   },
 })

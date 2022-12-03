@@ -34,6 +34,7 @@ export { default as ErrorSvg } from './Common/ErrorSvg'
 export { default as FullScreenSvg } from './Common/FullScreenSvg'
 export { default as PlusSvg } from './Common/PlusSvg'
 export { default as BellOffSvg } from './Common/BellOffSvg'
+export { default as NoteSvg } from './Common/NoteSvg'
 //Onboarding
 export { default as BallSvg } from './Onboarding/BallSvg'
 //Home

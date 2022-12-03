@@ -24,3 +24,5 @@ export const updateComment = (postId, commentId, data) =>
 
 export const deleteComment = (postId, commentId) =>
   request(Endpoint().deleteComment(postId, commentId), Method.DELETE)
+export const sendPost = data =>
+  request(Endpoint().createPost, Method.POST, data)

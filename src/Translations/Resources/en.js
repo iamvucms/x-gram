@@ -220,5 +220,8 @@ export default {
   createPost: {
     create_post: 'Create Post',
     caption_placeholder: 'Write a caption...',
+    caption_required: 'Caption is required',
+    mention_friends: 'Mention your friends',
+    mention_note: "You can mention people by typing '@' and their name",
   },
 }

@@ -83,6 +83,18 @@ export default class HomeStore {
       this.additionalPosts.find(post => post.post_id === postId)
     )
   }
+  addPost(post: Post) {
+    this.posts = [post, ...this.posts]
+  }
+  updatePost(postId: string, post: Partial<Post>) {
+    const index = this.posts.findIndex(post => post.post_id === postId)
+    if (index !== -1) {
+      this.posts[index] = {
+        ...this.posts[index],
+        ...post,
+      }
+    }
+  }
   addPostComment(postId, comment) {
     const post = this.findPostById(postId)
     if (post) {

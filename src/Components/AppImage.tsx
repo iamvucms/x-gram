@@ -32,6 +32,7 @@ interface AppImageProps {
   disabled?: boolean
   enablePinchZoom?: boolean
   onPress?: () => void
+  onLongPress?: () => void
   lightbox?: boolean
 }
 const AppImage = ({
@@ -43,6 +44,7 @@ const AppImage = ({
   containerStyle,
   disabled,
   onPress,
+  onLongPress,
   lightbox,
 }: AppImageProps) => {
   const pinchRef = useRef()
@@ -109,6 +111,7 @@ const AppImage = ({
   return (
     <Fragment>
       <Pressable
+        onLongPress={onLongPress}
         disabled={disabled}
         onPress={lightbox ? () => state.setLightboxVisible(true) : onPress}
         style={[styles.baseContainer, containerStyle]}

@@ -4,6 +4,7 @@ import {
   Obx,
   Padding,
   PostItem,
+  PostOptionBottomSheet,
   ShareBottomSheet,
 } from '@/Components'
 import { PageName } from '@/Config'
@@ -22,6 +23,7 @@ import { HomeMenu, StoryBar } from './HomeScreenComponents'
 const SheetType = {
   COMMENT: 'COMMENT',
   SHARE: 'SHARE',
+  OPTIONS: 'OPTIONS',
   NONE: 'NONE',
 }
 
@@ -58,6 +60,10 @@ const HomeScreen = () => {
       state.setSelectedPost(item)
       state.setType(SheetType.SHARE)
     }
+    const onOptionsPress = () => {
+      state.setSelectedPost(item)
+      state.setType(SheetType.OPTIONS)
+    }
     const onPress = () => {
       navigate(PageName.PostDetailScreen, {
         postId: item.post_id,
@@ -67,6 +73,7 @@ const HomeScreen = () => {
       <PostItem
         onSharePress={onSharePress}
         onCommentPress={onCommentPress}
+        onOptionPress={onOptionsPress}
         onPress={onPress}
         post={item}
       />
@@ -112,6 +119,15 @@ const HomeScreen = () => {
               type={ShareType.Post}
               onClose={() => state.setType(SheetType.NONE)}
               data={state?.selectedPost}
+            />
+          )
+        }
+      </Obx>
+      <Obx>
+        {() =>
+          state.sheetType === SheetType.OPTIONS && (
+            <PostOptionBottomSheet
+              onClose={() => state.setType(SheetType.NONE)}
             />
           )
         }

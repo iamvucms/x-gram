@@ -1,13 +1,23 @@
-import { CommentStatus } from '@/Models'
+import { CommentStatus, PostStatus } from '@/Models'
 import {
   deleteComment,
   sendComment,
+  sendPost,
   sendReactPost,
   sendUnReactPost,
   updateComment,
+  uploadImage,
+  uploadVideo,
 } from '@/Services/Api'
 import { toJS } from 'mobx'
-import { chatStore, homeStore, notiStore, profileStore, userStore } from '.'
+import {
+  chatStore,
+  diaLogStore,
+  homeStore,
+  notiStore,
+  profileStore,
+  userStore,
+} from '.'
 
 export const findPostById = postId => {
   return (
@@ -47,6 +57,14 @@ export const isReactedPost = postId => {
     userStore.isReactedPost(postId) ||
     profileStore.isReactedPost(postId)
   )
+}
+export const addPost = post => {
+  homeStore.addPost(post)
+  userStore.addPost(post)
+}
+export const updatePost = (postId, post) => {
+  homeStore.updatePost(postId, post)
+  userStore.updatePost(postId, post)
 }
 export const initData = () => {
   homeStore.fetchPosts()
@@ -165,5 +183,39 @@ export const reactRequest = async (postId, isUnReact) => {
     }
   } catch (e) {
     console.log({ reactRequestError: e })
+  }
+}
+export const createPost = async (message, medias, onDone) => {
+  try {
+    const uploadedMedias = await Promise.all(
+      medias.map(async m => {
+        const isVideo = m.uri.includes('video')
+        const response = isVideo
+          ? await uploadVideo(m.uri, m.mimeType)
+          : await uploadImage(m.uri, m.mimeType)
+        if (response.status === 'OK') {
+          return response.data
+        }
+        return {
+          url: response.data.url,
+          is_video: isVideo,
+        }
+      }),
+    )
+    const post = {
+      message,
+      medias: uploadedMedias,
+      created_at: new Date().getTime(),
+    }
+    const response = await sendPost(post)
+    if (response?.status !== 'OK') {
+      diaLogStore.showErrorDiaLog()
+    } else {
+      addPost(response.data)
+      onDone && onDone()
+    }
+  } catch (e) {
+    diaLogStore.showErrorDiaLog()
+    console.log({ createPostError: e })
   }
 }

@@ -170,6 +170,18 @@ export default class UserStore {
       diaLogStore.showErrorDiaLog()
     }
   }
+  addPost(post: Post) {
+    this.posts = [post, ...this.posts]
+  }
+  updatePost(postId: string, post: Partial<Post>) {
+    const index = this.posts.findIndex(post => post.post_id === postId)
+    if (index !== -1) {
+      this.posts[index] = {
+        ...this.posts[index],
+        ...post,
+      }
+    }
+  }
   setUserInfo(userInfo, isLogged = true) {
     this.userInfo = userInfo
     this.isLogged = isLogged

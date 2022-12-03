@@ -14,9 +14,7 @@ import AppText from './AppText'
 import Box from './Box'
 
 interface ShareBottomSheetProps {
-  comments: any[]
   data: any
-  type: ShareType
   onClose: () => void
 }
 const ShareBottomSheet = forwardRef(

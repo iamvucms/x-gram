@@ -44,6 +44,7 @@ import Padding from './Padding'
 interface PostItemProps {
   onCommentPress?: () => void
   onSharePress?: () => void
+  onOptionPress?: () => void
   onPress?: () => void
   post: any
   showDetail?: boolean
@@ -53,6 +54,7 @@ const PostItem = ({
   post,
   onCommentPress,
   onSharePress,
+  onOptionPress,
   onPress,
   showDetail = false,
   preview = false,
@@ -154,6 +156,7 @@ const PostItem = ({
               <AppImage
                 enablePinchZoom
                 onPress={onImagePress}
+                onLongPress={onOptionPress}
                 source={{
                   uri: post.medias[state.imageIndex].url,
                 }}
@@ -283,29 +286,34 @@ const PostItem = ({
       {!preview && (
         <Pressable onPress={onPress}>
           <Box marginTop={14}>
-            <AppText lineHeight={18}>
+            <AppText
+              regexMetion
+              onMentionPress={onMentionPress}
+              lineHeight={18}
+            >
               <AppText lineHeight={18} fontWeight={700}>
                 {post.posted_by.user_id}
               </AppText>{' '}
               {post.message}
             </AppText>
-            <Padding top={8} />
-            {!showDetail &&
-              post.comments.length > 0 &&
-              post.comments.slice(-2).map(comment => (
-                <AppText
-                  key={comment.comment_id}
-                  regexMetion
-                  onMentionPress={onMentionPress}
-                  numberOfLines={1}
-                  lineHeight={18}
-                >
-                  <AppText numberOfLines={1} lineHeight={18} fontWeight={700}>
-                    {comment.commented_by.user_id}
-                  </AppText>{' '}
-                  {comment.comment}
-                </AppText>
-              ))}
+            {!showDetail && post.comments.length > 0 && (
+              <Padding top={8}>
+                {post.comments.slice(-2).map(comment => (
+                  <AppText
+                    key={comment.comment_id}
+                    regexMetion
+                    onMentionPress={onMentionPress}
+                    numberOfLines={1}
+                    lineHeight={18}
+                  >
+                    <AppText numberOfLines={1} lineHeight={18} fontWeight={700}>
+                      {comment.commented_by.user_id}
+                    </AppText>{' '}
+                    {comment.comment}
+                  </AppText>
+                ))}
+              </Padding>
+            )}
           </Box>
         </Pressable>
       )}
