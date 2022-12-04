@@ -95,6 +95,9 @@ export default class HomeStore {
       }
     }
   }
+  deletePost(postId) {
+    this.posts = this.posts.filter(post => post.post_id !== postId)
+  }
   addPostComment(postId, comment) {
     const post = this.findPostById(postId)
     if (post) {

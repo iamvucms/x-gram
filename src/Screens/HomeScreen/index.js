@@ -12,6 +12,7 @@ import { ShareType } from '@/Models'
 import { navigate } from '@/Navigators'
 import { homeStore, initData } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
+import { useFocusEffect } from '@react-navigation/native'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback, useEffect } from 'react'
 import Animated, {
@@ -42,6 +43,11 @@ const HomeScreen = () => {
   useEffect(() => {
     initData()
   }, [])
+  useFocusEffect(
+    useCallback(() => {
+      return () => state.setType(SheetType.NONE)
+    }, []),
+  )
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: event => {
       if (event.contentOffset.y > 150) {
@@ -127,6 +133,8 @@ const HomeScreen = () => {
         {() =>
           state.sheetType === SheetType.OPTIONS && (
             <PostOptionBottomSheet
+              post={state?.selectedPost}
+              index={0}
               onClose={() => state.setType(SheetType.NONE)}
             />
           )

@@ -23,6 +23,7 @@ import {
   StoryScreen,
   UserPostsScreen,
   CreateFeatureScreen,
+  EditPostScreen,
 } from '@/Screens'
 import { Colors } from '@/Theme'
 import { NavigationContainer } from '@react-navigation/native'
@@ -116,6 +117,13 @@ const AuthStack = () => {
       <Stack.Screen
         name={PageName.CreateFeatureScreen}
         component={CreateFeatureScreen}
+      />
+      <Stack.Screen
+        options={{
+          animation: 'slide_from_bottom',
+        }}
+        name={PageName.EditPostScreen}
+        component={EditPostScreen}
       />
     </Stack.Navigator>
   )

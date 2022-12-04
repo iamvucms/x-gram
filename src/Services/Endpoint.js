@@ -22,7 +22,7 @@ export default () => {
     searchPosts: `${apiUrl}/search/posts`,
     createPost: `${apiUrl}/posts`,
     updatePostMessage: `${apiUrl}/posts/{id}`,
-    deletePost: `${apiUrl}/posts/{id}`,
+    deletePost: id => `${apiUrl}/posts/${id}`,
     reactPost: postId => `${apiUrl}/posts/${postId}/like`,
     unReactPost: postId => `${apiUrl}/posts/${postId}/unlike`,
     sendComment: postId => `${apiUrl}/posts/${postId}/comments`,

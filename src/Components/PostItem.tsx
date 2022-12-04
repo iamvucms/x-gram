@@ -2,6 +2,7 @@ import {
   BookMarkedSvg,
   BookMarkSvg,
   CommentSvg,
+  DotsSvg,
   FullScreenSvg,
   HeartSvg,
   SendSvg,
@@ -60,7 +61,6 @@ const PostItem = ({
   preview = false,
 }: PostItemProps) => {
   const reactAnim = useSharedValue(0)
-  const bookmarkAnim = useSharedValue(0)
   const pageAnim = useSharedValue(0)
   const { t } = useTranslation()
   const state = useLocalObservable(() => ({
@@ -86,17 +86,8 @@ const PostItem = ({
         reactAnim.value = withTiming(0)
       }
     })
-    const disposeBookmark = autorun(() => {
-      const isBookmarked = userStore.isBookmarked(post.post_id)
-      if (isBookmarked) {
-        bookmarkAnim.value = withTiming(1)
-      } else {
-        bookmarkAnim.value = withTiming(0)
-      }
-    })
     return () => {
       disposeReaction()
-      disposeBookmark()
     }
   }, [])
 
@@ -123,13 +114,7 @@ const PostItem = ({
       [Colors.white50, Colors.kFB2576],
     ),
   }))
-  const bookmarkButtonStyle = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(
-      bookmarkAnim.value,
-      [0, 1],
-      [Colors.white50, Colors.kFF7A51],
-    ),
-  }))
+
   return (
     <Box marginHorizontal={16} marginTop={16}>
       <View style={styles.rootView}>
@@ -212,26 +197,10 @@ const PostItem = ({
           {!preview && (
             <TouchableOpacity
               activeOpacity={0.8}
-              onPress={() =>
-                userStore.isBookmarked(post.post_id)
-                  ? userStore.removeBookmarkPost(post.post_id)
-                  : userStore.addBookmarkPost(post)
-              }
-              style={styles.bookMarkBtn}
+              onPress={onOptionPress}
+              style={styles.optionBtn}
             >
-              <Animated.View
-                style={[Layout.fill, Layout.center, bookmarkButtonStyle]}
-              >
-                <Obx>
-                  {() =>
-                    userStore.isBookmarked(post.post_id) ? (
-                      <BookMarkedSvg color={Colors.white} />
-                    ) : (
-                      <BookMarkSvg color={Colors.white} />
-                    )
-                  }
-                </Obx>
-              </Animated.View>
+              <DotsSvg color={Colors.white} />
             </TouchableOpacity>
           )}
         </Box>
@@ -284,7 +253,7 @@ const PostItem = ({
         )}
       </View>
       {!preview && (
-        <Pressable onPress={onPress}>
+        <Pressable onLongPress={onOptionPress} onPress={onPress}>
           <Box marginTop={14}>
             <AppText
               regexMetion
@@ -391,11 +360,13 @@ const styles = XStyleSheet.create({
     zIndex: 10,
     overflow: 'hidden',
   },
-  bookMarkBtn: {
+  optionBtn: {
     height: 57,
     width: 57,
     borderRadius: 99,
     overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   sideBarView: {
     position: 'absolute',

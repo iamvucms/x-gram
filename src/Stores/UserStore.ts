@@ -173,6 +173,9 @@ export default class UserStore {
   addPost(post: Post) {
     this.posts = [post, ...this.posts]
   }
+  deletePost(postId) {
+    this.posts = this.posts.filter(post => post.post_id !== postId)
+  }
   updatePost(postId: string, post: Partial<Post>) {
     const index = this.posts.findIndex(post => post.post_id === postId)
     if (index !== -1) {
@@ -301,6 +304,20 @@ export default class UserStore {
       )
     }
     return false
+  }
+  isFollowing(userId) {
+    return this.userInfo.following.some(user => user.user_id === userId)
+  }
+  isFollowingMe(userId) {
+    return this.userInfo.followers.some(user => user.user_id === userId)
+  }
+  addFollowing(user) {
+    this.userInfo.following = [user, ...this.userInfo.following]
+  }
+  removeFollowing(userId) {
+    this.userInfo.following = this.userInfo.following.filter(
+      user => user.user_id !== userId,
+    )
   }
   // check for hydration (required)
   get isHydrated() {

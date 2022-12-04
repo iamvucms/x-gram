@@ -2,6 +2,7 @@ import { CommentStatus, PostStatus } from '@/Models'
 import {
   deleteComment,
   sendComment,
+  sendDeletePost,
   sendPost,
   sendReactPost,
   sendUnReactPost,
@@ -65,6 +66,10 @@ export const addPost = post => {
 export const updatePost = (postId, post) => {
   homeStore.updatePost(postId, post)
   userStore.updatePost(postId, post)
+}
+export const deletePostById = postId => {
+  homeStore.deletePost(postId)
+  userStore.deletePost(postId)
 }
 export const initData = () => {
   homeStore.fetchPosts()
@@ -217,5 +222,17 @@ export const createPost = async (message, medias, onDone) => {
   } catch (e) {
     diaLogStore.showErrorDiaLog()
     console.log({ createPostError: e })
+  }
+}
+export const deletePost = async postId => {
+  try {
+    const response = await sendDeletePost(postId)
+    if (response?.status === 'OK') {
+      deletePostById(postId)
+    } else {
+      diaLogStore.showErrorDiaLog()
+    }
+  } catch (e) {
+    diaLogStore.showErrorDiaLog()
   }
 }
