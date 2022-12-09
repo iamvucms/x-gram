@@ -21,6 +21,7 @@ export default () => {
     getProfilePosts: (id, page) => `${apiUrl}/users/${id}/posts?page=${page}`,
     searchPosts: `${apiUrl}/search/posts`,
     createPost: `${apiUrl}/posts`,
+    updatePost: id => `${apiUrl}/posts/${id}`,
     updatePostMessage: `${apiUrl}/posts/{id}`,
     deletePost: id => `${apiUrl}/posts/${id}`,
     reactPost: postId => `${apiUrl}/posts/${postId}/like`,
@@ -46,6 +47,8 @@ export default () => {
     getBlockedUsers: `${apiUrl}/user/blocked-users`,
     blockUser: id => `${apiUrl}/user/blocked-users/${id}`,
     unBlockUser: id => `${apiUrl}/user/blocked-users/${id}/unblock`,
+    followUser: id => `${apiUrl}/user/following/${id}`,
+    unFollowUser: id => `${apiUrl}/user/following/${id}/unfollow`,
     //chat
     getConversations: `${apiUrl}/conversations`,
     getMessages: id => `${apiUrl}/conversations/${id}/messages`,

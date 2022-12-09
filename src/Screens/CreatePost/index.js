@@ -25,7 +25,7 @@ import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TouchableOpacity, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import Animated, { FadeIn } from 'react-native-reanimated'
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const CreatePost = ({ route }) => {
@@ -44,7 +44,7 @@ const CreatePost = ({ route }) => {
     },
   }))
   useEffect(() => {
-    const regex = /@(\w+)$/
+    const regex = /@(\w*)$/
     let to = null
     const dispose = autorun(() => {
       state.message
@@ -78,7 +78,7 @@ const CreatePost = ({ route }) => {
     }
   }, [])
   const onMentionUserPress = user => {
-    state.setMessage(state.message.replace(/@(\w+)$/, `@${user.user_id} `))
+    state.setMessage(state.message.replace(/@(\w*)$/, `@${user.user_id} `))
   }
   const onPostPress = async () => {
     state.setCreating(true)
@@ -149,7 +149,7 @@ const CreatePost = ({ route }) => {
             <Obx>
               {() =>
                 state.mentionList.length ? (
-                  <Animated.View entering={FadeIn}>
+                  <Animated.View entering={FadeInDown}>
                     <Padding top={4} />
                     <AppText fontWeight={700}>{t('results')}</AppText>
                     {state.mentionList.map(user => (

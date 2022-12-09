@@ -105,6 +105,7 @@ const NotificationScreen = () => {
             }))
             return (
               <SectionList
+                initialNumToRender={5}
                 showsVerticalScrollIndicator={false}
                 sections={sections}
                 keyExtractor={item => item.notification_id}

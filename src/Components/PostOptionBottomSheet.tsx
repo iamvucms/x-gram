@@ -14,12 +14,12 @@ import {
 } from '@/Assets/Svg'
 import { PageName } from '@/Config'
 import { Post } from '@/Models'
-import { navigate } from '@/Navigators'
+import { navigate, navigateToProfile } from '@/Navigators'
 import { deletePost, diaLogStore, userStore } from '@/Stores'
 import { Colors, screenHeight, XStyleSheet } from '@/Theme'
 import { isIOS } from '@/Utils'
 import Clipboard from '@react-native-clipboard/clipboard'
-import { toJS } from 'mobx'
+import { flowResult, toJS } from 'mobx'
 import React, { forwardRef, memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Keyboard, TouchableOpacity } from 'react-native'
@@ -43,12 +43,22 @@ const PostOptionBottomSheet = forwardRef(
     const isMyPost = post?.posted_by.user_id === userStore.userInfo.user_id
     return (
       <AppBottomSheet
-        backgroundStyle={{ backgroundColor: Colors.transparent }}
         onClose={_onClose}
         index={index}
-        snapPoints={[isMyPost ? screenHeight * 0.3 : screenHeight * 0.55]}
+        snapPoints={[isMyPost ? screenHeight * 0.35 : screenHeight * 0.45]}
         ref={ref}
+        backgroundStyle={styles.sheetHeader}
       >
+        <Box
+          paddingVertical={16}
+          center
+          borderBottomWidth={0.5}
+          borderBottomColor={Colors.border}
+        >
+          <AppText fontSize={16} fontWeight={700}>
+            {t('home.post_options')}
+          </AppText>
+        </Box>
         <Box
           topLeftRadius={24}
           topRightRadius={24}
@@ -56,19 +66,24 @@ const PostOptionBottomSheet = forwardRef(
           backgroundColor={Colors.white}
           overflow="hidden"
         >
-          <Box fill backgroundColor={Colors.primary10}>
+          <Box fill>
             <Box
               radius={4}
-              margin={16}
               backgroundColor={Colors.white}
-              style={styles.shadowBox}
+              {...(!isMyPost && {
+                borderBottomColor: Colors.border,
+                borderBottomWidth: 0.5,
+              })}
             >
               {isMyPost && (
                 <>
                   <TouchableOpacity
                     onPress={() => {
-                      navigate(PageName.EditPostScreen, {
-                        postId: post.post_id,
+                      onClose()
+                      setTimeout(() => {
+                        navigate(PageName.EditPostScreen, {
+                          postId: post.post_id,
+                        })
                       })
                     }}
                     style={styles.optionBtn}
@@ -102,18 +117,6 @@ const PostOptionBottomSheet = forwardRef(
               )}
               {!isMyPost && (
                 <>
-                  <TouchableOpacity
-                    onPress={() => {
-                      ref?.close?.()
-                    }}
-                    style={styles.optionBtn}
-                  >
-                    <EyeOnSvg size={20} />
-                    <Padding left={14} />
-                    <AppText fontSize={16} fontWeight={500}>
-                      {t('home.hide_post')}
-                    </AppText>
-                  </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => {
                       ref?.close?.()
@@ -174,16 +177,13 @@ const PostOptionBottomSheet = forwardRef(
               </TouchableOpacity>
             </Box>
             {!isMyPost && (
-              <Box
-                radius={4}
-                marginHorizontal={16}
-                marginBottom={16}
-                backgroundColor={Colors.white}
-                style={styles.shadowBox}
-              >
+              <Box radius={4} marginBottom={16} backgroundColor={Colors.white}>
                 <TouchableOpacity
                   onPress={() => {
-                    ref?.close?.()
+                    onClose()
+                    setTimeout(() => {
+                      navigateToProfile(post.posted_by.user_id)
+                    })
                   }}
                   style={styles.optionBtn}
                 >
@@ -201,7 +201,11 @@ const PostOptionBottomSheet = forwardRef(
                     return (
                       <TouchableOpacity
                         onPress={() => {
-                          ref?.close?.()
+                          if (isFollowing) {
+                            userStore.unfollowUser(post?.posted_by)
+                          } else {
+                            userStore.followUser(post?.posted_by)
+                          }
                         }}
                         style={styles.optionBtn}
                       >
@@ -225,7 +229,16 @@ const PostOptionBottomSheet = forwardRef(
                 </Obx>
                 <TouchableOpacity
                   onPress={() => {
-                    ref?.close?.()
+                    onClose()
+                    diaLogStore.showDiaLog({
+                      title: t('home.block_so', {
+                        so: post?.posted_by?.full_name,
+                      }),
+                      message: t('account.confirm_block'),
+                      dialogIcon: 'pack1_3',
+                      showCancelButton: true,
+                      onPress: () => userStore.blockUser(post.post_id),
+                    })
                   }}
                   style={styles.optionBtn}
                 >
@@ -266,5 +279,11 @@ const styles = XStyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
+  },
+  sheetHeader: {
+    borderWidth: 0.5,
+    borderColor: Colors.border,
+    borderBottomWidth: 0,
+    marginHorizontal: -0.5,
   },
 })

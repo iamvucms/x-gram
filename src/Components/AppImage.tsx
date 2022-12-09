@@ -36,7 +36,7 @@ interface AppImageProps {
   lightbox?: boolean
 }
 const AppImage = ({
-  source,
+  source = {},
   blurHashEnabled = false,
   enablePinchZoom = false,
   resizeMode = 'cover',

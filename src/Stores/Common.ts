@@ -1,4 +1,4 @@
-import { CommentStatus, PostStatus } from '@/Models'
+import { CommentStatus, Post, PostStatus, PrivacyType } from '@/Models'
 import {
   deleteComment,
   sendComment,
@@ -6,6 +6,7 @@ import {
   sendPost,
   sendReactPost,
   sendUnReactPost,
+  sendUpdatePost,
   updateComment,
   uploadImage,
   uploadVideo,
@@ -63,7 +64,7 @@ export const addPost = post => {
   homeStore.addPost(post)
   userStore.addPost(post)
 }
-export const updatePost = (postId, post) => {
+export const updatePost = (postId: string, post: Partial<Post>) => {
   homeStore.updatePost(postId, post)
   userStore.updatePost(postId, post)
 }
@@ -229,6 +230,30 @@ export const deletePost = async postId => {
     const response = await sendDeletePost(postId)
     if (response?.status === 'OK') {
       deletePostById(postId)
+    } else {
+      diaLogStore.showErrorDiaLog()
+    }
+  } catch (e) {
+    diaLogStore.showErrorDiaLog()
+  }
+}
+export const updatePostRequest = async (
+  postId: string,
+  message: string,
+  privacy: PrivacyType,
+  onDone?: () => void,
+) => {
+  try {
+    const response = await sendUpdatePost(postId, {
+      message,
+      privacy,
+    })
+    if (response?.status === 'OK') {
+      updatePost(postId, {
+        message,
+        privacy,
+      })
+      onDone && onDone()
     } else {
       diaLogStore.showErrorDiaLog()
     }

@@ -153,6 +153,7 @@ const ImageEditor = ({ route }) => {
             />
           )}
         </Obx>
+
         <Obx>
           {() => (
             <StickerLayer
@@ -162,15 +163,7 @@ const ImageEditor = ({ route }) => {
             />
           )}
         </Obx>
-        <Obx>
-          {() => (
-            <TextLayer
-              trashAnim={trashAnim}
-              trashY={trashY}
-              texts={state.texts[index]}
-            />
-          )}
-        </Obx>
+
         <Obx>
           {() => {
             return (
@@ -181,6 +174,15 @@ const ImageEditor = ({ route }) => {
               />
             )
           }}
+        </Obx>
+        <Obx>
+          {() => (
+            <TextLayer
+              trashAnim={trashAnim}
+              trashY={trashY}
+              texts={state.texts[index]}
+            />
+          )}
         </Obx>
       </ViewShot>
     )

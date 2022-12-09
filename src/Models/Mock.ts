@@ -1,5 +1,5 @@
 import { generateRandomIntegerInRange } from '@/Utils'
-import { Gender, MessageStatus, NotificationType } from './Enum'
+import { Gender, MessageStatus, NotificationType, PrivacyType } from './Enum'
 export const mockUsers = [
   {
     user_id: 'username01',
@@ -274,6 +274,7 @@ export const mockPosts = [
     created_at: new Date().getTime(),
     updated_at: new Date().getTime(),
     message: 'This is a post by John Doe',
+    privacy: PrivacyType.Public,
     medias: [
       {
         media_id: '1',
@@ -312,6 +313,7 @@ export const mockPosts = [
     created_at: new Date().getTime(),
     updated_at: new Date().getTime(),
     message: 'This is a post by John Doe',
+    privacy: PrivacyType.Public,
     medias: [
       {
         media_id: '1',
@@ -335,6 +337,7 @@ export const mockPosts = [
     created_at: new Date().getTime(),
     updated_at: new Date().getTime(),
     message: 'This is a post by John Doe',
+    privacy: PrivacyType.Public,
     medias: [
       {
         media_id: '1',
@@ -373,6 +376,7 @@ export const mockPosts = [
     created_at: new Date().getTime(),
     updated_at: new Date().getTime(),
     message: 'This is a post by John Doe',
+    privacy: PrivacyType.Public,
     medias: [
       {
         media_id: '1',
@@ -411,6 +415,7 @@ export const mockPosts = [
     created_at: new Date().getTime(),
     updated_at: new Date().getTime(),
     message: 'This is a post by John Doe',
+    privacy: PrivacyType.Public,
     medias: [
       {
         media_id: '1',
@@ -449,6 +454,7 @@ export const mockPosts = [
     created_at: new Date().getTime(),
     updated_at: new Date().getTime(),
     message: 'This is a post by John Doe',
+    privacy: PrivacyType.Public,
     medias: [
       {
         media_id: '1',
@@ -487,6 +493,7 @@ export const mockPosts = [
     created_at: new Date().getTime(),
     updated_at: new Date().getTime(),
     message: 'This is a post by John Doe',
+    privacy: PrivacyType.Public,
     medias: [
       {
         media_id: '1',

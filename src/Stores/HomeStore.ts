@@ -26,7 +26,7 @@ export default class HomeStore {
       'postPage',
     ])
   }
-  *fetchStories(loadMore) {
+  *fetchStories(loadMore?: boolean) {
     try {
       if (!loadMore) {
         this.loadingStories = true
@@ -46,7 +46,7 @@ export default class HomeStore {
       })
     }
   }
-  *fetchPosts(loadMore) {
+  *fetchPosts(loadMore?: boolean) {
     try {
       if (!loadMore) {
         this.loadingPosts = true

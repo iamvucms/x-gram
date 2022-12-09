@@ -96,6 +96,7 @@ const HomeScreen = () => {
       <Obx>
         {() => (
           <Animated.FlatList
+            initialNumToRender={2}
             bounces={false}
             ListHeaderComponent={<StoryBar scrollY={scrollY} />}
             scrollEventThrottle={16}

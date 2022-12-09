@@ -28,3 +28,4 @@ export { default as PersonalInformationScreen } from './PersonalInformationScree
 export { default as SettingScreen } from './SettingScreen'
 export { default as CreateFeatureScreen } from './CreateFeatureScreen'
 export { default as EditPostScreen } from './EditPostScreen'
+export { default as FollowScreen } from './FollowScreen'

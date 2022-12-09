@@ -39,6 +39,10 @@ export const request = async (url, method = Method.GET, data, onError) => {
   } catch (e) {
     onError && onError(e)
     handleError(e)
+    // return {
+    //   status: 'ERROR',
+    //   message: e.message,
+    // }
   }
 }
 export const uploadRequest = async (url, data, onError) => {

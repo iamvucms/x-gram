@@ -480,6 +480,7 @@ const ProfileScreen = () => {
         backgroundStyle={{ backgroundColor: Colors.transparent }}
         snapPoints={[screenHeight * 0.8, screenHeight - top]}
         ref={editSheetRef}
+        index={-1}
       >
         <EditProfileNavigator ref={editNavigatorRef} />
       </AppBottomSheet>

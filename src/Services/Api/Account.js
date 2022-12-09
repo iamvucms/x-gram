@@ -20,3 +20,7 @@ export const unblockUser = id =>
 
 export const updateUserInfo = data =>
   request(Endpoint().updateUserInfo, Method.POST, data)
+
+export const followUser = id => request(Endpoint().followUser(id), Method.POST)
+export const unFollowUser = id =>
+  request(Endpoint().unFollowUser(id), Method.POST)

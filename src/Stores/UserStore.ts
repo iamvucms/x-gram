@@ -1,10 +1,12 @@
 import { mockPosts, mockUsers, Post, User } from '@/Models'
 import {
   blockUser,
+  followUser,
   getBlockedUsers,
   getUserInfo,
   getUserPosts,
   unblockUser,
+  unFollowUser,
   updateUserInfo,
   uploadImage,
 } from '@/Services/Api'
@@ -15,6 +17,8 @@ import { diaLogStore } from '.'
 export default class UserStore {
   isLogged = false
   userInfo: User = {} as User
+  following: User[] = []
+  followers: User[] = []
   passcode = '123456'
   passcodeEnabled = true
   bookmarkPosts: Post[] = []
@@ -39,14 +43,17 @@ export default class UserStore {
       // fetch user info
       const { data } = yield getUserInfo(this.userInfo.user_id)
       this.userInfo = data
+      // fetch following
     } catch (e) {
       this.userInfo = mockUsers[0]
+      this.following = mockUsers.slice(1, 2)
+      this.followers = mockUsers.slice(1, 2)
       console.log({
         fetchUserInfo: e,
       })
     }
   }
-  *fetchPosts(loadMore) {
+  *fetchPosts(loadMore?: boolean) {
     try {
       if (!loadMore) {
         this.loadingPosts = true
@@ -168,6 +175,30 @@ export default class UserStore {
         updateProfileImage: e,
       })
       diaLogStore.showErrorDiaLog()
+    }
+  }
+  *followUser(user) {
+    try {
+      const response = yield followUser(user.user_id)
+      if (response?.status === 'OK') {
+        this.addFollowing(toJS(user))
+      }
+    } catch (e) {
+      console.log({
+        followUser: e,
+      })
+    }
+  }
+  *unfollowUser(user) {
+    try {
+      const response = yield unFollowUser(user.user_id)
+      if (response?.status === 'OK') {
+        this.removeFollowing(user.user_id)
+      }
+    } catch (e) {
+      console.log({
+        unfollowUser: e,
+      })
     }
   }
   addPost(post: Post) {
@@ -306,18 +337,16 @@ export default class UserStore {
     return false
   }
   isFollowing(userId) {
-    return this.userInfo.following.some(user => user.user_id === userId)
+    return this.following.some(user => user.user_id === userId)
   }
   isFollowingMe(userId) {
-    return this.userInfo.followers.some(user => user.user_id === userId)
+    return this.followers.some(user => user.user_id === userId)
   }
   addFollowing(user) {
-    this.userInfo.following = [user, ...this.userInfo.following]
+    this.following = [user, ...this.following]
   }
   removeFollowing(userId) {
-    this.userInfo.following = this.userInfo.following.filter(
-      user => user.user_id !== userId,
-    )
+    this.following = this.following.filter(user => user.user_id !== userId)
   }
   // check for hydration (required)
   get isHydrated() {

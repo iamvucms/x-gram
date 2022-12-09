@@ -24,6 +24,7 @@ import {
   UserPostsScreen,
   CreateFeatureScreen,
   EditPostScreen,
+  FollowScreen,
 } from '@/Screens'
 import { Colors } from '@/Theme'
 import { NavigationContainer } from '@react-navigation/native'
@@ -125,6 +126,7 @@ const AuthStack = () => {
         name={PageName.EditPostScreen}
         component={EditPostScreen}
       />
+      <Stack.Screen name={PageName.FollowScreen} component={FollowScreen} />
     </Stack.Navigator>
   )
 }

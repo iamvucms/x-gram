@@ -4,10 +4,14 @@ import {
   CommentSvg,
   DotsSvg,
   FullScreenSvg,
+  GlobalSvg,
   HeartSvg,
+  LockSvg,
+  PeopleSvg,
   SendSvg,
   StoryGradientBorderSvg,
 } from '@/Assets/Svg'
+import { Post, PrivacyType } from '@/Models'
 import { navigateToProfile } from '@/Navigators'
 import { isReactedPost, reactRequest, userStore } from '@/Stores'
 import {
@@ -37,7 +41,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import Video from 'react-native-video'
-import { Expanded, Obx } from '.'
+import { Expanded, Obx, Row } from '.'
 import AppImage from './AppImage'
 import AppText from './AppText'
 import Box from './Box'
@@ -47,7 +51,7 @@ interface PostItemProps {
   onSharePress?: () => void
   onOptionPress?: () => void
   onPress?: () => void
-  post: any
+  post: Post
   showDetail?: boolean
   preview?: boolean
 }
@@ -188,10 +192,26 @@ const PostItem = ({
               >
                 {post.posted_by.full_name}
               </AppText>
-              <Padding top={3} />
-              <AppText fontSize={12} color={Colors.white75}>
-                {moment(post.created_at).fromNow()}
-              </AppText>
+
+              <Row>
+                <Obx>
+                  {() =>
+                    post.privacy === PrivacyType.Public ? (
+                      <GlobalSvg size={12} color={Colors.white50} />
+                    ) : post.privacy === PrivacyType.Followers ? (
+                      <PeopleSvg size={12} color={Colors.white50} />
+                    ) : (
+                      <LockSvg size={12} color={Colors.white50} />
+                    )
+                  }
+                </Obx>
+                <AppText fontSize={6} color={Colors.white50}>
+                  {'   '}•{'   '}
+                </AppText>
+                <AppText fontSize={12} color={Colors.white50}>
+                  {moment(post.created_at).fromNow()}
+                </AppText>
+              </Row>
             </View>
           </Box>
           {!preview && (

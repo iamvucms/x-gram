@@ -46,3 +46,18 @@ export enum NotificationType {
   MENTION_IN_COMMENT = 'mention_in_comment',
   MENTION_IN_POST = 'mention_in_post',
 }
+export enum PrivacyType {
+  Public = 'public',
+  Private = 'private',
+  Followers = 'followers',
+}
+export enum FilterType {
+  Architecture = 'architecture',
+  Art = 'art',
+  Cosplay = 'cosplay',
+  Decor = 'decor',
+  Fashion = 'fashion',
+  Food = 'food',
+  Landscape = 'landscape',
+  Video = 'video',
+}
