@@ -15,10 +15,11 @@ export default () => {
     forgotPassword: `${apiUrl}/forgot-password`,
     resetPassword: `${apiUrl}/reset-password`,
     //posts
-    getHomePosts: page => `${apiUrl}/posts?page=${page}`,
+    getHomePosts: (page = 0) => `${apiUrl}/posts?page=${page}`,
     getPostDetail: id => `${apiUrl}/posts/${id}`,
     getProfile: `${apiUrl}/users/{id}`,
-    getProfilePosts: (id, page) => `${apiUrl}/users/${id}/posts?page=${page}`,
+    getProfilePosts: (id, page = 0) =>
+      `${apiUrl}/users/${id}/posts?page=${page}`,
     searchPosts: `${apiUrl}/search/posts`,
     createPost: `${apiUrl}/posts`,
     updatePost: id => `${apiUrl}/posts/${id}`,
@@ -37,10 +38,10 @@ export default () => {
     createStory: `${apiUrl}/stories`,
     deleteStoryMedia: `${apiUrl}/stories/{id}/medias/{media_id}`,
     //notifications
-    getNotifications: page => `${apiUrl}/notifications?page=${page}`,
+    getNotifications: (page = 0) => `${apiUrl}/notifications?page=${page}`,
     deleteNotification: id => `${apiUrl}/notifications/${id}`,
     //users
-    searchUsers: q => `${apiUrl}/search/user?q=${q}`,
+    searchUsers: (q, page = 0) => `${apiUrl}/search/user?q=${q}&page=${page}`,
     updateUserInfo: `${apiUrl}/user`,
     updatePassword: `${apiUrl}/user/password`,
     getUserInfo: id => `${apiUrl}/user/${id}`,

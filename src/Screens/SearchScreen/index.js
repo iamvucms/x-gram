@@ -1,21 +1,34 @@
 import {
-  CopySvg,
+  ArrowRightSvg,
+  FollowSvg,
   MultipleSvg,
   SearchSvg,
-  StackSvg,
+  UnfollowSvg,
   VideoSvg,
 } from '@/Assets/Svg'
 import {
+  AppButton,
   AppImage,
   AppInput,
   AppText,
   Box,
   Container,
+  LoadingIndicator,
   Obx,
   Padding,
+  Row,
 } from '@/Components'
-import { mockPosts, TagFilterTypes } from '@/Models'
-import { searchPosts } from '@/Services/Api'
+import { PageName } from '@/Config'
+import {
+  mockPosts,
+  mockUsers,
+  PeopleFilterType,
+  PeopleFilterTypes,
+  TagFilterTypes,
+} from '@/Models'
+import { navigate, navigateToProfile } from '@/Navigators'
+import { searchPosts, searchUsers } from '@/Services/Api'
+import { userStore } from '@/Stores'
 import {
   Colors,
   Layout,
@@ -24,53 +37,140 @@ import {
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
-import { autorun } from 'mobx'
+import { MasonryFlashList } from '@shopify/flash-list'
+import { autorun, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, Pressable, View } from 'react-native'
-import Animated, { FadeIn } from 'react-native-reanimated'
-import { MasonryFlashList } from '@shopify/flash-list'
-import { navigate } from '@/Navigators'
-import { PageName } from '@/Config'
+import {
+  Pressable,
+  ScrollView,
+  View,
+  TouchableOpacity as RNTouchableOpacity,
+} from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+import Animated, {
+  FadeIn,
+  FadeInLeft,
+  FadeInRight,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated'
 import Video from 'react-native-video'
+const SearchType = {
+  POST: 'POST',
+  PEOPLE: 'PEOPLE',
+}
 const SearchScreen = () => {
   const { t } = useTranslation()
   const filterRef = useRef()
+  const listRef = useRef()
+  const typeAnim = useSharedValue(0)
   const state = useLocalObservable(() => ({
+    searchType: SearchType.POST,
+    setSearchType: searchType => (state.searchType = searchType),
     type: null,
     setType: type => (state.type = type),
     posts: mockPosts,
     setPosts: posts => (state.posts = posts),
+    users: mockUsers,
+    setUsers: users => (state.users = users),
     page: 1,
     setPage: page => (state.page = page),
+    userPage: 1,
+    setUserPage: userPage => (state.userPage = userPage),
     q: '',
     setQ: q => (state.q = q),
     searching: false,
     setSearching: searching => (state.searching = searching),
     loadingMore: false,
     setLoadingMore: loadingMore => (state.loadingMore = loadingMore),
+    loadingMoreUsers: false,
+    setLoadingMoreUsers: loadingMoreUsers =>
+      (state.loadingMoreUsers = loadingMoreUsers),
+    loading: true,
+    setLoading: loading => (state.loading = loading),
   }))
+  const initSearchData = async () => {
+    //TODO fetch default posts from server
+    try {
+      const response = await searchPosts('', '')
+      if (response?.status === 'OK') {
+        state.setPosts(response.data)
+      }
+    } catch (e) {
+      //TODO handle error
+      console.log({ initSearchData: e })
+    }
+    //TODO fetch default users from server
+    try {
+      const response = await searchUsers('')
+      if (response?.status === 'OK') {
+        state.setUsers(response.data)
+      }
+    } catch (e) {
+      //TODO handle error
+      console.log({ initSearchData: e })
+    }
+  }
   useEffect(() => {
+    initSearchData()
     let to = null
+    setTimeout(() => {
+      state.setLoading(false)
+    }, 350)
     const dispose = autorun(() => {
       clearTimeout(to)
       const q = state.q
       const tag = state.type || ''
+      const searchType = state.searchType
       to = setTimeout(async () => {
         state.setSearching(true)
-        const response = await searchPosts(q, tag, state.page)
-        if (response?.status === 'OK') {
-          state.setPosts(response.data)
+        if (searchType === SearchType.POST) {
+          const response = await searchPosts(q, tag, state.page)
+          if (response?.status === 'OK') {
+            state.setPosts(response.data)
+          } else {
+            state.setPosts(mockPosts)
+          }
         } else {
-          state.setPosts(mockPosts)
+          if (tag === PeopleFilterType.All) {
+            const response = await searchUsers(q)
+            if (response?.status === 'OK') {
+              state.setUsers(response.data)
+            } else {
+              state.setUsers(mockUsers)
+            }
+          } else {
+            if (tag === PeopleFilterType.Following) {
+              state.setUsers(toJS(userStore.followings))
+            } else {
+              state.setUsers(toJS(userStore.followers))
+            }
+          }
         }
         state.setSearching(false)
       }, 250)
     })
+    const disposeSearchType = autorun(() => {
+      if (state.searchType === SearchType.POST) {
+        typeAnim.value = withTiming(0)
+        listRef?.current?.scrollTo?.({
+          x: 0,
+          animated: true,
+        })
+      } else {
+        typeAnim.value = withTiming(1)
+        listRef?.current?.scrollTo?.({
+          x: screenWidth,
+          animated: true,
+        })
+      }
+    })
     return () => {
       dispose()
+      disposeSearchType()
       clearTimeout(to)
     }
   }, [])
@@ -92,9 +192,27 @@ const SearchScreen = () => {
     }
     state.setLoadingMore(false)
   }, [])
+  const onLoadMoreUserPress = useCallback(async () => {
+    if (state.loadingMoreUsers) {
+      return
+    }
+    state.setLoadingMoreUsers(true)
+    const response = await searchUsers(state.q, state.userPage + 1)
+    if (response?.status === 'OK') {
+      state.setUsers([...state.users, ...response.data])
+      state.setUserPage(state.userPage + 1)
+    } else {
+      state.setUsers([...state.users, ...mockUsers])
+    }
+    state.setLoadingMoreUsers(false)
+  }, [])
   const renderFilterTypeItem = useCallback(({ item, index }) => {
     const onPress = () => {
-      state.setType(item.type === state.type ? null : item.type)
+      state.setType(
+        item.type === state.type && state.searchType === SearchType.POST
+          ? null
+          : item.type,
+      )
       filterRef.current?.scrollToIndex?.({ index, viewPosition: 0.5 })
     }
     return (
@@ -106,17 +224,22 @@ const SearchScreen = () => {
             )
           }
         </Obx>
-        <Obx>
-          {() => (
-            <item.icon
-              color={
-                state.type === item.type ? Colors.white : Colors.placeholder
-              }
-              size={14}
-            />
-          )}
-        </Obx>
-        <Padding left={6} />
+        {!!item.icon && (
+          <>
+            <Obx>
+              {() => (
+                <item.icon
+                  color={
+                    state.type === item.type ? Colors.white : Colors.placeholder
+                  }
+                  size={14}
+                />
+              )}
+            </Obx>
+            <Padding left={6} />
+          </>
+        )}
+
         <Obx>
           {() => (
             <AppText
@@ -133,9 +256,81 @@ const SearchScreen = () => {
       </Pressable>
     )
   }, [])
+  const renderUserItem = useCallback(({ item }) => {
+    return (
+      <RNTouchableOpacity onPress={() => navigateToProfile(item.user_id)}>
+        <Animated.View style={styles.userItem}>
+          <AppImage
+            style={styles.userAvatar}
+            source={{
+              uri: item.avatar_url,
+            }}
+          />
+          <Box fill paddingLeft={12}>
+            <Row justify="space-between">
+              <View>
+                <AppText fontWeight={600} lineHeight={16}>
+                  {item.full_name}
+                </AppText>
+                <AppText
+                  fontSize={12}
+                  lineHeight={14}
+                  color={Colors.placeholder}
+                >
+                  @{item.user_id}
+                </AppText>
+              </View>
+              <Obx>
+                {() => {
+                  const isFollowing = userStore.isFollowing(item.user_id)
+                  return (
+                    <RNTouchableOpacity
+                      onPress={() => {
+                        if (isFollowing) {
+                          userStore.unfollowUser(item)
+                        } else {
+                          userStore.followUser(item)
+                        }
+                      }}
+                      style={styles.followBtn}
+                    >
+                      {isFollowing ? (
+                        <UnfollowSvg size={16} color={Colors.white} />
+                      ) : (
+                        <FollowSvg size={16} color={Colors.white} />
+                      )}
+                      <Padding left={4} />
+                      <AppText
+                        fontSize={12}
+                        fontWeight={500}
+                        color={Colors.white}
+                      >
+                        {t(
+                          isFollowing ? 'profile.following' : 'profile.follow',
+                        )}
+                      </AppText>
+                    </RNTouchableOpacity>
+                  )
+                }}
+              </Obx>
+            </Row>
+            <Padding top={10} />
+            <AppText fontSize={12} numberOfLines={1}>
+              {item.bio}
+            </AppText>
+          </Box>
+        </Animated.View>
+      </RNTouchableOpacity>
+    )
+  }, [])
   const renderGridItem = useCallback(({ item, index }) => {
     return <GridItem item={item} index={index} />
   }, [])
+  const activeTypeWidth = ResponsiveWidth(55)
+  const activeTypeStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: typeAnim.value * activeTypeWidth }],
+  }))
+
   return (
     <Container
       statusBarProps={{ barStyle: 'light-content' }}
@@ -160,34 +355,174 @@ const SearchScreen = () => {
             placeholder={t('search.search_placeholder')}
             placeholderTextColor={Colors.placeholder}
           />
+          <Box
+            row
+            align="center"
+            width={120}
+            height={30}
+            backgroundColor={Colors.border}
+            radius={4}
+            paddingHorizontal={5}
+          >
+            <Animated.View style={[styles.activeTypeView, activeTypeStyle]} />
+            <Pressable
+              onPress={() => state.setSearchType(SearchType.POST)}
+              style={styles.typeBtn}
+            >
+              <AppText fontSize={12} fontWeight={600}>
+                {t('search.posts')}
+              </AppText>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                state.setSearchType(SearchType.PEOPLE)
+                state.setType(PeopleFilterType.All)
+              }}
+              style={styles.typeBtn}
+            >
+              <AppText fontSize={12} fontWeight={600}>
+                {t('search.people')}
+              </AppText>
+            </Pressable>
+          </Box>
         </Box>
-        <FlatList
-          ref={filterRef}
-          ListHeaderComponent={<Padding left={16} />}
-          data={TagFilterTypes}
-          renderItem={renderFilterTypeItem}
-          keyExtractor={item => item.type}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-        />
-      </Box>
-      <Box fill paddingTop={5} paddingLeft={5}>
         <Obx>
-          {() => (
-            <MasonryFlashList
-              data={state.posts.slice()}
-              numColumns={3}
-              renderItem={renderGridItem}
-              keyExtractor={item => item.post_id}
-              ListFooterComponent={<Padding bottom={110} />}
-              showsVerticalScrollIndicator={false}
-              estimatedItemSize={(screenWidth / 3) * 1.5}
-              onEndReached={onLoadMore}
-              onEndReachedThreshold={0.5}
-            />
-          )}
+          {() =>
+            state.searchType === SearchType.POST ? (
+              <Animated.FlatList
+                key={SearchType.POST}
+                entering={FadeInLeft}
+                ref={filterRef}
+                ListHeaderComponent={<Padding left={16} />}
+                data={TagFilterTypes}
+                renderItem={renderFilterTypeItem}
+                keyExtractor={item => item.type}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              />
+            ) : (
+              <Animated.FlatList
+                key={SearchType.PEOPLE}
+                entering={FadeInRight}
+                ref={filterRef}
+                ListHeaderComponent={<Padding left={16} />}
+                data={PeopleFilterTypes}
+                renderItem={renderFilterTypeItem}
+                keyExtractor={item => item.type}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              />
+            )
+          }
         </Obx>
       </Box>
+      <Obx>
+        {() =>
+          state.loading ? (
+            <Box paddingVertical={50} center>
+              <LoadingIndicator />
+            </Box>
+          ) : (
+            <Box fill paddingTop={5}>
+              <ScrollView
+                scrollEnabled={false}
+                ref={listRef}
+                pagingEnabled
+                horizontal
+                showsHorizontalScrollIndicator={false}
+              >
+                <View paddingLeft={ResponsiveWidth(5)} width={screenWidth}>
+                  <Obx>
+                    {() => (
+                      <MasonryFlashList
+                        ListEmptyComponent={
+                          <Obx>
+                            {() =>
+                              state.searching && (
+                                <Box paddingVertical={50} center>
+                                  <LoadingIndicator />
+                                </Box>
+                              )
+                            }
+                          </Obx>
+                        }
+                        key={SearchType.POST}
+                        data={state.posts.slice()}
+                        numColumns={3}
+                        renderItem={renderGridItem}
+                        keyExtractor={item => item.post_id}
+                        ListFooterComponent={
+                          <Box height={90} center>
+                            <Obx>
+                              {() =>
+                                state.loadingMore && (
+                                  <LoadingIndicator type="ThreeBounce" />
+                                )
+                              }
+                            </Obx>
+                          </Box>
+                        }
+                        showsVerticalScrollIndicator={false}
+                        estimatedItemSize={(screenWidth / 3) * 1.5}
+                        onEndReached={onLoadMore}
+                        onEndReachedThreshold={0.5}
+                      />
+                    )}
+                  </Obx>
+                </View>
+                <Obx>
+                  {() => (
+                    <Animated.FlatList
+                      style={{ width: screenWidth }}
+                      key={SearchType.PEOPLE}
+                      entering={FadeInRight}
+                      data={state.users.slice()}
+                      renderItem={renderUserItem}
+                      keyExtractor={item => item.user_id}
+                      ListFooterComponent={
+                        <Box
+                          paddingTop={12}
+                          paddingBottom={90}
+                          marginHorizontal={12}
+                        >
+                          <Obx>
+                            {() => (
+                              <AppButton
+                                disabled={state.loadingMoreUsers}
+                                disabledBackgroundColor={Colors.primary}
+                                spacing={state.loadingMoreUsers ? 0 : 4}
+                                onPress={onLoadMoreUserPress}
+                                text={
+                                  state.loadingMoreUsers
+                                    ? ''
+                                    : t('search.view_more')
+                                }
+                                textSize={12}
+                                backgroundColor={Colors.primary}
+                                svgIcon={
+                                  state.loadingMoreUsers ? (
+                                    <LoadingIndicator color={Colors.white} />
+                                  ) : (
+                                    <ArrowRightSvg
+                                      color={Colors.white}
+                                      size={14}
+                                    />
+                                  )
+                                }
+                              />
+                            )}
+                          </Obx>
+                        </Box>
+                      }
+                      showsVerticalScrollIndicator={false}
+                    />
+                  )}
+                </Obx>
+              </ScrollView>
+            </Box>
+          )
+        }
+      </Obx>
     </Container>
   )
 }
@@ -208,6 +543,13 @@ export const GridItem = memo(({ item, index }) => {
     }
     return (screenWidth - ResponsiveWidth(20)) / 3
   }, [row, col])
+  const mediaStyle = {
+    width: (screenWidth - ResponsiveWidth(20)) / 3,
+    height,
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: Colors.border,
+  }
   return (
     <TouchableOpacity
       onPress={() =>
@@ -224,26 +566,14 @@ export const GridItem = memo(({ item, index }) => {
           source={{
             uri: item.medias[0].url,
           }}
-          // eslint-disable-next-line react-native/no-inline-styles
-          style={{
-            width: (screenWidth - ResponsiveWidth(20)) / 3,
-            height,
-            borderRadius: 8,
-            overflow: 'hidden',
-          }}
+          style={mediaStyle}
         />
       ) : (
         <AppImage
           source={{
             uri: item.medias[0].url,
           }}
-          // eslint-disable-next-line react-native/no-inline-styles
-          containerStyle={{
-            width: (screenWidth - ResponsiveWidth(20)) / 3,
-            height,
-            borderRadius: 8,
-            overflow: 'hidden',
-          }}
+          containerStyle={mediaStyle}
         />
       )}
       {item.medias.length > 1 && (
@@ -285,5 +615,42 @@ const styles = XStyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 12,
+  },
+  activeTypeView: {
+    position: 'absolute',
+    left: 5,
+    width: 55,
+    height: 20,
+    backgroundColor: Colors.white,
+    borderRadius: 4,
+  },
+  typeBtn: {
+    width: 55,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  userItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.kF8F8F8,
+    marginHorizontal: 12,
+    padding: 6,
+    marginTop: 12,
+    borderRadius: 6,
+  },
+  userAvatar: {
+    height: 60,
+    width: 60,
+    borderRadius: 30,
+    overflow: 'hidden',
+  },
+  followBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    backgroundColor: Colors.primary,
   },
 })

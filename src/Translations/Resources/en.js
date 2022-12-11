@@ -254,5 +254,11 @@ export default {
     food: 'Food',
     landscape: 'Landscape',
     clip: 'Clip',
+    posts: 'Posts',
+    people: 'People',
+    all: 'All',
+    following: 'Following',
+    followers: 'Followers',
+    view_more: 'View More',
   },
 }

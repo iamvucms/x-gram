@@ -17,7 +17,7 @@ import { diaLogStore } from '.'
 export default class UserStore {
   isLogged = false
   userInfo: User = {} as User
-  following: User[] = []
+  followings: User[] = []
   followers: User[] = []
   passcode = '123456'
   passcodeEnabled = true
@@ -46,8 +46,8 @@ export default class UserStore {
       // fetch following
     } catch (e) {
       this.userInfo = mockUsers[0]
-      this.following = mockUsers.slice(1, 2)
-      this.followers = mockUsers.slice(1, 2)
+      this.followings = mockUsers.slice(1, 5)
+      this.followers = mockUsers.slice(1, 5)
       console.log({
         fetchUserInfo: e,
       })
@@ -182,6 +182,8 @@ export default class UserStore {
       const response = yield followUser(user.user_id)
       if (response?.status === 'OK') {
         this.addFollowing(toJS(user))
+      } else {
+        diaLogStore.showErrorDiaLog({ message: response?.message })
       }
     } catch (e) {
       console.log({
@@ -194,6 +196,8 @@ export default class UserStore {
       const response = yield unFollowUser(user.user_id)
       if (response?.status === 'OK') {
         this.removeFollowing(user.user_id)
+      } else {
+        diaLogStore.showErrorDiaLog({ message: response?.message })
       }
     } catch (e) {
       console.log({
@@ -337,16 +341,16 @@ export default class UserStore {
     return false
   }
   isFollowing(userId) {
-    return this.following.some(user => user.user_id === userId)
+    return this.followings.some(user => user.user_id === userId)
   }
   isFollowingMe(userId) {
     return this.followers.some(user => user.user_id === userId)
   }
   addFollowing(user) {
-    this.following = [user, ...this.following]
+    this.followings = [user, ...this.followings]
   }
   removeFollowing(userId) {
-    this.following = this.following.filter(user => user.user_id !== userId)
+    this.followings = this.followings.filter(user => user.user_id !== userId)
   }
   // check for hydration (required)
   get isHydrated() {

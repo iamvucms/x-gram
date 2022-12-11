@@ -14,7 +14,7 @@ import { PageName } from '@/Config'
 import { navigate } from '@/Navigators'
 import { Colors } from '@/Theme'
 import React from 'react'
-import { CreateType, FilterType, MediaType } from './Enum'
+import { CreateType, FilterType, MediaType, PeopleFilterType } from './Enum'
 
 export const CreateOptions = [
   {
@@ -92,5 +92,19 @@ export const TagFilterTypes = [
     type: FilterType.Video,
     icon: VideoSvg,
     name: 'search.clip',
+  },
+]
+export const PeopleFilterTypes = [
+  {
+    type: PeopleFilterType.All,
+    name: 'search.all',
+  },
+  {
+    type: PeopleFilterType.Following,
+    name: 'search.following',
+  },
+  {
+    type: PeopleFilterType.Followers,
+    name: 'search.followers',
   },
 ]

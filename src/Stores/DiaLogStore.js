@@ -88,7 +88,7 @@ export default class DiaLogStore {
     this.onClose = () => {}
     this.onPress = () => {}
   }
-  showErrorDiaLog(title = 'oops', message = 'wrong') {
+  showErrorDiaLog({ title = 'oops', message = 'wrong' } = {}) {
     this.showDiaLog({
       title,
       message,

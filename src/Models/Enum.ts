@@ -61,3 +61,8 @@ export enum FilterType {
   Landscape = 'landscape',
   Video = 'video',
 }
+export enum PeopleFilterType {
+  All = 'all',
+  Following = 'following',
+  Followers = 'followers',
+}
