@@ -365,15 +365,15 @@ const SearchScreen = () => {
             paddingHorizontal={5}
           >
             <Animated.View style={[styles.activeTypeView, activeTypeStyle]} />
-            <Pressable
+            <RNTouchableOpacity
               onPress={() => state.setSearchType(SearchType.POST)}
               style={styles.typeBtn}
             >
               <AppText fontSize={12} fontWeight={600}>
                 {t('search.posts')}
               </AppText>
-            </Pressable>
-            <Pressable
+            </RNTouchableOpacity>
+            <RNTouchableOpacity
               onPress={() => {
                 state.setSearchType(SearchType.PEOPLE)
                 state.setType(PeopleFilterType.All)
@@ -383,7 +383,7 @@ const SearchScreen = () => {
               <AppText fontSize={12} fontWeight={600}>
                 {t('search.people')}
               </AppText>
-            </Pressable>
+            </RNTouchableOpacity>
           </Box>
         </Box>
         <Obx>
@@ -486,31 +486,33 @@ const SearchScreen = () => {
                           marginHorizontal={12}
                         >
                           <Obx>
-                            {() => (
-                              <AppButton
-                                disabled={state.loadingMoreUsers}
-                                disabledBackgroundColor={Colors.primary}
-                                spacing={state.loadingMoreUsers ? 0 : 4}
-                                onPress={onLoadMoreUserPress}
-                                text={
-                                  state.loadingMoreUsers
-                                    ? ''
-                                    : t('search.view_more')
-                                }
-                                textSize={12}
-                                backgroundColor={Colors.primary}
-                                svgIcon={
-                                  state.loadingMoreUsers ? (
-                                    <LoadingIndicator color={Colors.white} />
-                                  ) : (
-                                    <ArrowRightSvg
-                                      color={Colors.white}
-                                      size={14}
-                                    />
-                                  )
-                                }
-                              />
-                            )}
+                            {() =>
+                              state.users.length > 8 && (
+                                <AppButton
+                                  disabled={state.loadingMoreUsers}
+                                  disabledBackgroundColor={Colors.primary}
+                                  spacing={state.loadingMoreUsers ? 0 : 4}
+                                  onPress={onLoadMoreUserPress}
+                                  text={
+                                    state.loadingMoreUsers
+                                      ? ''
+                                      : t('search.view_more')
+                                  }
+                                  textSize={12}
+                                  backgroundColor={Colors.primary}
+                                  svgIcon={
+                                    state.loadingMoreUsers ? (
+                                      <LoadingIndicator color={Colors.white} />
+                                    ) : (
+                                      <ArrowRightSvg
+                                        color={Colors.white}
+                                        size={14}
+                                      />
+                                    )
+                                  }
+                                />
+                              )
+                            }
                           </Obx>
                         </Box>
                       }

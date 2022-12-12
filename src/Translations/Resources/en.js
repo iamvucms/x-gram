@@ -261,4 +261,8 @@ export default {
     followers: 'Followers',
     view_more: 'View More',
   },
+  follow: {
+    title: 'Following & Followers',
+    remove_follower: 'Remove Follower',
+  },
 }

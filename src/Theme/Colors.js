@@ -48,6 +48,7 @@ export const Colors = {
   kE0144C: '#E0144C',
   kE0144C50: '#E0144C50',
   k54B435: '#54B435',
+  blueblack: '#1C315E',
 }
 
 export const DarkColors = {

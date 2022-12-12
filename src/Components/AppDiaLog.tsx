@@ -138,8 +138,9 @@ const AppDialog = ({
                 <>
                   <AppButton
                     onPress={onClose}
-                    style={styles.mainBtn}
-                    textStyle={styles.mainBtnTxt}
+                    style={[styles.mainBtn, styles.cancelBtn]}
+                    textSize={16}
+                    textColor={Colors.primary}
                     backgroundColor={Colors.black50}
                     text={t('cancel')}
                   />
@@ -218,6 +219,11 @@ const styles = XStyleSheet.create({
   blurView: {
     ...XStyleSheet.absoluteFillObject,
     zIndex: -1,
+  },
+  cancelBtn: {
+    backgroundColor: Colors.transparent,
+    borderColor: Colors.primary,
+    borderWidth: 2,
   },
 })
 export default memo(AppDialog)

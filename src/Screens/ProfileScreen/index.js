@@ -2,7 +2,9 @@ import {
   BookMarkSvg,
   CameraSvg,
   DotsSvg,
+  EditSvg,
   GridSvg,
+  LinkSvg,
   SettingSvg,
   VideoSvg,
 } from '@/Assets/Svg'
@@ -196,25 +198,19 @@ const ProfileScreen = () => {
         topLeftRadius={50}
         topRightRadius={50}
         marginTop={200}
-        paddingBottom={24}
+        paddingBottom={16}
       >
-        <Box row paddingHorizontal={20}>
-          <TouchableOpacity style={styles.infoBtn}>
-            <Obx>
-              {() => (
-                <AppText fontWeight={700}>
-                  {formatAmount(userStore.userInfo.followers.length)}
-                </AppText>
-              )}
-            </Obx>
-            <AppText color={Colors.black75} fontWeight={600}>
-              {t('profile.followers')}
-            </AppText>
-          </TouchableOpacity>
+        <Box center row paddingHorizontal={20} paddingBottom={8}>
           <View>
             <Obx>
               {() => (
-                <Box overflow="hidden" radius={99} center marginTop={-50}>
+                <Box
+                  style={styles.avatarContainer}
+                  overflow="hidden"
+                  radius={99}
+                  center
+                  marginTop={-50}
+                >
                   <AppImage
                     containerStyle={styles.avatar}
                     source={{
@@ -241,17 +237,8 @@ const ProfileScreen = () => {
               <CameraSvg />
             </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.infoBtn}>
-            <AppText fontWeight={700}>
-              {' '}
-              {formatAmount(userStore.userInfo.following.length)}
-            </AppText>
-            <AppText color={Colors.black75} fontWeight={600}>
-              {t('profile.followings')}
-            </AppText>
-          </TouchableOpacity>
         </Box>
-        <Box paddingHorizontal={50} marginTop={0} center>
+        <Box marginTop={0} center>
           <AppText fontWeight={700} fontSize={20}>
             {userStore.userInfo.full_name}
           </AppText>
@@ -261,20 +248,67 @@ const ProfileScreen = () => {
           <Padding top={8} />
           <AppText
             align="center"
-            color={Colors.primary}
+            color={Colors.blueblack}
             fontWeight={600}
             lineHeight={20}
           >
             {userStore.userInfo.bio}
           </AppText>
           <Box
-            width={screenWidth}
-            paddingHorizontal={20}
+            marginVertical={16}
+            width="100%"
+            paddingHorizontal={16}
             row
-            flexWrap="wrap"
-            justify="center"
-            marginTop={8}
+            center
           >
+            <TouchableOpacity style={styles.profileNumberBtn}>
+              <AppText fontSize={16} fontWeight={800} color={Colors.blueblack}>
+                {formatAmount(userStore.posts.length)}
+              </AppText>
+              <AppText fontWeight={600} fontSize={12} color={Colors.black50}>
+                {t('search.posts')}
+              </AppText>
+            </TouchableOpacity>
+            <Box
+              height={40}
+              width={1}
+              backgroundColor={Colors.white}
+              radius={99}
+            />
+            <TouchableOpacity
+              onPress={() => navigate(PageName.FollowScreen)}
+              style={styles.profileNumberBtn}
+            >
+              <AppText fontSize={16} fontWeight={800} color={Colors.blueblack}>
+                {formatAmount(userStore.followings.length)}
+              </AppText>
+              <AppText fontWeight={600} fontSize={12} color={Colors.black50}>
+                {t('profile.followings')}
+              </AppText>
+            </TouchableOpacity>
+            <Box
+              height={40}
+              width={1}
+              backgroundColor={Colors.white}
+              radius={99}
+            />
+            <TouchableOpacity
+              onPress={() =>
+                navigate(PageName.FollowScreen, {
+                  isFollowers: true,
+                })
+              }
+              style={styles.profileNumberBtn}
+            >
+              <AppText fontSize={16} fontWeight={800} color={Colors.blueblack}>
+                {formatAmount(userStore.followers.length)}
+              </AppText>
+              <AppText fontWeight={600} fontSize={12} color={Colors.black50}>
+                {t('profile.followers')}
+              </AppText>
+            </TouchableOpacity>
+          </Box>
+          <Box center width="100%" paddingHorizontal={16}>
             <Obx>
               {() =>
                 userStore.userInfo.websites.map((web, index) => (
@@ -283,8 +317,10 @@ const ProfileScreen = () => {
                     style={styles.webBtn}
                     key={index}
                   >
+                    <LinkSvg color={Colors.blueblack} size={12} />
+                    <Padding left={4} />
                     <AppText
-                      color={Colors.secondary}
+                      color={Colors.primary}
                       fontWeight={600}
                       fontSize={10}
                     >
@@ -295,19 +331,6 @@ const ProfileScreen = () => {
               }
             </Obx>
           </Box>
-        </Box>
-        <Box marginTop={16} paddingHorizontal={16} row align="center">
-          <TouchableOpacity
-            onPress={() => editSheetRef.current.snapTo(1)}
-            style={styles.optionBtn}
-          >
-            <AppText fontWeight={700} color={Colors.white}>
-              {t('profile.edit_profile')}
-            </AppText>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.settingBtn}>
-            <DotsSvg size={16} color={Colors.white} />
-          </TouchableOpacity>
         </Box>
       </Box>
     ),
@@ -445,6 +468,12 @@ const ProfileScreen = () => {
               >
                 <CameraSvg strokeWidth={2} />
               </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => editSheetRef.current.snapTo(1)}
+                style={styles.headerBtn}
+              >
+                <EditSvg strokeWidth={2} size={18} />
+              </TouchableOpacity>
             </Animated.View>
           </Box>
         </SafeAreaView>
@@ -516,6 +545,18 @@ const styles = XStyleSheet.create({
     backgroundColor: Colors.white,
     overflow: 'hidden',
   },
+  avatarContainer: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+
+    elevation: 8,
+    borderRadius: 99,
+  },
   headerBtn: {
     width: 40,
     height: 40,
@@ -578,11 +619,14 @@ const styles = XStyleSheet.create({
     marginBottom: 16,
   },
   webBtn: {
-    paddingHorizontal: 8,
-    paddingVertical: 6,
     borderRadius: 99,
-    borderColor: Colors.secondary,
-    borderWidth: 1,
-    marginHorizontal: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 2,
+  },
+  profileNumberBtn: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
