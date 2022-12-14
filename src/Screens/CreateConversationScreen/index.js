@@ -9,12 +9,11 @@ import {
   LoadingIndicator,
   MessageInput,
   Obx,
-  Padding,
   Row,
 } from '@/Components'
 import { PageName } from '@/Config'
 import { mockUsers } from '@/Models'
-import { goBack, navigate, navigateReplace } from '@/Navigators'
+import { goBack, navigateReplace } from '@/Navigators'
 import { chatStore, userStore } from '@/Stores'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
 import { isIOS } from '@/Utils'
@@ -25,14 +24,15 @@ import { useTranslation } from 'react-i18next'
 import { SectionList, TouchableOpacity, View } from 'react-native'
 import Animated, { FadeInLeft, FadeInRight } from 'react-native-reanimated'
 
-const CreateConversationScreen = () => {
+const CreateConversationScreen = ({ route }) => {
+  const { user } = route.params || {}
   const { t } = useTranslation()
   const state = useLocalObservable(() => ({
     recommendUsers: mockUsers,
     results: mockUsers,
     search: '',
     loading: true,
-    receiver: null,
+    receiver: user,
     sending: false,
     setRecommentUsers: users => (state.recommendUsers = users),
     setResults: results => (state.results = results),

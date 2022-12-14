@@ -4,6 +4,7 @@ import {
   MessageStatus,
   mockConversations,
   mockMessages,
+  Conversation,
 } from '@/Models'
 import {
   deleteConversation,
@@ -17,7 +18,7 @@ import { hydrateStore, isHydrated } from 'mobx-persist-store'
 import { io } from 'socket.io-client'
 import { userStore } from '.'
 export default class ChatStore {
-  conversations = []
+  conversations: Conversation[] = []
   messages = []
   onlineUsers = {}
   loadingConversations = false
@@ -51,7 +52,7 @@ export default class ChatStore {
       })
       this.socket.on('connect', () => {
         console.log('connected')
-        resolve()
+        resolve(true)
       })
       this.socket.on('disconnect', () => {
         console.log('disconnected')
@@ -127,7 +128,7 @@ export default class ChatStore {
         user: { ...mockConversations[0].user, user_id: userId },
         conversation_id: Math.random(),
       }
-      this.conversations = [fakeConversation, ...this.conversations]
+      this.conversations = [fakeConversation as any, ...this.conversations]
       console.log({
         createNewConversation: e,
       })
@@ -140,15 +141,11 @@ export default class ChatStore {
     const msgId = retryId || Math.random()
     try {
       if (!retryId) {
-        this.addMessage(
-          conversationId,
-          {
-            ...message,
-            message_id: msgId,
-            status: MessageStatus.SENDING,
-          },
-          msgId,
-        )
+        this.addMessage(conversationId, {
+          ...message,
+          message_id: msgId,
+          status: MessageStatus.SENDING,
+        })
       } else {
         this.updateMessage(msgId, {
           status: MessageStatus.SENDING,
@@ -198,9 +195,9 @@ export default class ChatStore {
   }
   addEmptyConversation(user) {
     this.conversations.unshift({
-      conversation_id: Math.random(),
+      conversation_id: `${Math.random()}`,
       last_message: {
-        message_id: Math.random(),
+        message_id: `${Math.random()}`,
         message: '',
         status: MessageStatus.SENDING,
       },
@@ -266,7 +263,7 @@ export default class ChatStore {
     return this.conversations.filter(
       item =>
         item.last_message?.sent_by?.user_id !== userStore.userInfo?.user_id &&
-        item.status !== MessageStatus.READ,
+        item.last_message.status !== MessageStatus.READ,
     ).length
   }
   get themeColors() {

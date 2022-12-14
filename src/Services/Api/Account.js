@@ -24,3 +24,6 @@ export const updateUserInfo = data =>
 export const followUser = id => request(Endpoint().followUser(id), Method.POST)
 export const unFollowUser = id =>
   request(Endpoint().unFollowUser(id), Method.POST)
+
+export const removeFollower = id =>
+  request(Endpoint().removeFollower(id), Method.POST)

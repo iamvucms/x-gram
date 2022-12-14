@@ -1,17 +1,22 @@
 import {
-  BookMarkSvg,
-  CameraSvg,
-  ChevronRightSvg,
+  ArrowRightSvg,
+  BlockSvg,
+  CommentSvg,
   DotsSvg,
+  FollowSvg,
   GridSvg,
-  SettingSvg,
+  LinkSvg,
+  ShareSvg,
+  UnfollowSvg,
   VideoSvg,
 } from '@/Assets/Svg'
 import {
+  AppBottomSheet,
   AppImage,
   AppText,
   Box,
   Container,
+  LoadingIndicator,
   Obx,
   Padding,
   Position,
@@ -19,15 +24,18 @@ import {
   PostPreviewModal,
 } from '@/Components'
 import { PageName } from '@/Config'
-import { mockPosts } from '@/Models'
-import { goBack, navigate } from '@/Navigators'
-import { userStore } from '@/Stores'
-import { Colors, Layout, XStyleSheet } from '@/Theme'
+import { useAppTheme } from '@/Hooks'
+import { goBack, navigate, navigateToConversationDetail } from '@/Navigators'
+import { diaLogStore, profileStore, userStore } from '@/Stores'
+import { Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
+import { formatAmount } from '@/Utils'
 import { BlurView } from '@react-native-community/blur'
+import { toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TouchableOpacity, View } from 'react-native'
+import { Image, Share, TouchableOpacity, View } from 'react-native'
+import InAppBrowser from 'react-native-inappbrowser-reborn'
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -37,37 +45,36 @@ import Animated, {
 import { SafeAreaView } from 'react-native-safe-area-context'
 const PostType = {
   Post: 'post',
-  Bookmark: 'bookmark',
   Video: 'video',
 }
-const ProfileOtherScreen = () => {
+
+const ProfileOther = () => {
   const { t } = useTranslation()
+  const { Images } = useAppTheme()
   const scrollY = useSharedValue(0)
   const headerButtonAnim = useSharedValue(0)
-
+  const optionSheetRef = useRef(null)
   const state = useLocalObservable(() => ({
-    posts: mockPosts,
     postType: PostType.Post,
     previewPost: null,
+    updatingCover: false,
+    updatingAvatar: false,
     setPreviewPost: (post, specs) => (state.previewPost = { post, specs }),
     hidePreviewPost: () => (state.previewPost = null),
-    setPosts: posts => (state.posts = posts),
     setPostType: postType => (state.postType = postType),
+    setUpdatingCover: updatingCover => (state.updatingCover = updatingCover),
+    setUpdatingAvatar: updatingAvatar =>
+      (state.updatingAvatar = updatingAvatar),
     get filteredPosts() {
-      const photoPosts = state.posts
+      const photoPosts = profileStore.posts
         .filter(post => !post.medias[0].is_video)
         .slice()
-      const videoPosts = state.posts
+      const videoPosts = profileStore.posts
         .filter(post => post.medias[0].is_video)
         .slice()
-      const bookmarkPosts = userStore.bookmarkPosts.slice()
       return [
         ...PostTabs,
-        ...(state.postType === PostType.Post
-          ? photoPosts
-          : state.postType === PostType.Bookmark
-          ? bookmarkPosts
-          : videoPosts),
+        ...(state.postType === PostType.Post ? photoPosts : videoPosts),
       ]
     },
   }))
@@ -107,22 +114,6 @@ const ProfileOtherScreen = () => {
         ),
       },
       {
-        type: PostType.Bookmark,
-        icon: (
-          <Obx>
-            {() => (
-              <BookMarkSvg
-                color={
-                  state.postType === PostType.Bookmark
-                    ? Colors.secondary
-                    : Colors.gray
-                }
-              />
-            )}
-          </Obx>
-        ),
-      },
-      {
         type: PostType.Video,
         icon: (
           <Obx>
@@ -143,26 +134,6 @@ const ProfileOtherScreen = () => {
     [],
   )
 
-  const onUpdateAvatarPress = useCallback(async () => {
-    try {
-      navigate(PageName.MediaPicker, {
-        type: 'photo',
-        multiple: false,
-        disableVideo: true,
-        editable: true,
-        editorProps: {
-          onNext: medias => {
-            console.log(medias)
-            navigate(PageName.ProfileOtherScreen)
-          },
-        },
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }, [])
-  const onUpdateCoverPress = useCallback(() => {}, [])
-
   const ListHeader = useMemo(
     () => (
       <Box
@@ -170,71 +141,241 @@ const ProfileOtherScreen = () => {
         topLeftRadius={50}
         topRightRadius={50}
         marginTop={200}
-        paddingBottom={24}
+        paddingBottom={16}
       >
-        <Box row paddingHorizontal={20}>
-          <TouchableOpacity style={styles.infoBtn}>
-            <AppText fontWeight={700}>1k</AppText>
-            <Padding top={4} />
-            <AppText color={Colors.black75}>Followers</AppText>
-          </TouchableOpacity>
+        <Box center row paddingHorizontal={20} paddingBottom={8}>
           <View>
             <Obx>
               {() => (
-                <AppImage
-                  containerStyle={styles.avatar}
-                  source={{
-                    uri: userStore.userInfo.avatar_url,
-                  }}
-                  lightbox
-                />
+                <Box
+                  style={styles.avatarContainer}
+                  overflow="hidden"
+                  radius={99}
+                  center
+                  marginTop={-50}
+                >
+                  <AppImage
+                    containerStyle={styles.avatar}
+                    source={{
+                      uri: profileStore.profileInfo.avatar_url,
+                    }}
+                    lightbox
+                  />
+                  <Obx>
+                    {() =>
+                      state.updatingAvatar && (
+                        <View style={styles.uploadingView}>
+                          <LoadingIndicator size={16} color={Colors.white} />
+                        </View>
+                      )
+                    }
+                  </Obx>
+                </Box>
               )}
             </Obx>
-            <TouchableOpacity
-              onPress={onUpdateAvatarPress}
-              style={styles.updateAvatarBtn}
-            >
-              <CameraSvg />
-            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.infoBtn}>
-            <AppText fontWeight={700}>1k</AppText>
-            <Padding top={4} />
-            <AppText color={Colors.black75}>Following</AppText>
-          </TouchableOpacity>
         </Box>
-        <Box paddingHorizontal={50} marginTop={0} center>
-          <AppText fontWeight={700} fontSize={16}>
-            {userStore.userInfo.full_name}
+        <Box marginTop={0} center>
+          <AppText fontWeight={700} fontSize={20}>
+            <Obx>{() => profileStore.profileInfo.full_name}</Obx>
           </AppText>
           <AppText fontWeight={600} color={Colors.placeholder} fontSize={12}>
-            @{userStore.userInfo.user_id}
+            @{profileStore.profileInfo.user_id}
           </AppText>
-          <AppText align="center" color={Colors.k6C7A9C} lineHeight={20}>
-            This is a description of the user. This is a description of the
-            user. This is a description of the user.
+          <Padding top={8} />
+          <AppText
+            align="center"
+            color={Colors.blueblack}
+            fontWeight={600}
+            lineHeight={20}
+          >
+            <Obx>{() => profileStore.profileInfo.bio}</Obx>
           </AppText>
-        </Box>
-        <Box marginTop={16} paddingHorizontal={16} row align="center">
-          {/* <TouchableOpacity style={styles.optionBtn}>
-                <AppText fontWeight={700} color={Colors.white}>
-                  Follow
-                </AppText>
-              </TouchableOpacity>
-              <Padding left={16} /> */}
-          <TouchableOpacity style={styles.optionBtn}>
-            <AppText fontWeight={700} color={Colors.white}>
-              {t('profile.edit_profile')}
-            </AppText>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.settingBtn}>
-            <DotsSvg size={16} color={Colors.white} />
-          </TouchableOpacity>
+          <Box row marginTop={16} align="center">
+            <TouchableOpacity
+              onPress={() =>
+                navigateToConversationDetail(toJS(profileStore.profileInfo))
+              }
+              style={styles.profileBtn}
+            >
+              <CommentSvg color={Colors.primary} size={18} />
+            </TouchableOpacity>
+            <Obx>
+              {() => {
+                const isFollowing = userStore.isFollowing(
+                  profileStore.profileInfo.user_id,
+                )
+                const onUnFollowPress = async () =>
+                  userStore.unfollowUser(toJS(profileStore.profileInfo))
+                const onFollowPress = async () =>
+                  userStore.followUser(toJS(profileStore.profileInfo))
+                return (
+                  <TouchableOpacity
+                    onPress={isFollowing ? onUnFollowPress : onFollowPress}
+                    style={styles.followBtn}
+                  >
+                    <>
+                      {isFollowing ? (
+                        <UnfollowSvg size={14} color={Colors.white} />
+                      ) : (
+                        <FollowSvg size={14} color={Colors.white} />
+                      )}
+                      <Padding left={2} />
+                      <AppText
+                        lineHeight={14}
+                        fontWeight={600}
+                        color={Colors.white}
+                      >
+                        {t(
+                          isFollowing ? 'profile.following' : 'profile.follow',
+                        )}
+                      </AppText>
+                    </>
+                  </TouchableOpacity>
+                )
+              }}
+            </Obx>
+            <TouchableOpacity
+              onPress={() => {
+                Share.share({
+                  title: `${profileStore.profileInfo.full_name} on XGram`,
+                  message: `https://xgram.app/u/${profileStore.profileInfo.user_id}`,
+                })
+              }}
+              style={styles.profileBtn}
+            >
+              <ShareSvg size={18} color={Colors.primary} />
+            </TouchableOpacity>
+          </Box>
+          <Box
+            marginVertical={16}
+            width="100%"
+            paddingHorizontal={16}
+            row
+            center
+          >
+            <TouchableOpacity style={styles.profileNumberBtn}>
+              <AppText fontSize={16} fontWeight={800} color={Colors.blueblack}>
+                <Obx>{() => formatAmount(profileStore.posts.length)}</Obx>
+              </AppText>
+              <AppText fontWeight={600} fontSize={12} color={Colors.black50}>
+                {t('search.posts')}
+              </AppText>
+            </TouchableOpacity>
+            <Box
+              height={40}
+              width={1}
+              backgroundColor={Colors.white}
+              radius={99}
+            />
+            <TouchableOpacity
+              onPress={() => navigate(PageName.FollowScreen)}
+              style={styles.profileNumberBtn}
+            >
+              <AppText fontSize={16} fontWeight={800} color={Colors.blueblack}>
+                <Obx>{() => formatAmount(profileStore.followings.length)}</Obx>
+              </AppText>
+              <AppText fontWeight={600} fontSize={12} color={Colors.black50}>
+                {t('profile.followings')}
+              </AppText>
+            </TouchableOpacity>
+            <Box
+              height={40}
+              width={1}
+              backgroundColor={Colors.white}
+              radius={99}
+            />
+            <TouchableOpacity
+              onPress={() =>
+                navigate(PageName.FollowScreen, {
+                  isFollowers: true,
+                })
+              }
+              style={styles.profileNumberBtn}
+            >
+              <AppText fontSize={16} fontWeight={800} color={Colors.blueblack}>
+                <Obx>{() => formatAmount(profileStore.followers.length)}</Obx>
+              </AppText>
+              <AppText fontWeight={600} fontSize={12} color={Colors.black50}>
+                {t('profile.followers')}
+              </AppText>
+            </TouchableOpacity>
+          </Box>
+          <Box center width="100%" paddingHorizontal={16}>
+            <Obx>
+              {() =>
+                profileStore.profileInfo?.websites?.map((web, index) => (
+                  <TouchableOpacity
+                    onPress={() => InAppBrowser.open(web)}
+                    style={styles.webBtn}
+                    key={index}
+                  >
+                    <LinkSvg color={Colors.blueblack} size={12} />
+                    <Padding left={4} />
+                    <AppText
+                      color={Colors.primary}
+                      fontWeight={600}
+                      fontSize={10}
+                    >
+                      {web}
+                    </AppText>
+                  </TouchableOpacity>
+                ))
+              }
+            </Obx>
+          </Box>
         </Box>
       </Box>
     ),
     [],
   )
+  const ListFooterComponent = useMemo(() => {
+    return (
+      <>
+        <Obx>
+          {() =>
+            state.filteredPosts.length === 3 && (
+              <Box height={190} center backgroundColor={Colors.white}>
+                <>
+                  <Image
+                    style={styles.emptyIcon}
+                    resizeMode="contain"
+                    source={Images.pack4_15}
+                  />
+                  {state.postType === PostType.Post ? (
+                    <AppText
+                      fontSize={16}
+                      fontWeight={600}
+                      color={Colors.placeholder}
+                    >
+                      {t('profile.you_have_not_photo_yet')}
+                    </AppText>
+                  ) : state.postType === PostType.Bookmark ? (
+                    <AppText
+                      fontSize={16}
+                      fontWeight={600}
+                      color={Colors.placeholder}
+                    >
+                      {t('profile.you_have_not_bookmark_yet')}
+                    </AppText>
+                  ) : (
+                    <AppText
+                      fontSize={16}
+                      fontWeight={600}
+                      color={Colors.placeholder}
+                    >
+                      {t('profile.you_have_not_video_yet')}
+                    </AppText>
+                  )}
+                </>
+              </Box>
+            )
+          }
+        </Obx>
+        <Box height={90} backgroundColor={Colors.kE6EEFA} />
+      </>
+    )
+  }, [])
 
   const headerOverlayStyle = useAnimatedStyle(
     () => ({
@@ -242,12 +383,11 @@ const ProfileOtherScreen = () => {
     }),
     [],
   )
-
   const headerLeftButtonStyle = useAnimatedStyle(() => ({
     opacity: 1 - headerButtonAnim.value,
     transform: [
       {
-        translateX: headerButtonAnim.value * -100,
+        translateX: -headerButtonAnim.value * 100,
       },
     ],
   }))
@@ -296,7 +436,7 @@ const ProfileOtherScreen = () => {
             {() => (
               <AppImage
                 source={{
-                  uri: userStore.userInfo.cover_url,
+                  uri: profileStore.profileInfo.cover_url,
                 }}
                 resizeMode="cover"
                 containerStyle={styles.coverPhoto}
@@ -317,18 +457,19 @@ const ProfileOtherScreen = () => {
             paddingHorizontal={16}
           >
             <Animated.View style={headerLeftButtonStyle}>
-              <TouchableOpacity onPress={goBack} style={styles.headerBtn}>
-                <View style={{ transform: [{ rotate: '180deg' }] }}>
-                  <ChevronRightSvg />
-                </View>
+              <TouchableOpacity
+                onPress={goBack}
+                style={[styles.headerBtn, styles.backBtn]}
+              >
+                <ArrowRightSvg size={18} />
               </TouchableOpacity>
             </Animated.View>
             <Animated.View style={headerRightButtonStyle}>
-              <TouchableOpacity style={styles.headerBtn}>
-                <SettingSvg />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.headerBtn}>
-                <CameraSvg strokeWidth={2} />
+              <TouchableOpacity
+                onPress={() => optionSheetRef.current?.snapTo?.(0)}
+                style={styles.headerBtn}
+              >
+                <DotsSvg size={18} />
               </TouchableOpacity>
             </Animated.View>
           </Box>
@@ -338,9 +479,7 @@ const ProfileOtherScreen = () => {
         {() => (
           <Animated.FlatList
             ListHeaderComponent={ListHeader}
-            ListFooterComponent={
-              <Box height={90} backgroundColor={Colors.kE6EEFA} />
-            }
+            ListFooterComponent={ListFooterComponent}
             columnWrapperStyle={styles.listView}
             onScroll={scrollHandler}
             scrollEventThrottle={16}
@@ -363,11 +502,52 @@ const ProfileOtherScreen = () => {
           />
         )}
       </Obx>
+      <AppBottomSheet ref={optionSheetRef} snapPoints={[screenHeight * 0.4]}>
+        <Box
+          paddingVertical={12}
+          center
+          borderBottomWidth={0.5}
+          borderBottomColor={Colors.border}
+        >
+          <AppText fontSize={16} fontWeight={700}>
+            {t('profile.profile_options')}
+          </AppText>
+        </Box>
+        <Box fill>
+          <TouchableOpacity
+            onPress={() => {
+              diaLogStore.showDiaLog({
+                title: t('home.block_so', {
+                  so: profileStore.profileInfo.full_name,
+                }),
+                message: t('account.confirm_block'),
+                dialogIcon: 'pack1_3',
+                showCancelButton: true,
+                onPress: () =>
+                  userStore.blockUser(toJS(profileStore.profileInfo)),
+              })
+            }}
+            style={styles.optionBtn}
+          >
+            <BlockSvg size={20} />
+            <Padding left={14} />
+            <AppText fontSize={16} fontWeight={500}>
+              <Obx>
+                {() =>
+                  t('home.block_so', {
+                    replace: { so: profileStore.profileInfo.full_name },
+                  })
+                }
+              </Obx>
+            </AppText>
+          </TouchableOpacity>
+        </Box>
+      </AppBottomSheet>
     </Container>
   )
 }
 
-export default ProfileOtherScreen
+export default ProfileOther
 
 const styles = XStyleSheet.create({
   rootView: {
@@ -390,11 +570,22 @@ const styles = XStyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    marginTop: -50,
     borderColor: Colors.white,
     borderWidth: 4,
     backgroundColor: Colors.white,
     overflow: 'hidden',
+  },
+  avatarContainer: {
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+
+    elevation: 8,
+    borderRadius: 99,
   },
   headerBtn: {
     width: 40,
@@ -416,14 +607,6 @@ const styles = XStyleSheet.create({
     bottom: 15,
     right: 0,
   },
-  optionBtn: {
-    flex: 1,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.primary,
-    borderRadius: 5,
-  },
   settingBtn: {
     height: 44,
     aspectRatio: 1,
@@ -444,5 +627,70 @@ const styles = XStyleSheet.create({
     marginBottom: 10,
     borderBottomColor: Colors.border,
     borderBottomWidth: 0.5,
+  },
+  uploadingView: {
+    ...XStyleSheet.absoluteFillObject,
+    zIndex: 99,
+    backgroundColor: Colors.black50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyIcon: {
+    width: 100,
+    height: 100,
+    marginBottom: 16,
+  },
+  webBtn: {
+    borderRadius: 99,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 2,
+  },
+  profileNumberBtn: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  followBtn: {
+    height: 40,
+    paddingHorizontal: 74,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.primary,
+    borderRadius: 99,
+    shadowColor: Colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 4.65,
+
+    elevation: 10,
+  },
+  profileBtn: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: Colors.primary,
+    borderWidth: 1,
+    marginHorizontal: 24,
+    backgroundColor: Colors.white,
+  },
+  backBtn: {
+    transform: [
+      {
+        rotate: '180deg',
+      },
+    ],
+  },
+  optionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
 })

@@ -1,4 +1,7 @@
-import BottomSheet, { BottomSheetProps } from '@gorhom/bottom-sheet'
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetProps,
+} from '@gorhom/bottom-sheet'
 import { Portal } from '@gorhom/portal'
 import React, { forwardRef, useImperativeHandle, useMemo, useRef } from 'react'
 import { StyleSheet } from 'react-native'
@@ -34,6 +37,13 @@ const AppBottomSheet = forwardRef(
       <Portal name={portalName}>
         <BottomSheet
           {...restProps}
+          backdropComponent={props => (
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
+            />
+          )}
           index={isNaN(restProps.index) ? -1 : restProps.index}
           snapPoints={snapPoints}
           enablePanDownToClose

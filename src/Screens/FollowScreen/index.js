@@ -11,7 +11,7 @@ import {
   Padding,
 } from '@/Components'
 import { navigateToProfile } from '@/Navigators'
-import { userStore } from '@/Stores'
+import { diaLogStore, userStore } from '@/Stores'
 import {
   Colors,
   Layout,
@@ -90,6 +90,15 @@ const FollowScreen = ({ route }) => {
   )
   const renderFollowingItem = useCallback(({ item }) => {
     const onOpenProfile = () => navigateToProfile(item.user_id)
+    const onUnFollowPress = () => {
+      diaLogStore.showDiaLog({
+        title: t('follow.unFollowTitle'),
+        message: t('follow.unFollowDesc'),
+        dialogIcon: 'pack1_3',
+        showCancelButton: true,
+        onPress: () => userStore.unfollowUser(item),
+      })
+    }
     return (
       <TouchableOpacity onPress={onOpenProfile} style={styles.userItem}>
         <AppImage
@@ -114,8 +123,13 @@ const FollowScreen = ({ route }) => {
               {item.bio}
             </AppText>
           </View>
-          <TouchableOpacity style={styles.followBtn}>
-            <AppText numberOfLines={1} color={Colors.primary} fontWeight={600}>
+          <TouchableOpacity onPress={onUnFollowPress} style={styles.followBtn}>
+            <AppText
+              fontSize={12}
+              numberOfLines={1}
+              color={Colors.primary}
+              fontWeight={600}
+            >
               {t('profile.following')}
             </AppText>
           </TouchableOpacity>
@@ -125,6 +139,15 @@ const FollowScreen = ({ route }) => {
   }, [])
   const renderFollowerItem = useCallback(({ item }) => {
     const onOpenProfile = () => navigateToProfile(item.user_id)
+    const onRemoveFollowerPress = () => {
+      diaLogStore.showDiaLog({
+        title: t('follow.removeFollowerTitle'),
+        message: t('follow.removeFollowerDesc'),
+        dialogIcon: 'pack1_3',
+        showCancelButton: true,
+        onPress: () => userStore.removeFollower(item),
+      })
+    }
     return (
       <TouchableOpacity onPress={onOpenProfile} style={styles.userItem}>
         <AppImage
@@ -149,8 +172,16 @@ const FollowScreen = ({ route }) => {
               {item.bio}
             </AppText>
           </View>
-          <TouchableOpacity style={styles.followBtn}>
-            <AppText numberOfLines={1} color={Colors.primary} fontWeight={600}>
+          <TouchableOpacity
+            onPress={onRemoveFollowerPress}
+            style={styles.followBtn}
+          >
+            <AppText
+              fontSize={12}
+              numberOfLines={1}
+              color={Colors.error}
+              fontWeight={600}
+            >
               {t('follow.remove_follower')}
             </AppText>
           </TouchableOpacity>
@@ -284,7 +315,7 @@ export default FollowScreen
 const styles = XStyleSheet.create({
   tabBtn: {
     flex: 1,
-    height: 36,
+    height: 40,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -303,7 +334,7 @@ const styles = XStyleSheet.create({
     marginHorizontal: 16,
     marginTop: 16,
     padding: 8,
-    backgroundColor: Colors.primary25,
+    backgroundColor: Colors.primary10,
     borderRadius: 12,
   },
   avatar: {

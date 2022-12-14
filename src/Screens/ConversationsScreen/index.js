@@ -2,7 +2,6 @@ import {
   CheckSvg,
   ChevronRightSvg,
   DoubleCheckSvg,
-  SearchSvg,
   SendSvg,
   TrashBinSvg,
 } from '@/Assets/Svg'
@@ -25,7 +24,6 @@ import {
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
-import { getHitSlop } from '@/Utils'
 import { FlashList } from '@shopify/flash-list'
 import { observer } from 'mobx-react-lite'
 import moment from 'moment'

@@ -1,5 +1,5 @@
-import { Post, User } from '@/Models'
-import { getUserPosts } from '@/Services/Api'
+import { mockPosts, mockUsers, Post, User } from '@/Models'
+import { getUserInfo, getUserPosts } from '@/Services/Api'
 import { makeAutoObservable, toJS } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
 import { userStore } from '.'
@@ -7,6 +7,8 @@ export default class ProfileStore {
   profileInfo: User = {} as User
   fetching = false
   posts: Post[] = []
+  followers: User[] = []
+  followings: User[] = []
   loadingPosts = false
   loadingMorePosts = false
   postPage = 1
@@ -14,9 +16,21 @@ export default class ProfileStore {
     makeAutoObservable(this)
   }
   *fetchProfile(userId) {
-    this.fetching = true
-    // fetch profile
-    this.fetching = false
+    try {
+      this.profileInfo.user_id = userId
+      // fetch user info
+      const { data } = yield getUserInfo(this.profileInfo.user_id)
+      throw new Error('test')
+      // fetch following
+    } catch (e) {
+      this.profileInfo = mockUsers[1]
+      this.followings = mockUsers.slice(1, 5)
+      this.followers = mockUsers.slice(1, 5)
+      this.posts = mockPosts
+      console.log({
+        fetchProfile: e,
+      })
+    }
   }
   *fetchPosts(loadMore) {
     try {

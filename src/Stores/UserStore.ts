@@ -5,6 +5,7 @@ import {
   getBlockedUsers,
   getUserInfo,
   getUserPosts,
+  removeFollower,
   unblockUser,
   unFollowUser,
   updateUserInfo,
@@ -205,6 +206,20 @@ export default class UserStore {
       })
     }
   }
+  *removeFollower(user) {
+    try {
+      const response = yield removeFollower(user.user_id)
+      if (response?.status === 'OK') {
+        this.removeFollowerUser(user.user_id)
+      } else {
+        diaLogStore.showErrorDiaLog({ message: response?.message })
+      }
+    } catch (e) {
+      console.log({
+        removeFollower: e,
+      })
+    }
+  }
   addPost(post: Post) {
     this.posts = [post, ...this.posts]
   }
@@ -351,6 +366,9 @@ export default class UserStore {
   }
   removeFollowing(userId) {
     this.followings = this.followings.filter(user => user.user_id !== userId)
+  }
+  removeFollowerUser(userId) {
+    this.followers = this.followers.filter(user => user.user_id !== userId)
   }
   // check for hydration (required)
   get isHydrated() {

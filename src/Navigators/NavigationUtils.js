@@ -1,5 +1,5 @@
 import { PageName } from '@/Config'
-import { profileStore, userStore } from '@/Stores'
+import { chatStore, profileStore, userStore } from '@/Stores'
 import {
   CommonActions,
   createNavigationContainerRef,
@@ -11,6 +11,12 @@ export const navigationRef = createNavigationContainerRef()
 export const navigate = (name, params) => {
   if (navigationRef.isReady()) {
     navigationRef.navigate(name, params)
+  }
+}
+
+export const navigatePush = (name, params) => {
+  if (navigationRef.isReady()) {
+    navigationRef.dispatch(StackActions.push(name, params))
   }
 }
 
@@ -62,6 +68,18 @@ export const navigateToProfile = userId => {
   } else {
     // get profile data from server
     profileStore.fetchProfile(userId)
+    profileStore.fetchPosts(false)
     navigate(PageName.ProfileOther, { userId })
+  }
+}
+export const navigateToConversationDetail = user => {
+  const conversation = chatStore.getConversationByUserId(user.user_id)
+  if (conversation) {
+    chatStore.fetchMessages(conversation.conversation_id)
+    navigate(PageName.ConversationDetailScreen)
+  } else {
+    navigate(PageName.CreateConversationScreen, {
+      user,
+    })
   }
 }

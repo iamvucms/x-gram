@@ -50,7 +50,7 @@ const PostOptionBottomSheet = forwardRef(
         backgroundStyle={styles.sheetHeader}
       >
         <Box
-          paddingVertical={16}
+          paddingVertical={12}
           center
           borderBottomWidth={0.5}
           borderBottomColor={Colors.border}
@@ -237,7 +237,7 @@ const PostOptionBottomSheet = forwardRef(
                       message: t('account.confirm_block'),
                       dialogIcon: 'pack1_3',
                       showCancelButton: true,
-                      onPress: () => userStore.blockUser(post.post_id),
+                      onPress: () => userStore.blockUser(post.posted_by),
                     })
                   }}
                   style={styles.optionBtn}

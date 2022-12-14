@@ -235,7 +235,7 @@ const ConversationDetailScreen = () => {
         snapPoints={[0.35 * screenHeight]}
       >
         <Box
-          paddingVertical={16}
+          paddingVertical={12}
           center
           borderBottomWidth={0.5}
           borderBottomColor={Colors.border}
@@ -566,6 +566,7 @@ const styles = XStyleSheet.create({
     width: 40,
     borderRadius: 20,
     overflow: 'hidden',
+    backgroundColor: Colors.gray,
   },
   msgSticker: {
     height: 100,

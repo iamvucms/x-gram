@@ -46,6 +46,7 @@ const PostGridItem = ({
       onClosePreview?.()
     }
   }, [onClosePreview])
+  console.log(post)
   return (
     <Pressable
       ref={ref}
@@ -57,7 +58,7 @@ const PostGridItem = ({
       <Animated.View style={Layout.fill} entering={FadeIn}>
         <FastImage
           source={{
-            uri: post.medias[0].url,
+            uri: post?.medias?.[0]?.url,
           }}
           style={Layout.fill}
         />

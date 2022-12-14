@@ -148,6 +148,7 @@ export default {
     followers: 'Followers',
     followings: 'Followings',
     edit_profile: 'Edit Profile',
+    profile_options: "Profile's Options",
     setting: 'Setting',
     logout: 'Logout',
     logout_confirm: 'Are you sure you want to logout?',
@@ -264,5 +265,9 @@ export default {
   follow: {
     title: 'Following & Followers',
     remove_follower: 'Remove Follower',
+    unFollowTitle: 'Unfollow User',
+    unFollowDesc: 'Are you sure you want to unfollow this user?',
+    removeFollowerTitle: 'Remove Follower',
+    removeFollowerDesc: 'Are you sure you want to remove this follower?',
   },
 }
