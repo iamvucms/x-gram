@@ -139,7 +139,7 @@ const AppDialog = ({
                   <AppButton
                     onPress={onClose}
                     style={[styles.mainBtn, styles.cancelBtn]}
-                    textSize={16}
+                    textSize={14}
                     textColor={Colors.primary}
                     backgroundColor={Colors.black50}
                     text={t('cancel')}
@@ -193,15 +193,15 @@ const styles = XStyleSheet.create({
   },
   mainBtnTxt: {
     color: Colors.white,
-    fontSize: 16,
+    fontSize: 14,
   },
   titleTxt: {
-    fontSize: 19,
+    fontSize: 16,
     textAlign: 'center',
     marginTop: 12,
   },
   messageTxt: {
-    fontSize: 13,
+    fontSize: 12,
     marginTop: 8,
     marginHorizontal: 10,
     textAlign: 'center',

@@ -169,6 +169,13 @@ export default {
     date_of_birth: 'Date of Birth',
     update_personal_info_note:
       "You can update your personal information here. This information won't be shared with anyone.",
+    unFollow: 'Unfollow',
+    basic_info: 'Basic Info',
+    contact_info: 'Contact Info',
+    other_links: 'Other Links',
+    copy_profile_link: 'Copy Profile Link',
+    turn_off_notification_from_so: 'Turn off notification from {{so}}',
+    turn_on_notification_from_so: 'Turn on notification from {{so}}',
   },
   conversations: {
     conversations: 'Conversations',

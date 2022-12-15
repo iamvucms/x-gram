@@ -111,7 +111,7 @@ const ProfileScreen = () => {
               <GridSvg
                 color={
                   state.postType === PostType.Post
-                    ? Colors.secondary
+                    ? Colors.primary
                     : Colors.gray
                 }
                 size={20}
@@ -128,7 +128,7 @@ const ProfileScreen = () => {
               <BookMarkSvg
                 color={
                   state.postType === PostType.Bookmark
-                    ? Colors.secondary
+                    ? Colors.primary
                     : Colors.gray
                 }
               />
@@ -144,7 +144,7 @@ const ProfileScreen = () => {
               <VideoSvg
                 color={
                   state.postType === PostType.Video
-                    ? Colors.secondary
+                    ? Colors.primary
                     : Colors.gray
                 }
                 size={28}

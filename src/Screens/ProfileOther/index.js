@@ -1,11 +1,20 @@
 import {
   ArrowRightSvg,
+  BellOffSvg,
+  BellSvg,
+  BirthdayCakeSvg,
   BlockSvg,
   CommentSvg,
+  CopySvg,
   DotsSvg,
   FollowSvg,
+  GenderSvg,
   GridSvg,
+  InforSvg,
   LinkSvg,
+  MailSvg,
+  PhoneSvg,
+  ReportSvg,
   ShareSvg,
   UnfollowSvg,
   VideoSvg,
@@ -25,10 +34,17 @@ import {
 } from '@/Components'
 import { PageName } from '@/Config'
 import { useAppTheme } from '@/Hooks'
-import { goBack, navigate, navigateToConversationDetail } from '@/Navigators'
+import { Gender } from '@/Models'
+import {
+  goBack,
+  navigate,
+  navigatePush,
+  navigateToConversationDetail,
+} from '@/Navigators'
 import { diaLogStore, profileStore, userStore } from '@/Stores'
 import { Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
 import { formatAmount } from '@/Utils'
+import Clipboard from '@react-native-clipboard/clipboard'
 import { BlurView } from '@react-native-community/blur'
 import { toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
@@ -37,15 +53,17 @@ import { useTranslation } from 'react-i18next'
 import { Image, Share, TouchableOpacity, View } from 'react-native'
 import InAppBrowser from 'react-native-inappbrowser-reborn'
 import Animated, {
+  FadeIn,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
-const PostType = {
+const TabType = {
   Post: 'post',
   Video: 'video',
+  Info: 'info',
 }
 
 const ProfileOther = () => {
@@ -55,13 +73,13 @@ const ProfileOther = () => {
   const headerButtonAnim = useSharedValue(0)
   const optionSheetRef = useRef(null)
   const state = useLocalObservable(() => ({
-    postType: PostType.Post,
+    tabType: TabType.Post,
     previewPost: null,
     updatingCover: false,
     updatingAvatar: false,
     setPreviewPost: (post, specs) => (state.previewPost = { post, specs }),
     hidePreviewPost: () => (state.previewPost = null),
-    setPostType: postType => (state.postType = postType),
+    setTabType: tabType => (state.tabType = tabType),
     setUpdatingCover: updatingCover => (state.updatingCover = updatingCover),
     setUpdatingAvatar: updatingAvatar =>
       (state.updatingAvatar = updatingAvatar),
@@ -74,7 +92,11 @@ const ProfileOther = () => {
         .slice()
       return [
         ...PostTabs,
-        ...(state.postType === PostType.Post ? photoPosts : videoPosts),
+        ...(state.tabType === TabType.Post
+          ? photoPosts
+          : state.tabType === TabType.Video
+          ? videoPosts
+          : []),
       ]
     },
   }))
@@ -97,15 +119,13 @@ const ProfileOther = () => {
   const PostTabs = useMemo(
     () => [
       {
-        type: PostType.Post,
+        type: TabType.Post,
         icon: (
           <Obx>
             {() => (
               <GridSvg
                 color={
-                  state.postType === PostType.Post
-                    ? Colors.secondary
-                    : Colors.gray
+                  state.tabType === TabType.Post ? Colors.primary : Colors.gray
                 }
                 size={20}
               />
@@ -114,17 +134,30 @@ const ProfileOther = () => {
         ),
       },
       {
-        type: PostType.Video,
+        type: TabType.Video,
         icon: (
           <Obx>
             {() => (
               <VideoSvg
                 color={
-                  state.postType === PostType.Video
-                    ? Colors.secondary
-                    : Colors.gray
+                  state.tabType === TabType.Video ? Colors.primary : Colors.gray
                 }
                 size={28}
+              />
+            )}
+          </Obx>
+        ),
+      },
+      {
+        type: TabType.Info,
+        icon: (
+          <Obx>
+            {() => (
+              <InforSvg
+                color={
+                  state.tabType === TabType.Info ? Colors.primary : Colors.gray
+                }
+                size={22}
               />
             )}
           </Obx>
@@ -180,7 +213,7 @@ const ProfileOther = () => {
             <Obx>{() => profileStore.profileInfo.full_name}</Obx>
           </AppText>
           <AppText fontWeight={600} color={Colors.placeholder} fontSize={12}>
-            @{profileStore.profileInfo.user_id}
+            @<Obx>{() => profileStore.profileInfo.user_id}</Obx>
           </AppText>
           <Padding top={8} />
           <AppText
@@ -214,23 +247,13 @@ const ProfileOther = () => {
                     onPress={isFollowing ? onUnFollowPress : onFollowPress}
                     style={styles.followBtn}
                   >
-                    <>
-                      {isFollowing ? (
-                        <UnfollowSvg size={14} color={Colors.white} />
-                      ) : (
-                        <FollowSvg size={14} color={Colors.white} />
-                      )}
-                      <Padding left={2} />
-                      <AppText
-                        lineHeight={14}
-                        fontWeight={600}
-                        color={Colors.white}
-                      >
-                        {t(
-                          isFollowing ? 'profile.following' : 'profile.follow',
-                        )}
-                      </AppText>
-                    </>
+                    <AppText
+                      lineHeight={14}
+                      fontWeight={600}
+                      color={Colors.white}
+                    >
+                      {t(isFollowing ? 'profile.following' : 'profile.follow')}
+                    </AppText>
                   </TouchableOpacity>
                 )
               }}
@@ -269,7 +292,9 @@ const ProfileOther = () => {
               radius={99}
             />
             <TouchableOpacity
-              onPress={() => navigate(PageName.FollowScreen)}
+              onPress={() =>
+                navigatePush(PageName.FollowScreen, { isOtherProfile: true })
+              }
               style={styles.profileNumberBtn}
             >
               <AppText fontSize={16} fontWeight={800} color={Colors.blueblack}>
@@ -287,8 +312,9 @@ const ProfileOther = () => {
             />
             <TouchableOpacity
               onPress={() =>
-                navigate(PageName.FollowScreen, {
+                navigatePush(PageName.FollowScreen, {
                   isFollowers: true,
+                  isOtherProfile: true,
                 })
               }
               style={styles.profileNumberBtn}
@@ -301,29 +327,6 @@ const ProfileOther = () => {
               </AppText>
             </TouchableOpacity>
           </Box>
-          <Box center width="100%" paddingHorizontal={16}>
-            <Obx>
-              {() =>
-                profileStore.profileInfo?.websites?.map((web, index) => (
-                  <TouchableOpacity
-                    onPress={() => InAppBrowser.open(web)}
-                    style={styles.webBtn}
-                    key={index}
-                  >
-                    <LinkSvg color={Colors.blueblack} size={12} />
-                    <Padding left={4} />
-                    <AppText
-                      color={Colors.primary}
-                      fontWeight={600}
-                      fontSize={10}
-                    >
-                      {web}
-                    </AppText>
-                  </TouchableOpacity>
-                ))
-              }
-            </Obx>
-          </Box>
         </Box>
       </Box>
     ),
@@ -334,7 +337,8 @@ const ProfileOther = () => {
       <>
         <Obx>
           {() =>
-            state.filteredPosts.length === 3 && (
+            state.tabType !== TabType.Info &&
+            state.filteredPosts.length === 3 ? (
               <Box height={190} center backgroundColor={Colors.white}>
                 <>
                   <Image
@@ -342,7 +346,7 @@ const ProfileOther = () => {
                     resizeMode="contain"
                     source={Images.pack4_15}
                   />
-                  {state.postType === PostType.Post ? (
+                  {state.tabType === TabType.Post ? (
                     <AppText
                       fontSize={16}
                       fontWeight={600}
@@ -350,7 +354,7 @@ const ProfileOther = () => {
                     >
                       {t('profile.you_have_not_photo_yet')}
                     </AppText>
-                  ) : state.postType === PostType.Bookmark ? (
+                  ) : (
                     <AppText
                       fontSize={16}
                       fontWeight={600}
@@ -358,17 +362,131 @@ const ProfileOther = () => {
                     >
                       {t('profile.you_have_not_bookmark_yet')}
                     </AppText>
-                  ) : (
-                    <AppText
-                      fontSize={16}
-                      fontWeight={600}
-                      color={Colors.placeholder}
-                    >
-                      {t('profile.you_have_not_video_yet')}
-                    </AppText>
                   )}
                 </>
               </Box>
+            ) : (
+              state.tabType === TabType.Info && (
+                <Box backgroundColor={Colors.white} padding={16}>
+                  <AppText fontSize={16} fontWeight={700}>
+                    {t('profile.basic_info')}
+                  </AppText>
+                  <Box marginTop={10} paddingBottom={6} row align="center">
+                    <Box
+                      size={30}
+                      radius={99}
+                      center
+                      backgroundColor={Colors.primaryLight}
+                      marginRight={8}
+                    >
+                      <GenderSvg size={14} color={Colors.white} />
+                    </Box>
+                    <AppText fontWeight={600} color={Colors.placeholder}>
+                      <Obx>
+                        {() => {
+                          const gender = profileStore.profileInfo.gender
+                          switch (gender) {
+                            case Gender.Female:
+                              return t('profile.female')
+                            case Gender.Male:
+                              return t('profile.male')
+                            case Gender.PreferNotToSay:
+                              return t('profile.prefer_not_to_say')
+                          }
+                        }}
+                      </Obx>
+                    </AppText>
+                  </Box>
+                  <Box row align="center" paddingTop={8} marginBottom={20}>
+                    <Box
+                      size={30}
+                      radius={99}
+                      center
+                      backgroundColor={Colors.primaryLight}
+                      marginRight={8}
+                    >
+                      <BirthdayCakeSvg size={14} color={Colors.white} />
+                    </Box>
+                    <AppText fontWeight={600} color={Colors.placeholder}>
+                      <Obx>
+                        {() =>
+                          profileStore.profileInfo.date_of_birth.replaceAll(
+                            '-',
+                            '/',
+                          )
+                        }
+                      </Obx>
+                    </AppText>
+                  </Box>
+                  <AppText fontSize={16} fontWeight={700}>
+                    {t('profile.contact_info')}
+                  </AppText>
+                  <Box marginTop={10} paddingBottom={6} row align="center">
+                    <Box
+                      size={30}
+                      radius={99}
+                      center
+                      backgroundColor={Colors.primaryLight}
+                      marginRight={8}
+                    >
+                      <PhoneSvg size={14} color={Colors.white} />
+                    </Box>
+                    <AppText fontWeight={600} color={Colors.placeholder}>
+                      <Obx>{() => profileStore.profileInfo.phone_number}</Obx>
+                    </AppText>
+                  </Box>
+                  <Box row align="center" paddingTop={8} marginBottom={20}>
+                    <Box
+                      size={30}
+                      radius={99}
+                      center
+                      backgroundColor={Colors.primaryLight}
+                      marginRight={8}
+                    >
+                      <MailSvg size={14} color={Colors.white} />
+                    </Box>
+                    <AppText fontWeight={600} color={Colors.placeholder}>
+                      <Obx>{() => profileStore.profileInfo.email}</Obx>
+                    </AppText>
+                  </Box>
+                  <Obx>
+                    {() =>
+                      profileStore.profileInfo.websites.length && (
+                        <>
+                          <AppText fontSize={16} fontWeight={700}>
+                            {t('profile.other_links')}
+                          </AppText>
+                          <Padding top={10} />
+                          {profileStore.profileInfo.websites.map(web => (
+                            <TouchableOpacity
+                              key={web}
+                              onPress={() => InAppBrowser.open(web)}
+                            >
+                              <Box marginBottom={14} row align="center">
+                                <Box
+                                  size={30}
+                                  radius={99}
+                                  center
+                                  backgroundColor={Colors.primaryLight}
+                                  marginRight={8}
+                                >
+                                  <LinkSvg size={14} color={Colors.white} />
+                                </Box>
+                                <AppText
+                                  fontWeight={600}
+                                  color={Colors.placeholder}
+                                >
+                                  {web}
+                                </AppText>
+                              </Box>
+                            </TouchableOpacity>
+                          ))}
+                        </>
+                      )
+                    }
+                  </Obx>
+                </Box>
+              )
             )
           }
         </Obx>
@@ -407,7 +525,7 @@ const ProfileOther = () => {
   const renderPostItem = useCallback(({ item, index }) => {
     const onPress = () => {
       if (index <= 2) {
-        state.setPostType(item.type)
+        state.setTabType(item.type)
       } else {
         navigate(PageName.PostDetailScreen, {
           postId: item.post_id,
@@ -514,6 +632,77 @@ const ProfileOther = () => {
           </AppText>
         </Box>
         <Box fill>
+          <Obx>
+            {() => {
+              const isMuted = userStore.isMutedUserNotification(
+                profileStore.profileInfo.user_id,
+              )
+              return (
+                <TouchableOpacity
+                  onPress={() =>
+                    isMuted
+                      ? userStore.unmuteUserNotification(
+                          profileStore.profileInfo.user_id,
+                        )
+                      : userStore.muteUserNotification(
+                          profileStore.profileInfo.user_id,
+                        )
+                  }
+                  style={styles.optionBtn}
+                >
+                  <Obx>
+                    {() =>
+                      isMuted ? <BellSvg size={20} /> : <BellOffSvg size={20} />
+                    }
+                  </Obx>
+                  <Padding left={14} />
+                  <AppText fontSize={16} fontWeight={500}>
+                    {t(
+                      isMuted
+                        ? 'profile.turn_on_notification_from_so'
+                        : 'profile.turn_off_notification_from_so',
+                      {
+                        replace: { so: profileStore.profileInfo.full_name },
+                      },
+                    )}
+                  </AppText>
+                </TouchableOpacity>
+              )
+            }}
+          </Obx>
+          <TouchableOpacity
+            onPress={() => {
+              Clipboard.setString(
+                `https://xgram.app/u/${profileStore.profileInfo.user_id}`,
+              )
+              optionSheetRef.current?.close?.()
+            }}
+            style={styles.optionBtn}
+          >
+            <CopySvg size={20} />
+            <Padding left={14} />
+            <AppText fontSize={16} fontWeight={500}>
+              {t('profile.copy_profile_link')}
+            </AppText>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              diaLogStore.showDiaLog({
+                title: t('conversations.report_user'),
+                message: t('conversations.report_message'),
+                dialogIcon: 'pack1_3',
+                showCancelButton: true,
+                onPress: () => {},
+              })
+            }}
+            style={styles.optionBtn}
+          >
+            <ReportSvg size={20} />
+            <Padding left={14} />
+            <AppText fontSize={16} fontWeight={500}>
+              <Obx>{() => t('conversations.report_user')}</Obx>
+            </AppText>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               diaLogStore.showDiaLog({
@@ -640,12 +829,7 @@ const styles = XStyleSheet.create({
     height: 100,
     marginBottom: 16,
   },
-  webBtn: {
-    borderRadius: 99,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 2,
-  },
+
   profileNumberBtn: {
     flex: 1,
     justifyContent: 'center',
@@ -653,7 +837,7 @@ const styles = XStyleSheet.create({
   },
   followBtn: {
     height: 40,
-    paddingHorizontal: 74,
+    paddingHorizontal: 60,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
@@ -679,6 +863,14 @@ const styles = XStyleSheet.create({
     borderWidth: 1,
     marginHorizontal: 24,
     backgroundColor: Colors.white,
+    shadowColor: Colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 4.65,
+    elevation: 10,
   },
   backBtn: {
     transform: [

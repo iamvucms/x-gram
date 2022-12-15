@@ -102,6 +102,7 @@ const FollowScreen = ({ route }) => {
     return (
       <TouchableOpacity onPress={onOpenProfile} style={styles.userItem}>
         <AppImage
+          disabled
           source={{
             uri: item.avatar_url,
           }}
@@ -127,10 +128,10 @@ const FollowScreen = ({ route }) => {
             <AppText
               fontSize={12}
               numberOfLines={1}
-              color={Colors.primary}
+              color={Colors.error}
               fontWeight={600}
             >
-              {t('profile.following')}
+              {t('profile.unFollow')}
             </AppText>
           </TouchableOpacity>
         </Box>
@@ -151,6 +152,7 @@ const FollowScreen = ({ route }) => {
     return (
       <TouchableOpacity onPress={onOpenProfile} style={styles.userItem}>
         <AppImage
+          disabled
           source={{
             uri: item.avatar_url,
           }}
@@ -201,7 +203,7 @@ const FollowScreen = ({ route }) => {
     ],
   }))
   return (
-    <Container>
+    <Container safeAreaColor={Colors.white}>
       <AppBar title={t('follow.title')} />
       <Box fill>
         <Box

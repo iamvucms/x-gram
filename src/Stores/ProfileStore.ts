@@ -23,7 +23,8 @@ export default class ProfileStore {
       throw new Error('test')
       // fetch following
     } catch (e) {
-      this.profileInfo = mockUsers[1]
+      this.profileInfo =
+        mockUsers.find(u => u.user_id === userId) || mockUsers[1]
       this.followings = mockUsers.slice(1, 5)
       this.followers = mockUsers.slice(1, 5)
       this.posts = mockPosts

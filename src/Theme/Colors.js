@@ -21,7 +21,7 @@ export const Colors = {
   placeholder: '#4F555A',
   disabled: '#E5E5E5',
   error: '#FF0000',
-  border: '#ddd',
+  border: '#eee',
   background: '#F6F6F6',
   kE5AFAF: '#E5AFAF',
   kC4BCFF: '#C4BCFF',

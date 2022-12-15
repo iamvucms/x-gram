@@ -27,6 +27,7 @@ const AppInput = forwardRef(
       fontWeight = 400,
       fontSize = 'normal',
       color = Colors.typography,
+      placeholderTextColor = Colors.placeholder,
       lineHeightRatio,
       lineHeight,
       style,
@@ -55,6 +56,7 @@ const AppInput = forwardRef(
       <TextInput
         ref={ref}
         style={[styles.base, textStyles, style]}
+        placeholderTextColor={placeholderTextColor}
         {...restProps}
       />
     )

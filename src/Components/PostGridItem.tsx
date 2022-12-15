@@ -46,7 +46,6 @@ const PostGridItem = ({
       onClosePreview?.()
     }
   }, [onClosePreview])
-  console.log(post)
   return (
     <Pressable
       ref={ref}

@@ -156,11 +156,13 @@ const CreateConversationScreen = ({ route }) => {
             paddingHorizontal={12}
             height={40}
             radius={99}
-            backgroundColor={Colors.border}
+            backgroundColor={Colors.primary}
             marginRight={12}
             center
           >
-            <AppText fontWeight={700}>{t('conversations.to')}</AppText>
+            <AppText fontWeight={700} color={Colors.white}>
+              {t('conversations.to')}
+            </AppText>
           </Box>
         </Animated.View>
         <Animated.View style={Layout.fill} entering={FadeInRight.delay(500)}>
@@ -172,6 +174,7 @@ const CreateConversationScreen = ({ route }) => {
                 onChangeText={txt => state.setSearch(txt)}
                 style={styles.searchInput}
                 placeholder={t('conversations.user_name_placeholder')}
+                placeholderTextColor={Colors.placeholder}
               />
             )}
           </Obx>

@@ -66,6 +66,11 @@ export { default as FingerPrintSvg } from './Auth/FingerPrintSvg'
 export { default as BackSpaceSvg } from './Auth/BackSpaceSvg'
 //Profile
 export { default as GridSvg } from './Profile/GridSvg'
+export { default as BirthdayCakeSvg } from './Profile/BirthdayCakeSvg'
+export { default as ClockSvg } from './Profile/ClockSvg'
+export { default as PhoneSvg } from './Profile/PhoneSvg'
+export { default as MailSvg } from './Profile/MailSvg'
+export { default as GenderSvg } from './Profile/GenderSvg'
 //Conversations
 export { default as DoubleCheckSvg } from './Conversations/DoubleCheckSvg'
 export { default as InforSvg } from './Conversations/InforSvg'

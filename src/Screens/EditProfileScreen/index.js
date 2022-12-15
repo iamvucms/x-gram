@@ -191,21 +191,7 @@ const EditProfileScreen = ({ navigation }) => {
         </Obx>
       </Box>
       <BottomSheetScrollView keyboardShouldPersistTaps="handled">
-        <Box margin={16}>
-          <FastImage
-            source={{
-              uri: userStore.userInfo.cover_url,
-            }}
-            style={styles.coverImage}
-          />
-          <FastImage
-            source={{
-              uri: userStore.userInfo.avatar_url,
-            }}
-            style={styles.avatarImage}
-          />
-        </Box>
-        <Box marginHorizontal={16} marginBottom={16}>
+        <Box marginTop={16} marginHorizontal={16} marginBottom={16}>
           <AppText fontSize={12} fontWeight={700} color={Colors.placeholder}>
             {t('profile.full_name')}
           </AppText>

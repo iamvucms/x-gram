@@ -27,6 +27,7 @@ export default class UserStore {
   hiddenCommentIds = {}
   hiddenMessageIds = {}
   mutedMessageNotificationIds = {}
+  mutedUserNotificationIds = {}
   posts: Post[] = []
   postPage = 1
   loadingPosts = false
@@ -289,6 +290,17 @@ export default class UserStore {
   }
   isMutedMessageNotification(userId) {
     return !!this.mutedMessageNotificationIds[userId]
+  }
+  muteUserNotification(userId) {
+    //TODO: call localnotification api to mute
+    this.mutedUserNotificationIds[userId] = true
+  }
+  unmuteUserNotification(userId) {
+    //TODO: call localnotification api to unmute
+    delete this.mutedUserNotificationIds[userId]
+  }
+  isMutedUserNotification(userId) {
+    return !!this.mutedUserNotificationIds[userId]
   }
 
   isBlocked(userId) {
