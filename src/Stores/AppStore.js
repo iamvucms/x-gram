@@ -29,7 +29,7 @@ export default class AppStore {
   setLanguage(code) {
     i18n.changeLanguage(code)
     this.languagues.forEach(lang => {
-      lang.isSelected = lang.code === code
+      lang.isSelected = lang?.code === code
     })
   }
 

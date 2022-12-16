@@ -91,3 +91,8 @@ export { default as HammerSvg } from './Search/HammerSvg'
 export { default as LandscapeSvg } from './Search/LandscapeSvg'
 export { default as MaskSvg } from './Search/MaskSvg'
 export { default as MultipleSvg } from './Search/MultipleSvg'
+//Setting
+export { default as LogoutSvg } from './Setting/LogoutSvg'
+export { default as UserSvg } from './Setting/UserSvg'
+export { default as LanguageSvg } from './Setting/LanguageSvg'
+export { default as PaperSvg } from './Setting/PaperSvg'

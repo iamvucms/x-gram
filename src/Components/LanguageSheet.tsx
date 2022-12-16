@@ -10,7 +10,7 @@ import { AppBottomSheet, AppText, Obx, Padding } from '.'
 import Row from './Row'
 
 const LanguageSheet = () => {
-  const sheetRef = useRef()
+  const sheetRef = useRef<any>()
   const { t } = useTranslation()
   useEffect(() => {
     const dipose = autorun(() => {
@@ -26,7 +26,7 @@ const LanguageSheet = () => {
     return (
       <TouchableOpacity
         onPress={() => {
-          appStore.setLanguage(item.code)
+          appStore.setLanguage(item?.code)
           appStore.setShowLanguageSheet(false)
         }}
         style={styles.langItem}

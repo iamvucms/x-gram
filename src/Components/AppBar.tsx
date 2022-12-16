@@ -58,7 +58,7 @@ const styles = XStyleSheet.create({
   header: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: 60,
+    height: 44,
     borderBottomColor: Colors.border,
     borderBottomWidth: 0.6,
   },

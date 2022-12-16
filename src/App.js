@@ -19,7 +19,7 @@ const App = () => {
     rehydrateStore()
       .then(() => {
         // setTimeout(() => {
-        i18n.changeLanguage(appStore.currentLanguage.code)
+        i18n.changeLanguage(appStore.currentLanguage?.code)
         setIsReady(true)
         // }, 1000),
       })

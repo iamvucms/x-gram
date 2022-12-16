@@ -4,7 +4,6 @@ import BottomSheet, {
 } from '@gorhom/bottom-sheet'
 import { Portal } from '@gorhom/portal'
 import React, { forwardRef, useImperativeHandle, useMemo, useRef } from 'react'
-import { StyleSheet } from 'react-native'
 interface AppBottomSheetProps extends BottomSheetProps {
   snapPoints: (`${number}%` | number)[]
   children: React.ReactNode
@@ -57,5 +56,3 @@ const AppBottomSheet = forwardRef(
 )
 
 export default AppBottomSheet
-
-const styles = StyleSheet.create({})

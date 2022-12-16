@@ -459,7 +459,10 @@ const ProfileScreen = () => {
           >
             <View />
             <Animated.View style={headerRightButtonStyle}>
-              <TouchableOpacity style={styles.headerBtn}>
+              <TouchableOpacity
+                onPress={() => navigate(PageName.SettingScreen)}
+                style={styles.headerBtn}
+              >
                 <SettingSvg />
               </TouchableOpacity>
               <TouchableOpacity

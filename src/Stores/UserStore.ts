@@ -28,6 +28,7 @@ export default class UserStore {
   hiddenMessageIds = {}
   mutedMessageNotificationIds = {}
   mutedUserNotificationIds = {}
+  mutedAllNotification = false
   posts: Post[] = []
   postPage = 1
   loadingPosts = false
@@ -381,6 +382,9 @@ export default class UserStore {
   }
   removeFollowerUser(userId) {
     this.followers = this.followers.filter(user => user.user_id !== userId)
+  }
+  setMutedAllNotification(muted) {
+    this.mutedAllNotification = muted
   }
   // check for hydration (required)
   get isHydrated() {

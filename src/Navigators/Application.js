@@ -25,6 +25,9 @@ import {
   CreateFeatureScreen,
   EditPostScreen,
   FollowScreen,
+  LanguageSetting,
+  AccountSetting,
+  PrivacySetting,
 } from '@/Screens'
 import { Colors } from '@/Theme'
 import { NavigationContainer } from '@react-navigation/native'
@@ -127,6 +130,12 @@ const AuthStack = () => {
         component={EditPostScreen}
       />
       <Stack.Screen name={PageName.FollowScreen} component={FollowScreen} />
+      <Stack.Screen
+        name={PageName.LanguageSetting}
+        component={LanguageSetting}
+      />
+      <Stack.Screen name={PageName.AccountSetting} component={AccountSetting} />
+      <Stack.Screen name={PageName.PrivacySetting} component={PrivacySetting} />
     </Stack.Navigator>
   )
 }

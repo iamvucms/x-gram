@@ -138,6 +138,7 @@ const PostItem = ({
                     onVideoFullscreenPlayerDidDismiss={() =>
                       state.setFullscreen(false)
                     }
+                    muted
                   />
                 )}
               </Obx>
