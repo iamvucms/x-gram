@@ -3,20 +3,20 @@ import Endpoint from '../Endpoint'
 
 export const uploadImage = (uri, mimeType) => {
   const data = new FormData()
-  data.append('image', {
+  data.append('medias', {
     uri,
     name: uri.split('/').pop(),
     type: mimeType,
   })
-  return uploadRequest(Endpoint().uploadImage, data)
+  return uploadRequest(Endpoint().upload, data)
 }
 
 export const uploadVideo = (uri, mimeType) => {
   const data = new FormData()
-  data.append('video', {
+  data.append('medias', {
     uri,
     name: 'video.mp4',
     type: mimeType,
   })
-  return uploadRequest(Endpoint().uploadVideo, data)
+  return uploadRequest(Endpoint().upload, data)
 }

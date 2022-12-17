@@ -15,10 +15,10 @@ export default () => {
     forgotPassword: `${apiUrl}/forgot-password`,
     resetPassword: `${apiUrl}/reset-password`,
     //posts
-    getHomePosts: (page = 0) => `${apiUrl}/posts?page=${page}`,
+    getHomePosts: (page = 1) => `${apiUrl}/posts?page=${page}`,
     getPostDetail: id => `${apiUrl}/posts/${id}`,
     getProfile: `${apiUrl}/users/{id}`,
-    getProfilePosts: (id, page = 0) =>
+    getProfilePosts: (id, page = 1) =>
       `${apiUrl}/users/${id}/posts?page=${page}`,
     searchPosts: `${apiUrl}/search/posts`,
     createPost: `${apiUrl}/posts`,
@@ -38,19 +38,19 @@ export default () => {
     createStory: `${apiUrl}/stories`,
     deleteStoryMedia: `${apiUrl}/stories/{id}/medias/{media_id}`,
     //notifications
-    getNotifications: (page = 0) => `${apiUrl}/notifications?page=${page}`,
+    getNotifications: (page = 1) => `${apiUrl}/notifications?page=${page}`,
     deleteNotification: id => `${apiUrl}/notifications/${id}`,
     //users
-    searchUsers: (q, page = 0) => `${apiUrl}/search/user?q=${q}&page=${page}`,
-    updateUserInfo: `${apiUrl}/user`,
-    updatePassword: `${apiUrl}/user/password`,
-    getUserInfo: id => `${apiUrl}/user/${id}`,
-    getBlockedUsers: `${apiUrl}/user/blocked-users`,
-    blockUser: id => `${apiUrl}/user/blocked-users/${id}`,
-    unBlockUser: id => `${apiUrl}/user/blocked-users/${id}/unblock`,
-    followUser: id => `${apiUrl}/user/following/${id}`,
-    unFollowUser: id => `${apiUrl}/user/following/${id}/unfollow`,
-    removeFollower: id => `${apiUrl}/user/followers/${id}/remove`,
+    searchUsers: (q, page = 1) => `${apiUrl}/search/users?q=${q}&page=${page}`,
+    updateUserInfo: `${apiUrl}/users`,
+    updatePassword: `${apiUrl}/users/password`,
+    getUserInfo: id => `${apiUrl}/users/${id}`,
+    getBlockedUsers: `${apiUrl}/users/blocked-users`,
+    blockUser: id => `${apiUrl}/users/blocked-users/${id}`,
+    unBlockUser: id => `${apiUrl}/users/blocked-users/${id}/unblock`,
+    followUser: id => `${apiUrl}/users/following/${id}`,
+    unFollowUser: id => `${apiUrl}/users/following/${id}/unfollow`,
+    removeFollower: id => `${apiUrl}/users/followers/${id}/remove`,
     //chat
     getConversations: `${apiUrl}/conversations`,
     getMessages: id => `${apiUrl}/conversations/${id}/messages`,
@@ -58,7 +58,6 @@ export default () => {
     createConversation: `${apiUrl}/conversations`,
     deleteConversation: id => `${apiUrl}/conversations/${id}`,
     //upload
-    uploadImage: `${apiUrl}/upload/image`,
-    uploadVideo: `${apiUrl}/upload/video`,
+    upload: `${apiUrl}/uploads`,
   }
 }

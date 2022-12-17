@@ -118,7 +118,6 @@ const PostItem = ({
       [Colors.white50, Colors.kFB2576],
     ),
   }))
-
   return (
     <Box marginHorizontal={16} marginTop={16}>
       <View style={styles.rootView}>
@@ -195,20 +194,24 @@ const PostItem = ({
               </AppText>
 
               <Row>
-                <Obx>
-                  {() =>
-                    post.privacy === PrivacyType.Public ? (
-                      <GlobalSvg size={12} color={Colors.white50} />
-                    ) : post.privacy === PrivacyType.Followers ? (
-                      <PeopleSvg size={12} color={Colors.white50} />
-                    ) : (
-                      <LockSvg size={12} color={Colors.white50} />
-                    )
-                  }
-                </Obx>
-                <AppText fontSize={6} color={Colors.white50}>
-                  {'   '}•{'   '}
-                </AppText>
+                {!preview && (
+                  <>
+                    <Obx>
+                      {() =>
+                        post.privacy === PrivacyType.Public ? (
+                          <GlobalSvg size={12} color={Colors.white50} />
+                        ) : post.privacy === PrivacyType.Followers ? (
+                          <PeopleSvg size={12} color={Colors.white50} />
+                        ) : (
+                          <LockSvg size={12} color={Colors.white50} />
+                        )
+                      }
+                    </Obx>
+                    <AppText fontSize={6} color={Colors.white50}>
+                      {'   '}•{'   '}
+                    </AppText>
+                  </>
+                )}
                 <AppText fontSize={12} color={Colors.white50}>
                   {moment(post.created_at).fromNow()}
                 </AppText>
@@ -266,7 +269,7 @@ const PostItem = ({
                 </Obx>
                 <Padding top={4} />
                 <AppText fontWeight={700} color={Colors.white}>
-                  <Obx>{() => formatAmount(post.reactions.length)}</Obx>
+                  <Obx>{() => formatAmount(post.reactions.length) as any}</Obx>
                 </AppText>
               </Animated.View>
             </TouchableOpacity>

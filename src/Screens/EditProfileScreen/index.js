@@ -87,7 +87,6 @@ const EditProfileScreen = ({ navigation }) => {
         state.errorBio === '' &&
         state.errorUserId === '' &&
         state.fullName !== '' &&
-        state.bio !== '' &&
         state.userId !== '' &&
         (state.userId !== userStore.userInfo.user_id ||
           state.fullName !== userStore.userInfo.full_name ||
@@ -99,7 +98,6 @@ const EditProfileScreen = ({ navigation }) => {
       )
     },
   }))
-
   const renderWebsiteItem = useCallback(site => {
     return (
       <TouchableOpacity

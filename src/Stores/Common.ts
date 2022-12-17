@@ -73,11 +73,11 @@ export const deletePostById = postId => {
   userStore.deletePost(postId)
 }
 export const initData = () => {
+  userStore.fetchUserInfo()
+  userStore.fetchPosts()
+  userStore.fetchBlockedUsers()
   homeStore.fetchPosts()
   homeStore.fetchStories()
-  userStore.fetchUserInfo()
-  userStore.fetchBlockedUsers()
-  userStore.fetchPosts()
   chatStore.initSocket()
   notiStore.fetchNotifcations()
 }
@@ -86,6 +86,14 @@ export const sendCommentRequest = async (postId, message, isImage, retryId) => {
   const commentId = retryId || `cmt_${Math.random()}`
   const isNewComment = !retryId
   try {
+    if (isImage) {
+      const extension = message.split('.').pop()
+      const mimeType = extension === 'png' ? 'image/png' : 'image/jpeg'
+      const response = await uploadImage(message, mimeType)
+      if (response.status === 'OK') {
+        message = response.data[0].url
+      }
+    }
     const comment = {
       comment_id: commentId,
       commented_by: toJS(userStore.userInfo),
@@ -98,7 +106,10 @@ export const sendCommentRequest = async (postId, message, isImage, retryId) => {
     } else {
       updatePostComment(postId, commentId, comment)
     }
-    const response = await sendComment(postId, comment)
+    const response = await sendComment(postId, {
+      data: message,
+      is_image: isImage,
+    })
     if (response.status === 'OK') {
       updatePostComment(postId, commentId, {
         comment_id: response.data.comment_id,
@@ -191,8 +202,9 @@ export const reactRequest = async (postId, isUnReact) => {
     console.log({ reactRequestError: e })
   }
 }
-export const createPost = async (message, medias, onDone) => {
+export const createPost = async (message, medias, privacy, onDone) => {
   try {
+    const tags = []
     const uploadedMedias = await Promise.all(
       medias.map(async m => {
         const isVideo = m.uri.includes('video')
@@ -200,28 +212,34 @@ export const createPost = async (message, medias, onDone) => {
           ? await uploadVideo(m.uri, m.mimeType)
           : await uploadImage(m.uri, m.mimeType)
         if (response.status === 'OK') {
-          return response.data
-        }
-        return {
-          url: response.data.url,
-          is_video: isVideo,
+          const media = response.data[0]
+          if (!tags.includes(media.tag)) {
+            tags.push(media.tag)
+          }
+          return {
+            url: media.url,
+            is_video: isVideo,
+          }
+        } else {
+          throw new Error('Upload media error')
         }
       }),
     )
     const post = {
       message,
       medias: uploadedMedias,
-      created_at: new Date().getTime(),
+      tags,
+      privacy,
     }
     const response = await sendPost(post)
     if (response?.status !== 'OK') {
-      diaLogStore.showErrorDiaLog()
+      diaLogStore.showErrorDiaLog({ message: response?.message })
     } else {
       addPost(response.data)
       onDone && onDone()
     }
   } catch (e) {
-    diaLogStore.showErrorDiaLog()
+    diaLogStore.showErrorDiaLog({ message: e.message })
     console.log({ createPostError: e })
   }
 }

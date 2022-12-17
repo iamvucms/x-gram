@@ -53,15 +53,17 @@ export default class HomeStore {
       } else {
         this.loadingMorePosts = true
       }
-      const { data } = yield getPosts(this.postPage)
-      if (!loadMore) {
-        this.posts = data
-      } else {
-        this.posts = [...this.posts, ...data]
+      const response = yield getPosts(this.postPage)
+      if (response?.status === 'OK') {
+        if (!loadMore) {
+          this.posts = response.data
+        } else {
+          this.posts = [...this.posts, ...response.data]
+        }
+        this.postPage += 1
       }
-      this.postPage += 1
     } catch (e) {
-      this.posts = mockPosts
+      // this.posts = mockPosts
       console.log({
         fetchPosts: e,
       })

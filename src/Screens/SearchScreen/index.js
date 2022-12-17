@@ -132,7 +132,7 @@ const SearchScreen = () => {
           if (response?.status === 'OK') {
             state.setPosts(response.data)
           } else {
-            state.setPosts(mockPosts)
+            // state.setPosts(mockPosts)
           }
         } else {
           if (tag === PeopleFilterType.All) {
@@ -140,7 +140,7 @@ const SearchScreen = () => {
             if (response?.status === 'OK') {
               state.setUsers(response.data)
             } else {
-              state.setUsers(mockUsers)
+              // state.setUsers(mockUsers)
             }
           } else {
             if (tag === PeopleFilterType.Following) {
@@ -208,6 +208,7 @@ const SearchScreen = () => {
   }, [])
   const renderFilterTypeItem = useCallback(({ item, index }) => {
     const onPress = () => {
+      state.setPage(1)
       state.setType(
         item.type === state.type && state.searchType === SearchType.POST
           ? null
@@ -272,13 +273,6 @@ const SearchScreen = () => {
                 <AppText fontWeight={600} lineHeight={16}>
                   {item.full_name}
                 </AppText>
-                <AppText
-                  fontSize={12}
-                  lineHeight={14}
-                  color={Colors.placeholder}
-                >
-                  @{item.user_id}
-                </AppText>
               </View>
               <Obx>
                 {() => {
@@ -314,7 +308,7 @@ const SearchScreen = () => {
                 }}
               </Obx>
             </Row>
-            <Padding top={10} />
+            <Padding top={6} />
             <AppText fontSize={12} numberOfLines={1}>
               {item.bio}
             </AppText>
@@ -349,12 +343,21 @@ const SearchScreen = () => {
         >
           <SearchSvg color={Colors.placeholder} size={18} />
           <Padding right={8} />
-          <AppInput
-            style={Layout.fill}
-            fontWeight={500}
-            placeholder={t('search.search_placeholder')}
-            placeholderTextColor={Colors.placeholder}
-          />
+          <Obx>
+            {() => (
+              <AppInput
+                style={Layout.fill}
+                fontWeight={500}
+                placeholder={t('search.search_placeholder')}
+                placeholderTextColor={Colors.placeholder}
+                value={state.q}
+                onChangeText={q => {
+                  state.setQ(q)
+                  state.setPage(1)
+                }}
+              />
+            )}
+          </Obx>
           <Box
             row
             align="center"
@@ -646,6 +649,7 @@ const styles = XStyleSheet.create({
     width: 60,
     borderRadius: 30,
     overflow: 'hidden',
+    backgroundColor: Colors.white,
   },
   followBtn: {
     flexDirection: 'row',

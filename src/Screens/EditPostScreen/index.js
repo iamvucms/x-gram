@@ -189,13 +189,6 @@ const EditPostScreen = ({ route }) => {
                         />
                         <Padding left={12}>
                           <AppText fontWeight={700}>{user.full_name}</AppText>
-                          <AppText
-                            fontSize={12}
-                            fontWeight={600}
-                            color={Colors.placeholder}
-                          >
-                            @{user.user_id}
-                          </AppText>
                         </Padding>
                       </TouchableOpacity>
                     ))}

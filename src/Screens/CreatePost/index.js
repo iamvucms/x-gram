@@ -1,6 +1,7 @@
-import { NoteSvg } from '@/Assets/Svg'
+import { ChevronDownSvg, NoteSvg } from '@/Assets/Svg'
 import {
   AppBar,
+  AppBottomSheet,
   AppButton,
   AppImage,
   AppInput,
@@ -14,31 +15,34 @@ import {
   PostItem,
 } from '@/Components'
 import { PageName } from '@/Config'
-import { mockUsers } from '@/Models'
+import { PrivacyType, mockUsers } from '@/Models'
 import { navigate } from '@/Navigators'
 import { searchUsers } from '@/Services/Api'
 import { createPost, userStore } from '@/Stores'
-import { Colors, XStyleSheet } from '@/Theme'
-import { autorun, flowResult, toJS } from 'mobx'
+import { Colors, XStyleSheet, screenHeight } from '@/Theme'
+import { autorun, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TouchableOpacity, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated'
+import Animated, { FadeInDown } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const CreatePost = ({ route }) => {
   const { medias } = route?.params
   const processedMedias = medias.map(m => ({ ...m, url: m.uri }))
   const { t } = useTranslation()
+  const privacySheetRef = useRef()
   const state = useLocalObservable(() => ({
     message: '',
     mentionList: [],
     creating: false,
+    privacy: PrivacyType.Public,
     setMessage: value => (state.message = value),
     setMentionList: value => (state.mentionList = value),
     setCreating: value => (state.creating = value),
+    setPrivacy: value => (state.privacy = value),
     get isValid() {
       return state.message.trim().length > 0
     },
@@ -82,11 +86,12 @@ const CreatePost = ({ route }) => {
   }
   const onPostPress = async () => {
     state.setCreating(true)
-    await createPost(state.message, processedMedias, () =>
+    await createPost(state.message, processedMedias, state.privacy, () =>
       navigate(PageName.HomeScreen),
     )
     state.setCreating(false)
   }
+  const closePrivacySheet = () => privacySheetRef.current?.close?.()
   const { bottom } = useSafeAreaInsets()
   return (
     <Container style={styles.rootView}>
@@ -104,14 +109,28 @@ const CreatePost = ({ route }) => {
               posted_by: userStore.userInfo,
             }}
           />
-          <Box marginHorizontal={16} marginTop={14}>
-            <AppText lineHeight={18} fontWeight={700}>
-              {userStore.userInfo.user_id}
+          <TouchableOpacity
+            onPress={() => privacySheetRef.current?.snapTo?.(0)}
+            style={styles.privacyBtn}
+          >
+            <AppText fontSize={12} lineHeight={12} fontWeight={600}>
+              <Obx>
+                {() =>
+                  state.privacy === PrivacyType.Public
+                    ? t('home.privacy_public')
+                    : state.privacy === PrivacyType.Followers
+                    ? t('home.privacy_followers')
+                    : t('home.privacy_private')
+                }
+              </Obx>
             </AppText>
+            <Padding left={4} />
+            <ChevronDownSvg size={8} />
+          </TouchableOpacity>
+          <Box marginHorizontal={16} marginTop={12}>
             <Box
-              marginTop={8}
               padding={12}
-              radius={6}
+              radius={8}
               height={90}
               backgroundColor={Colors.primary25}
             >
@@ -166,13 +185,6 @@ const CreatePost = ({ route }) => {
                         />
                         <Padding left={12}>
                           <AppText fontWeight={700}>{user.full_name}</AppText>
-                          <AppText
-                            fontSize={12}
-                            fontWeight={600}
-                            color={Colors.placeholder}
-                          >
-                            @{user.user_id}
-                          </AppText>
                         </Padding>
                       </TouchableOpacity>
                     ))}
@@ -211,6 +223,107 @@ const CreatePost = ({ route }) => {
           )}
         </Obx>
       </Box>
+      <AppBottomSheet ref={privacySheetRef} snapPoints={[screenHeight * 0.3]}>
+        <TouchableOpacity
+          onPress={() => {
+            state.setPrivacy(PrivacyType.Public)
+            closePrivacySheet()
+          }}
+          style={styles.privacyOptionBtn}
+        >
+          <View style={styles.leftPrivacyOption}>
+            <Obx>
+              {() => (
+                <Box
+                  size={20}
+                  radius={10}
+                  borderWidth={5}
+                  borderColor={Colors.primary25}
+                  backgroundColor={
+                    state.privacy === PrivacyType.Public
+                      ? Colors.primary
+                      : Colors.white
+                  }
+                />
+              )}
+            </Obx>
+          </View>
+          <View>
+            <AppText fontSize={16} fontWeight={500}>
+              {t('home.privacy_public')}
+            </AppText>
+            <AppText fontSize={12} color={Colors.grey}>
+              {t('home.privacy_public_desc')}
+            </AppText>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            state.setPrivacy(PrivacyType.Followers)
+            closePrivacySheet()
+          }}
+          style={styles.privacyOptionBtn}
+        >
+          <View style={styles.leftPrivacyOption}>
+            <Obx>
+              {() => (
+                <Box
+                  size={20}
+                  radius={10}
+                  borderWidth={5}
+                  borderColor={Colors.primary25}
+                  backgroundColor={
+                    state.privacy === PrivacyType.Followers
+                      ? Colors.primary
+                      : Colors.white
+                  }
+                />
+              )}
+            </Obx>
+          </View>
+          <View>
+            <AppText fontSize={16} fontWeight={500}>
+              {t('home.privacy_followers')}
+            </AppText>
+            <AppText fontSize={12} color={Colors.grey}>
+              {t('home.privacy_followers_desc')}
+            </AppText>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            state.setPrivacy(PrivacyType.Private)
+            closePrivacySheet()
+          }}
+          style={styles.privacyOptionBtn}
+        >
+          <View style={styles.leftPrivacyOption}>
+            <Obx>
+              {() => (
+                <Box
+                  size={20}
+                  radius={10}
+                  borderWidth={5}
+                  borderColor={Colors.primary25}
+                  backgroundColor={
+                    state.privacy === PrivacyType.Private
+                      ? Colors.primary
+                      : Colors.white
+                  }
+                />
+              )}
+            </Obx>
+          </View>
+          <View>
+            <AppText fontSize={16} fontWeight={500}>
+              {t('home.privacy_private')}
+            </AppText>
+            <AppText fontSize={12} color={Colors.grey}>
+              {t('home.privacy_private_desc')}
+            </AppText>
+          </View>
+        </TouchableOpacity>
+      </AppBottomSheet>
       <Obx>{() => state.creating && <LoadingIndicator overlay />}</Obx>
     </Container>
   )
@@ -240,5 +353,29 @@ const styles = XStyleSheet.create({
     position: 'absolute',
     right: 6,
     bottom: 4,
+  },
+  privacyBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 8,
+    backgroundColor: Colors.border,
+    borderWidth: 0.5,
+    borderColor: Colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 16,
+    alignSelf: 'flex-start',
+    marginTop: 12,
+  },
+  privacyOptionBtn: {
+    height: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  leftPrivacyOption: {
+    height: '100%',
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })

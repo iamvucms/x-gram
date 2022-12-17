@@ -18,6 +18,7 @@ export default class AppStore {
       isSelected: i18n.language === 'vi',
     },
   ]
+  passedOnboarding = false
   showLanguageSheet = false
 
   constructor() {
@@ -31,6 +32,10 @@ export default class AppStore {
     this.languagues.forEach(lang => {
       lang.isSelected = lang?.code === code
     })
+  }
+
+  setPassedOnboarding(value) {
+    this.passedOnboarding = value
   }
 
   setShowLanguageSheet(value) {

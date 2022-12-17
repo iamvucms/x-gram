@@ -104,6 +104,7 @@ const OnboardingScreen = () => {
   const onNextPress = () => {
     if (state.currentPage === 2) {
       navigateAndReset([PageName.PreAuthStack], 0)
+      appStore.setPassedOnboarding(true)
     } else {
       listRef.current?.scrollToIndex?.({
         index: state.currentPage + 1,
@@ -114,9 +115,7 @@ const OnboardingScreen = () => {
       }
     }
   }
-  setTimeout(() => {
-    navigate(PageName.AuthStack)
-  }, 500)
+
   const { top: paddingTop } = useSafeAreaInsets()
   return (
     <Container statusBarProps={{ barStyle: 'light-content' }} disableTop>
@@ -133,11 +132,12 @@ const OnboardingScreen = () => {
             </AppText>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() =>
+            onPress={() => {
               navigate(PageName.PreAuthStack, {
                 screen: PageName.LoginScreen,
               })
-            }
+              appStore.setPassedOnboarding(true)
+            }}
             style={styles.skipBtn}
           >
             <AppText color={Colors.white} lineHeight={14} fontSize={14}>

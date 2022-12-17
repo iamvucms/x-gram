@@ -59,11 +59,10 @@ const MessageInput = forwardRef(
     const onImagePickerPress = useCallback(async () => {
       const response = await launchImageLibrary({
         mediaType: 'photo',
-        includeBase64: true,
       })
       if (response?.assets?.[0]) {
         state.setMessage('')
-        const url = `data:${response.assets[0].type};base64,${response.assets[0].base64}`
+        const url = response.assets[0].uri
         onSendPress && onSendPress(url, MessageType.Image)
       }
     }, [])

@@ -5,7 +5,7 @@ export const EnvType = {
   PROD: 2,
   GIT: 3,
 }
-export const APP_ENV = EnvType.PROD
+export const APP_ENV = EnvType.DEV
 
 export const CommonConfig = {
   ...ProdConfig,
@@ -18,7 +18,7 @@ export const StgConfig = {
   SOCKET_URL: '',
 }
 export const DevConfig = {
-  API_URL: '',
+  API_URL: 'https://fde3-2001-ee0-4b42-cc00-c5b-ed04-628a-2140.ap.ngrok.io',
   BASE_URL: '',
   BASE_API: '',
   SOCKET_URL: '',

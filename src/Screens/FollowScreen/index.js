@@ -110,16 +110,7 @@ const FollowScreen = ({ route }) => {
         />
         <Box fill>
           <View flex={1}>
-            <AppText fontWeight={500}>
-              {item.full_name}{' '}
-              <AppText
-                color={Colors.placeholder}
-                fontWeight={500}
-                fontSize={10}
-              >
-                (@{item.user_id})
-              </AppText>
-            </AppText>
+            <AppText fontWeight={500}>{item.full_name}</AppText>
             <AppText numberOfLines={1} color={Colors.placeholder} fontSize={12}>
               {item.bio}
             </AppText>
@@ -160,16 +151,7 @@ const FollowScreen = ({ route }) => {
         />
         <Box fill>
           <View flex={1}>
-            <AppText fontWeight={500}>
-              {item.full_name}{' '}
-              <AppText
-                color={Colors.placeholder}
-                fontWeight={500}
-                fontSize={10}
-              >
-                (@{item.user_id})
-              </AppText>
-            </AppText>
+            <AppText fontWeight={500}>{item.full_name}</AppText>
             <AppText numberOfLines={1} color={Colors.placeholder} fontSize={12}>
               {item.bio}
             </AppText>

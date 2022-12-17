@@ -96,6 +96,11 @@ export default {
     phone_start_with: 'Phone number must start with 0',
     phone_special_characters:
       'Phone number must not contain special characters',
+    errorRequireUserName: 'Username is required',
+    errorRequireUserNameMin6: 'Username must be at least 6 characters',
+    errorRequireUserNameMax30: 'Username must be at most 30 characters',
+    errorRequireUserNameNotContainSpecial:
+      'Username must not contain special characters',
   },
   home: {
     create_story: 'Create Story',

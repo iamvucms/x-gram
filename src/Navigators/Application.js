@@ -32,12 +32,47 @@ import {
 import { Colors } from '@/Theme'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useEffect } from 'react'
 import BottomTab from './BottomTab'
-import { navigationRef, screenOptions } from './NavigationUtils'
+import {
+  navigateAndReset,
+  navigationRef,
+  screenOptions,
+} from './NavigationUtils'
+import { appStore, userStore } from '@/Stores'
+import { autorun } from 'mobx'
 const Stack = createNativeStackNavigator()
 const Application = () => {
   const { NavigationTheme } = useAppTheme()
+  useEffect(() => {
+    const dispose = autorun(() => {
+      if (userStore.isLogged) {
+        navigateAndReset([
+          PageName.AuthStack,
+          // PageName.InAppUpdateScreen
+        ])
+      } else {
+        if (appStore.passedOnboarding) {
+          navigateAndReset(
+            [
+              PageName.PreAuthStack,
+              // PageName.InAppUpdateScreen
+            ],
+            undefined,
+          )
+        } else {
+          navigateAndReset([
+            PageName.OnboardingScreen,
+            PageName.PreAuthStack,
+            // PageName.InAppUpdateScreen,
+          ])
+        }
+      }
+    })
+    return () => {
+      dispose()
+    }
+  }, [])
   return (
     <NavigationContainer theme={NavigationTheme} ref={navigationRef}>
       <Stack.Navigator
@@ -48,12 +83,12 @@ const Application = () => {
           name={PageName.OnboardingScreen}
           component={OnboardingScreen}
         />
+        <Stack.Screen name={PageName.PreAuthStack} component={PreAuthStack} />
+        <Stack.Screen name={PageName.AuthStack} component={AuthStack} />
         <Stack.Screen
           name={PageName.InAppUpdateScreen}
           component={InAppUpdateScreen}
         />
-        <Stack.Screen name={PageName.PreAuthStack} component={PreAuthStack} />
-        <Stack.Screen name={PageName.AuthStack} component={AuthStack} />
       </Stack.Navigator>
     </NavigationContainer>
   )

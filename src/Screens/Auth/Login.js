@@ -13,16 +13,18 @@ import {
   Box,
   Container,
   ErrorLabel,
+  LoadingIndicator,
   Obx,
   Padding,
   Row,
 } from '@/Components'
 import { PageName } from '@/Config'
 import { useAppTheme } from '@/Hooks'
-import { navigate } from '@/Navigators'
-import { appStore } from '@/Stores'
+import { navigate, navigateAndReset } from '@/Navigators'
+import { login } from '@/Services/Api'
+import { appStore, diaLogStore, userStore } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
-import { getHitSlop, isAndroid, validateEmail, validatePassword } from '@/Utils'
+import { getHitSlop, isAndroid } from '@/Utils'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
@@ -44,12 +46,14 @@ const LoginScreen = () => {
     saveLogin: false,
     errorPassword: '',
     errorEmail: '',
+    logining: false,
     setShowPassword: value => (state.showPassword = value),
     setPassword: value => (state.password = value),
     setEmail: value => (state.email = value),
     setSaveLogin: value => (state.saveLogin = value),
     setErrorPassword: value => (state.errorPassword = value),
     setErrorEmail: value => (state.errorEmail = value),
+    setLogining: value => (state.logining = value),
     get isValid() {
       return (
         !this.errorEmail && !this.errorPassword && this.email && this.password
@@ -59,15 +63,31 @@ const LoginScreen = () => {
 
   const onEmailChange = useCallback(value => {
     state.setEmail(value)
-    state.setErrorEmail(validateEmail(value))
+    // state.setErrorEmail(validateEmail(value))
+    state.setErrorEmail('')
   }, [])
 
   const onPasswordChange = useCallback(value => {
     state.setPassword(value)
-    state.setErrorPassword(validatePassword(value))
+    // state.setErrorPassword(validatePassword(value))
+    state.setErrorPassword('')
   }, [])
 
-  const onLoginPress = useCallback(() => {}, [])
+  const onLoginPress = useCallback(async () => {
+    state.setLogining(true)
+    const response = await login({
+      email: state.email,
+      password: state.password,
+    })
+    if (response?.status === 'OK') {
+      userStore.setUserInfo(response.data.user)
+      userStore.setCookie(response.data.cookie)
+      navigateAndReset([PageName.AuthStack])
+    } else {
+      diaLogStore.showErrorDiaLog()
+    }
+    state.setLogining(false)
+  }, [])
 
   const onLoginWithGooglePress = useCallback(async () => {
     try {
@@ -280,6 +300,7 @@ const LoginScreen = () => {
         </TouchableOpacity>
       </Box>
       <Image source={Images.blueBlur} style={styles.blueBlur} />
+      <Obx>{() => state.logining && <LoadingIndicator overlay />}</Obx>
     </Container>
   )
 }

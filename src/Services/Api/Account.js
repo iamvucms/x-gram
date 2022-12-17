@@ -9,7 +9,7 @@ export const getUserInfo = id => request(Endpoint().getUserInfo(id), Method.GET)
 export const getBlockedUsers = () =>
   request(Endpoint().getBlockedUsers, Method.GET)
 
-export const searchUsers = (q, page) => {
+export const searchUsers = (q = '', page) => {
   return request(Endpoint().searchUsers(q, page), Method.GET)
 }
 

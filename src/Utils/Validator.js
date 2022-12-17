@@ -6,13 +6,13 @@ export function validateUserName(value) {
   const regexSpecialString =
     /[!@#$%^&*()+\- =\[\]{};':"\\|,.<>\/?ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]+/
   if (value.trim().length === 0) {
-    return translation('authPage.errorRequireUserName')
+    return translation('auth.errorRequireUserName')
   } else if (value.trim().length < 6) {
-    return translation('authPage.errorRequireUserNameMin6')
+    return translation('auth.errorRequireUserNameMin6')
   } else if (value.trim().length >= 30) {
-    return translation('authPage.errorRequireUserNameMax30')
+    return translation('auth.errorRequireUserNameMax30')
   } else if (regexSpecialString.test(value.trim())) {
-    return translation('authPage.errorRequireUserNameNotContainSpecial')
+    return translation('auth.errorRequireUserNameNotContainSpecial')
   } else {
     return ''
   }

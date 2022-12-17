@@ -12,14 +12,14 @@ const commonHeader = {
 }
 
 export const generateHeader = () => {
-  const token = userStore.token
+  const cookie = userStore.cookie
 
-  return !token
+  return !cookie
     ? {
         ...commonHeader,
       }
     : {
         ...commonHeader,
-        Cookie: `tk=${token}`,
+        Cookie: cookie,
       }
 }

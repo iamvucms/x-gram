@@ -202,9 +202,6 @@ const CreateConversationScreen = ({ route }) => {
                 <AppText fontWeight={700} fontSize={12}>
                   {state.receiver.full_name}
                 </AppText>
-                <AppText color={Colors.black50} fontSize={10}>
-                  @{state.receiver.user_id}
-                </AppText>
               </View>
             </Box>
           )
