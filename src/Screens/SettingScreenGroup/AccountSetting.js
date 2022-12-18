@@ -1,14 +1,21 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { AppBar, Container } from '@/Components'
+import { Colors, XStyleSheet } from '@/Theme'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 const AccountSetting = () => {
+  const { t } = useTranslation()
   return (
-    <View>
-      <Text>AccountSetting</Text>
-    </View>
+    <Container safeAreaColor={Colors.white} style={styles.rootView}>
+      <AppBar title={t('setting.account')} />
+    </Container>
   )
 }
 
 export default AccountSetting
 
-const styles = StyleSheet.create({})
+const styles = XStyleSheet.create({
+  rootView: {
+    backgroundColor: Colors.white,
+  },
+})
