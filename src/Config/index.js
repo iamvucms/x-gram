@@ -18,7 +18,7 @@ export const StgConfig = {
   SOCKET_URL: '',
 }
 export const DevConfig = {
-  API_URL: 'https://fde3-2001-ee0-4b42-cc00-c5b-ed04-628a-2140.ap.ngrok.io',
+  API_URL: 'https://f15f-2001-ee0-4b42-cc00-c5b-ed04-628a-2140.ap.ngrok.io',
   BASE_URL: '',
   BASE_API: '',
   SOCKET_URL: '',

@@ -57,7 +57,7 @@ const FollowScreen = ({ route }) => {
       )
     },
     get followings() {
-      const followings = toJS(userStore.followings)
+      const followings = toJS(userStore.following)
       return followings.filter(
         following =>
           following.full_name.toLowerCase().includes(state.q.toLowerCase()) ||
@@ -185,7 +185,7 @@ const FollowScreen = ({ route }) => {
     ],
   }))
   return (
-    <Container safeAreaColor={Colors.white}>
+    <Container safeAreaColor={Colors.gray}>
       <AppBar title={t('follow.title')} />
       <Box fill>
         <Box
@@ -270,7 +270,7 @@ const FollowScreen = ({ route }) => {
               {() => (
                 <FlatList
                   width={screenWidth}
-                  data={state.followers.slice()}
+                  data={state.followings.slice()}
                   keyExtractor={item => item.user_id}
                   renderItem={renderFollowingItem}
                 />
@@ -280,7 +280,7 @@ const FollowScreen = ({ route }) => {
               {() => (
                 <FlatList
                   width={screenWidth}
-                  data={state.followings.slice()}
+                  data={state.followers.slice()}
                   keyExtractor={item => item.user_id}
                   renderItem={renderFollowerItem}
                 />

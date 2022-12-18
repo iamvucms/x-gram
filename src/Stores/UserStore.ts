@@ -19,7 +19,7 @@ export default class UserStore {
   isLogged = false
   cookie = ''
   userInfo: User = {} as User
-  followings: User[] = []
+  following: User[] = []
   followers: User[] = []
   passcode = ''
   passcodeEnabled = false
@@ -48,6 +48,8 @@ export default class UserStore {
       const response = yield getUserInfo(this.userInfo.user_id)
       if (response?.status === 'OK') {
         this.userInfo = response.data
+        this.following = response.data.following
+        this.followers = response.data.followers
       }
       // fetch following
     } catch (e) {
@@ -375,16 +377,16 @@ export default class UserStore {
     return false
   }
   isFollowing(userId) {
-    return this.followings.some(user => user.user_id === userId)
+    return this.following.some(user => user.user_id === userId)
   }
   isFollowingMe(userId) {
     return this.followers.some(user => user.user_id === userId)
   }
   addFollowing(user) {
-    this.followings = [user, ...this.followings]
+    this.following = [user, ...this.following]
   }
   removeFollowing(userId) {
-    this.followings = this.followings.filter(user => user.user_id !== userId)
+    this.following = this.following.filter(user => user.user_id !== userId)
   }
   removeFollowerUser(userId) {
     this.followers = this.followers.filter(user => user.user_id !== userId)

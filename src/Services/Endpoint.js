@@ -48,9 +48,9 @@ export default () => {
     getBlockedUsers: `${apiUrl}/users/blocked-users`,
     blockUser: id => `${apiUrl}/users/blocked-users/${id}`,
     unBlockUser: id => `${apiUrl}/users/blocked-users/${id}/unblock`,
-    followUser: id => `${apiUrl}/users/following/${id}`,
-    unFollowUser: id => `${apiUrl}/users/following/${id}/unfollow`,
-    removeFollower: id => `${apiUrl}/users/followers/${id}/remove`,
+    followUser: id => `${apiUrl}/users/follow/${id}`,
+    unFollowUser: id => `${apiUrl}/users/unfollow/${id}`,
+    removeFollower: id => `${apiUrl}/users/removefollower/${id}`,
     //chat
     getConversations: `${apiUrl}/conversations`,
     getMessages: id => `${apiUrl}/conversations/${id}/messages`,

@@ -262,7 +262,7 @@ const NotificationItem = memo(({ item, onLongPress, onPress }) => {
           <AppImage
             disabled
             source={{
-              uri: item.user.avatar_url,
+              uri: item?.user?.avatar_url,
             }}
             containerStyle={styles.avatar}
           />

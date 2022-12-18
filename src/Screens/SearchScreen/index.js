@@ -144,7 +144,7 @@ const SearchScreen = () => {
             }
           } else {
             if (tag === PeopleFilterType.Following) {
-              state.setUsers(toJS(userStore.followings))
+              state.setUsers(toJS(userStore.following))
             } else {
               state.setUsers(toJS(userStore.followers))
             }
@@ -273,6 +273,13 @@ const SearchScreen = () => {
                 <AppText fontWeight={600} lineHeight={16}>
                   {item.full_name}
                 </AppText>
+                <AppText
+                  fontWeight={500}
+                  fontSize={12}
+                  color={Colors.placeholder}
+                >
+                  @{item.user_name}
+                </AppText>
               </View>
               <Obx>
                 {() => {
@@ -309,8 +316,8 @@ const SearchScreen = () => {
               </Obx>
             </Row>
             <Padding top={6} />
-            <AppText fontSize={12} numberOfLines={1}>
-              {item.bio}
+            <AppText fontSize={12} numberOfLines={1} color={Colors.placeholder}>
+              {item.bio || t('search.bio_not_available')}
             </AppText>
           </Box>
         </Animated.View>

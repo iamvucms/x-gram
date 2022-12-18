@@ -67,7 +67,7 @@ export const navigateToProfile = userId => {
     navigate(PageName.ProfileScreen)
   } else {
     // get profile data from server
-    profileStore.fetchProfile(userId)
+    profileStore.fetchProfile(userId.replaceAll('@', ''))
     profileStore.fetchPosts(false)
     navigate(PageName.ProfileOther, { userId })
   }

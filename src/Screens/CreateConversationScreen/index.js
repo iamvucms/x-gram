@@ -58,7 +58,7 @@ const CreateConversationScreen = ({ route }) => {
       state.setRecommentUsers(
         toJS(chatStore.conversations)
           .map(c => c.user)
-          .concat(toJS(userStore.followings || []))
+          .concat(toJS(userStore.following || []))
           .concat(toJS(userStore.followers || [])),
       )
     })

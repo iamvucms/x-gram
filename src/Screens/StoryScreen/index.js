@@ -1,11 +1,33 @@
-import { CloseSvg, DotsSvg, StoryGradientBorderSvg } from '@/Assets/Svg'
-import { AppImage, AppText, Container, Obx, Padding, Row } from '@/Components'
-import { mockStories } from '@/Models'
+import {
+  CloseSvg,
+  DotsSvg,
+  RemoveSvg,
+  StoryGradientBorderSvg,
+} from '@/Assets/Svg'
+import {
+  AppBottomSheet,
+  AppImage,
+  AppText,
+  Box,
+  Container,
+  Obx,
+  Padding,
+  Row,
+} from '@/Components'
 import { goBack } from '@/Navigators'
-import { Colors, screenHeight, screenWidth, XStyleSheet } from '@/Theme'
+import { diaLogStore, homeStore } from '@/Stores'
+import { Colors, XStyleSheet, screenHeight, screenWidth } from '@/Theme'
 import { getHitSlop } from '@/Utils'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { memo, useCallback, useEffect, useRef } from 'react'
+import React, {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from 'react'
+import { useTranslation } from 'react-i18next'
 import { Pressable, TouchableOpacity, View } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import Animated, {
@@ -21,25 +43,35 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const StoryScreen = () => {
+  const optionRef = useRef()
   const listRef = useRef()
+  const pageRefs = useRef([])
+  const { t } = useTranslation()
   const scrollX = useSharedValue(0)
   const state = useLocalObservable(() => ({
-    stories: mockStories,
     index: 0,
+    selectedStory: null,
     setIndex: index => (state.index = index),
     isActive: index => state.index === index,
+    setSelectedStory: story => (state.selectedStory = story),
   }))
   const renderStoryPageItem = useCallback(({ item, index }) => {
     return (
       <Obx>
         {() => (
           <StoryPage
+            ref={ref => (pageRefs.current[index] = ref)}
             isActive={state.isActive(index)}
             scrollX={scrollX}
             story={item}
             index={index}
+            onOpenOption={() => {
+              pageRefs.current[index]?.pause?.()
+              state.setSelectedStory(item)
+              optionRef.current?.snapTo?.(0)
+            }}
             onNextPage={() => {
-              if (state.index < state.stories.length - 1) {
+              if (state.index < homeStore.stories.length - 1) {
                 listRef.current?.scrollToIndex({ index: index + 1 })
                 state.setIndex(index + 1)
               }
@@ -60,6 +92,10 @@ const StoryScreen = () => {
       scrollX.value = event.contentOffset.x
     },
   })
+  const closeOptionSheet = () => {
+    optionRef.current?.close?.()
+    pageRefs.current[state.index]?.resume?.()
+  }
   const onScrollEnd = event => {
     const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth)
     state.setIndex(index)
@@ -74,28 +110,81 @@ const StoryScreen = () => {
             onMomentumScrollEnd={onScrollEnd}
             horizontal
             pagingEnabled
-            data={state.stories.slice()}
+            data={homeStore.stories.slice()}
             renderItem={renderStoryPageItem}
             keyExtractor={item => item.story_id}
             showsHorizontalScrollIndicator={false}
           />
         )}
       </Obx>
+      <AppBottomSheet
+        backgroundStyle={styles.sheetHeader}
+        ref={optionRef}
+        snapPoints={[screenHeight * 0.4]}
+        handleIndicatorStyle={{ backgroundColor: Colors.white50 }}
+      >
+        <Box
+          topLeftRadius={16}
+          topRightRadius={16}
+          fill
+          backgroundColor={Colors.white}
+        >
+          <Box
+            height={50}
+            center
+            borderBottomWidth={0.5}
+            borderBottomColor={Colors.border}
+          >
+            <AppText fontSize={16} fontWeight={700}>
+              {t('home.story_options')}
+            </AppText>
+            <TouchableOpacity
+              onPress={closeOptionSheet}
+              style={styles.closeBtn}
+            >
+              <CloseSvg />
+            </TouchableOpacity>
+          </Box>
+          <Obx>
+            {() =>
+              !!state.selectedStory && (
+                <>
+                  <TouchableOpacity
+                    onPress={() => {
+                      closeOptionSheet()
+                      const media = state.selectedStory.medias[state.index]
+                      diaLogStore.showDiaLog({
+                        title: t('home.delete_story'),
+                        message: t('home.delete_story_confirm'),
+                        showCancelButton: true,
+                        onPress: () =>
+                          homeStore.deleteStory(media.story_id, media.media_id),
+                      })
+                    }}
+                    style={styles.optionBtn}
+                  >
+                    <RemoveSvg size={20} />
+                    <Padding left={14} />
+                    <AppText fontSize={16} fontWeight={500}>
+                      {t('home.delete_story')}
+                    </AppText>
+                  </TouchableOpacity>
+                </>
+              )
+            }
+          </Obx>
+        </Box>
+      </AppBottomSheet>
     </Container>
   )
 }
 
 export default StoryScreen
-const StoryPage = memo(
-  ({
-    story,
-    scrollX,
-    index,
-    isActive,
-    onNextPage,
-    onPrevPage,
-    onOpenOption,
-  }) => {
+const StoryPage = forwardRef(
+  (
+    { story, scrollX, index, isActive, onNextPage, onPrevPage, onOpenOption },
+    ref,
+  ) => {
     const controlAnim = useSharedValue(1)
     const indexAnim = useSharedValue(-1)
     const inputRange = [screenWidth * (index - 1), screenWidth * (index + 1)]
@@ -132,6 +221,10 @@ const StoryPage = memo(
         isFinished => isFinished && runOnJS(callback)(),
       )
     }
+    useImperativeHandle(ref, () => ({
+      pause: () => (indexAnim.value = indexAnim.value),
+      resume: animateIndex,
+    }))
     useEffect(() => {
       if (isActive) {
         animateIndex()
@@ -268,7 +361,7 @@ const StoryPage = memo(
                 </View>
                 <Padding left={12}>
                   <AppText fontWeight={700} color={Colors.white}>
-                    {story.posted_by.user_id}
+                    {story.posted_by.user_name}
                   </AppText>
                   <AppText color={Colors.white50}>4h ago</AppText>
                 </Padding>
@@ -360,5 +453,23 @@ const styles = XStyleSheet.create({
   indicator: {
     height: 4,
     backgroundColor: Colors.white,
+  },
+  optionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  sheetHeader: {
+    opacity: 0,
+  },
+  closeBtn: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    height: 50,
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })

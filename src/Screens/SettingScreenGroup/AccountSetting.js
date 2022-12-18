@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 const AccountSetting = () => {
   const { t } = useTranslation()
   return (
-    <Container safeAreaColor={Colors.white} style={styles.rootView}>
+    <Container safeAreaColor={Colors.gray} style={styles.rootView}>
       <AppBar title={t('setting.account')} />
     </Container>
   )

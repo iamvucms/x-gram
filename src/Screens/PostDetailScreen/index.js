@@ -63,10 +63,10 @@ const PostDetailScreen = ({ route }) => {
         const post = findPostById(postId)
         if (post) {
           state.setPost(post)
-
           state.setLoading(false)
         } else {
           await flowResult(homeStore.fetchAndAddAdditionalPosts(postId))
+          state.setLoading(false)
         }
       })
     })

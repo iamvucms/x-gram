@@ -98,7 +98,16 @@ const HomeScreen = () => {
           <Animated.FlatList
             initialNumToRender={2}
             bounces={false}
-            ListHeaderComponent={<StoryBar scrollY={scrollY} />}
+            ListHeaderComponent={
+              <Obx>
+                {() => (
+                  <StoryBar
+                    stories={homeStore.stories.slice()}
+                    scrollY={scrollY}
+                  />
+                )}
+              </Obx>
+            }
             scrollEventThrottle={16}
             onScroll={scrollHandler}
             data={homeStore.posts.slice()}

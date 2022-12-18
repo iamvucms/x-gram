@@ -139,6 +139,12 @@ export default {
     privacy_private_desc: 'Only you can see this post',
     privacy_followers_desc: 'Only your followers can see this post',
     update_privacy: 'Update Privacy',
+    sent_an_image: 'sent an image',
+    story_options: "Story's Options",
+    delete_story: 'Delete Story',
+    report_story: 'Report Story',
+    share_story: 'Share Story',
+    delete_story_confirm: 'Are you sure you want to delete this story?',
   },
   mediaPicker: {
     select_photo: 'Select Photo',
@@ -273,6 +279,7 @@ export default {
     following: 'Following',
     followers: 'Followers',
     view_more: 'View More',
+    bio_not_available: 'Bio not available',
   },
   follow: {
     title: 'Following & Followers',

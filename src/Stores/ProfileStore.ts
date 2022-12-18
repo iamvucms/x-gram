@@ -8,7 +8,7 @@ export default class ProfileStore {
   fetching = false
   posts: Post[] = []
   followers: User[] = []
-  followings: User[] = []
+  following: User[] = []
   loadingPosts = false
   loadingMorePosts = false
   postPage = 1
@@ -19,13 +19,17 @@ export default class ProfileStore {
     try {
       this.profileInfo.user_id = userId
       // fetch user info
-      const { data } = yield getUserInfo(this.profileInfo.user_id)
-      throw new Error('test')
+      const response = yield getUserInfo(this.profileInfo.user_id)
+      if (response?.status === 'OK') {
+        this.profileInfo = response.data
+        this.followers = response.data.followers
+        this.following = response.data.following
+      }
       // fetch following
     } catch (e) {
       this.profileInfo =
         mockUsers.find(u => u.user_id === userId) || mockUsers[1]
-      this.followings = mockUsers.slice(1, 5)
+      this.following = mockUsers.slice(1, 5)
       this.followers = mockUsers.slice(1, 5)
       this.posts = mockPosts
       console.log({
@@ -40,16 +44,18 @@ export default class ProfileStore {
       } else {
         this.loadingMorePosts = true
       }
-      const { data } = yield getUserPosts(
+      const response = yield getUserPosts(
         this.profileInfo.user_id,
         this.postPage,
       )
-      if (!loadMore) {
-        this.posts = data
-      } else {
-        this.posts = [...this.posts, ...data]
+      if (response?.status === 'OK') {
+        if (!loadMore) {
+          this.posts = response.data
+        } else {
+          this.posts = [...this.posts, ...response.data]
+        }
+        this.postPage += 1
       }
-      this.postPage += 1
     } catch (e) {
       console.log({
         fetchPosts: e,

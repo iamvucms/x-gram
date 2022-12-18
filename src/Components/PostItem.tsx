@@ -103,7 +103,7 @@ const PostItem = ({
       state.setImageIndex(0)
       pageAnim.value = withTiming(0)
     }
-  }, [])
+  }, [post.medias.length])
 
   const renderIndicatorItem = useCallback((_, index) => {
     return <IndicatorItem pageAnim={pageAnim} key={index} index={index} />
@@ -276,40 +276,34 @@ const PostItem = ({
           </View>
         )}
       </View>
-      {!preview && (
-        <Pressable onLongPress={onOptionPress} onPress={onPress}>
-          <Box marginTop={14}>
-            <AppText
-              regexMetion
-              onMentionPress={onMentionPress}
-              lineHeight={18}
-            >
-              <AppText lineHeight={18} fontWeight={700}>
-                {post.posted_by.user_id}
-              </AppText>{' '}
-              {post.message}
-            </AppText>
-            {!showDetail && post.comments.length > 0 && (
-              <Padding top={8}>
-                {post.comments.slice(-2).map(comment => (
-                  <AppText
-                    key={comment.comment_id}
-                    regexMetion
-                    onMentionPress={onMentionPress}
-                    numberOfLines={1}
-                    lineHeight={18}
-                  >
-                    <AppText numberOfLines={1} lineHeight={18} fontWeight={700}>
-                      {comment.commented_by.user_id}
-                    </AppText>{' '}
-                    {comment.comment}
-                  </AppText>
-                ))}
-              </Padding>
-            )}
-          </Box>
-        </Pressable>
-      )}
+      <Pressable onLongPress={onOptionPress} onPress={onPress}>
+        <Box marginTop={14}>
+          <AppText regexMetion onMentionPress={onMentionPress} lineHeight={18}>
+            <AppText lineHeight={18} fontWeight={700}>
+              {post.posted_by.user_name}
+            </AppText>{' '}
+            {post.message}
+          </AppText>
+          {!showDetail && !preview && post.comments.length > 0 && (
+            <Padding top={8}>
+              {post.comments.slice(-2).map(comment => (
+                <AppText
+                  key={comment.comment_id}
+                  regexMetion
+                  onMentionPress={onMentionPress}
+                  numberOfLines={1}
+                  lineHeight={18}
+                >
+                  <AppText numberOfLines={1} lineHeight={18} fontWeight={700}>
+                    {comment.commented_by.user_name}
+                  </AppText>{' '}
+                  {comment.is_image ? t('home.sent_an_image') : comment.comment}
+                </AppText>
+              ))}
+            </Padding>
+          )}
+        </Box>
+      </Pressable>
       {!preview && !showDetail && (
         <TouchableOpacity onPress={onCommentPress} style={styles.commentBar}>
           <AppImage

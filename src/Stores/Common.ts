@@ -5,6 +5,7 @@ import {
   sendDeletePost,
   sendPost,
   sendReactPost,
+  sendStory,
   sendUnReactPost,
   sendUpdatePost,
   updateComment,
@@ -132,7 +133,9 @@ export const updateCommentRequest = async (postId, commentId, message) => {
       comment: message,
       status: CommentStatus.UPDATING,
     })
-    const response = await updateComment(postId, commentId, message)
+    const response = await updateComment(postId, commentId, {
+      data: message,
+    })
     if (response.status === 'OK') {
       updatePostComment(postId, commentId, {
         status: CommentStatus.SENT,
@@ -200,6 +203,36 @@ export const reactRequest = async (postId, isUnReact) => {
     }
   } catch (e) {
     console.log({ reactRequestError: e })
+  }
+}
+export const createStory = async (medias, onDone) => {
+  try {
+    const uploadedMedias = await Promise.all(
+      medias.map(async m => {
+        const isVideo = m.uri.includes('video')
+        const response = isVideo
+          ? await uploadVideo(m.uri, m.mimeType)
+          : await uploadImage(m.uri, m.mimeType)
+        if (response.status === 'OK') {
+          const media = response.data[0]
+          return {
+            url: media.url,
+            is_video: isVideo,
+          }
+        } else {
+          throw new Error('Upload media error')
+        }
+      }),
+    )
+    const response = await sendStory({
+      medias: uploadedMedias,
+    })
+    if (response?.status === 'OK') {
+      homeStore.fetchStories()
+      onDone()
+    }
+  } catch (e) {
+    console.log({ createStoryError: e })
   }
 }
 export const createPost = async (message, medias, privacy, onDone) => {

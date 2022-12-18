@@ -2,7 +2,8 @@ import { generateRandomIntegerInRange } from '@/Utils'
 import { Gender, MessageStatus, NotificationType, PrivacyType } from './Enum'
 export const mockUsers = [
   {
-    user_id: 'username01',
+    user_id: '01',
+    user_name: 'username01',
     full_name: 'John Doe',
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
@@ -22,7 +23,8 @@ export const mockUsers = [
     gender: Gender.Male,
   },
   {
-    user_id: 'username02',
+    user_id: '02',
+    user_name: 'username02',
     full_name: 'Jane Doe',
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
@@ -42,7 +44,8 @@ export const mockUsers = [
     gender: Gender.Female,
   },
   {
-    user_id: 'username03',
+    user_id: '03',
+    user_name: 'username03',
     full_name: 'Jane Doe',
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
@@ -62,7 +65,8 @@ export const mockUsers = [
     gender: Gender.Female,
   },
   {
-    user_id: 'username04',
+    user_id: '04',
+    user_name: 'username04',
     full_name: 'Jane Doe',
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
@@ -82,7 +86,8 @@ export const mockUsers = [
     gender: Gender.Female,
   },
   {
-    user_id: 'username05',
+    user_id: '05',
+    user_name: 'username05',
     full_name: 'Jane Doe',
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
@@ -102,7 +107,8 @@ export const mockUsers = [
     gender: Gender.Female,
   },
   {
-    user_id: 'username06',
+    user_id: '06',
+    user_name: 'username06',
     full_name: 'Jane Doe',
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
@@ -122,7 +128,8 @@ export const mockUsers = [
     gender: Gender.Female,
   },
   {
-    user_id: 'username07',
+    user_id: '07',
+    user_name: 'username07',
     full_name: 'Jane Doe',
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
@@ -142,7 +149,8 @@ export const mockUsers = [
     gender: Gender.Female,
   },
   {
-    user_id: 'username08',
+    user_id: '08',
+    user_name: 'username08',
     full_name: 'Jane Doe',
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
@@ -162,7 +170,8 @@ export const mockUsers = [
     gender: Gender.Female,
   },
   {
-    user_id: 'username09',
+    user_id: '09',
+    user_name: 'username09',
     full_name: 'Jane Doe',
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
@@ -182,7 +191,8 @@ export const mockUsers = [
     gender: Gender.Female,
   },
   {
-    user_id: 'username10',
+    user_id: '10',
+    user_name: 'username10',
     full_name: 'Jane Doe',
     avatar_url: `https://picsum.photos/${generateRandomIntegerInRange(
       300,
@@ -535,6 +545,7 @@ export const mockStories = [
     updated_at: new Date().getTime(),
     medias: [
       {
+        story_id: '1',
         media_id: '1',
         url:
           'https://picsum.photos/' +
@@ -546,6 +557,7 @@ export const mockStories = [
         created_at: new Date().getTime(),
       },
       {
+        story_id: '1',
         media_id: '2',
         url:
           'https://picsum.photos/' +
@@ -557,6 +569,7 @@ export const mockStories = [
         created_at: new Date().getTime(),
       },
       {
+        story_id: '1',
         media_id: '3',
         url:
           'https://picsum.photos/' +
@@ -576,6 +589,7 @@ export const mockStories = [
     updated_at: new Date().getTime(),
     medias: [
       {
+        story_id: '2',
         media_id: '1',
         url:
           'https://picsum.photos/' +
@@ -587,6 +601,7 @@ export const mockStories = [
         created_at: new Date().getTime(),
       },
       {
+        story_id: '2',
         media_id: '2',
         url:
           'https://picsum.photos/' +
@@ -606,6 +621,7 @@ export const mockStories = [
     updated_at: new Date().getTime(),
     medias: [
       {
+        story_id: '3',
         media_id: '1',
         url:
           'https://picsum.photos/' +
@@ -617,6 +633,7 @@ export const mockStories = [
         created_at: new Date().getTime(),
       },
       {
+        story_id: '3',
         media_id: '2',
         url:
           'https://picsum.photos/' +
@@ -636,6 +653,7 @@ export const mockStories = [
     updated_at: new Date().getTime(),
     medias: [
       {
+        story_id: '4',
         media_id: '1',
         url:
           'https://picsum.photos/' +
@@ -647,6 +665,7 @@ export const mockStories = [
         created_at: new Date().getTime(),
       },
       {
+        story_id: '4',
         media_id: '2',
         url:
           'https://picsum.photos/' +

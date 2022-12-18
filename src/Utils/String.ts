@@ -49,3 +49,19 @@ export const getNotificationText = (notification: Notification, t) => {
       return ''
   }
 }
+
+export const getImageMimeType = (uri: string) => {
+  if (uri.endsWith('.png')) {
+    return 'image/png'
+  }
+  if (uri.endsWith('.jpg')) {
+    return 'image/jpeg'
+  }
+  if (uri.endsWith('.jpeg')) {
+    return 'image/jpeg'
+  }
+  if (uri.endsWith('.gif')) {
+    return 'image/gif'
+  }
+  return 'image/jpeg'
+}

@@ -62,13 +62,13 @@ const CreatePost = ({ route }) => {
                 state.setMentionList(res.data.slice(0, 5))
               } else {
                 state.setMentionList(
-                  mockUsers.filter(u => u.user_id.includes(q[1])),
+                  mockUsers.filter(u => u.user_name.includes(q[1])),
                 )
               }
             })
             .catch(() => {
               state.setMentionList(
-                mockUsers.filter(u => u.user_id.includes(q[1])),
+                mockUsers.filter(u => u.user_name.includes(q[1])),
               )
             })
         } else {
@@ -82,7 +82,7 @@ const CreatePost = ({ route }) => {
     }
   }, [])
   const onMentionUserPress = user => {
-    state.setMessage(state.message.replace(/@(\w*)$/, `@${user.user_id} `))
+    state.setMessage(state.message.replace(/@(\w*)$/, `@${user.user_name} `))
   }
   const onPostPress = async () => {
     state.setCreating(true)
@@ -94,7 +94,7 @@ const CreatePost = ({ route }) => {
   const closePrivacySheet = () => privacySheetRef.current?.close?.()
   const { bottom } = useSafeAreaInsets()
   return (
-    <Container style={styles.rootView}>
+    <Container safeAreaColor={Colors.gray} style={styles.rootView}>
       <AppBar title={t('createPost.create_post')} />
       <Box fill>
         <KeyboardAwareScrollView
@@ -175,7 +175,7 @@ const CreatePost = ({ route }) => {
                       <TouchableOpacity
                         onPress={() => onMentionUserPress(user)}
                         style={styles.mentionUserBtn}
-                        key={user.user_id}
+                        key={user.user_name}
                       >
                         <AppImage
                           source={{

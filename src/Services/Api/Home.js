@@ -30,3 +30,6 @@ export const sendUpdatePost = (id, data) =>
   request(Endpoint().updatePost(id), Method.POST, data)
 export const sendDeletePost = id =>
   request(Endpoint().deletePost(id), Method.DELETE)
+
+export const sendStory = data =>
+  request(Endpoint().createStory, Method.POST, data)

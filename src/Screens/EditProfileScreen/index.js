@@ -31,7 +31,6 @@ import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { View } from 'react-native'
-import FastImage from 'react-native-fast-image'
 
 const EditProfileScreen = ({ navigation }) => {
   const { t } = useTranslation()
@@ -39,23 +38,23 @@ const EditProfileScreen = ({ navigation }) => {
 
   const state = useLocalObservable(() => ({
     fullName: userStore.userInfo.full_name,
-    userId: userStore.userInfo.user_id,
+    username: userStore.userInfo.user_name,
     bio: userStore.userInfo.bio,
     website: '',
     websites: toJS(userStore.userInfo.websites) || [],
     errorFullName: '',
     errorBio: '',
     errorWebsite: '',
-    errorUserId: '',
+    errorUsername: '',
     updating: false,
     setFullName: value => (state.fullName = value),
     setBio: value => (state.bio = value),
     setWebsite: value => (state.website = value),
-    setUserId: value => (state.userId = value),
+    setUsername: value => (state.username = value),
     setErrorFullName: value => (state.errorFullName = value),
     setErrorBio: value => (state.errorBio = value),
     setErrorWebsite: value => (state.errorWebsite = value),
-    setErrorUserId: value => (state.errorUserId = value),
+    setErrorUsername: value => (state.errorUsername = value),
     setWebsites: value => (state.websites = value),
     setUpdating: value => (state.updating = value),
     addWebsite: () => {
@@ -79,18 +78,17 @@ const EditProfileScreen = ({ navigation }) => {
       state.setErrorFullName('')
       state.setErrorBio('')
       state.setErrorWebsite('')
-      state.setErrorUserId('')
+      state.setErrorUsername('')
     },
     get isValid() {
       return (
         state.errorFullName === '' &&
         state.errorBio === '' &&
-        state.errorUserId === '' &&
+        state.errorUsername === '' &&
         state.fullName !== '' &&
-        state.userId !== '' &&
-        (state.userId !== userStore.userInfo.user_id ||
+        state.username !== '' &&
+        (state.username !== userStore.userInfo.user_name ||
           state.fullName !== userStore.userInfo.full_name ||
-          state.bio !== userStore.userInfo.bio ||
           !compareTwoStringArray(
             toJS(state.websites),
             toJS(userStore.userInfo.websites),
@@ -134,7 +132,7 @@ const EditProfileScreen = ({ navigation }) => {
     const updateData = {
       full_name: state.fullName,
       bio: state.bio,
-      user_id: state.userId,
+      user_name: state.username,
       websites: state.websites,
     }
     await flowResult(userStore.updateUserInfo(updateData))
@@ -224,10 +222,10 @@ const EditProfileScreen = ({ navigation }) => {
               {() => (
                 <AppInput
                   fontWeight={500}
-                  value={state.userId}
+                  value={state.username}
                   onChangeText={txt => {
-                    state.setUserId(txt)
-                    state.setErrorUserId(validateUserName(txt))
+                    state.setUsername(txt)
+                    state.setErrorUsername(validateUserName(txt))
                   }}
                   placeholder={t('auth.user_name_placeholder')}
                   placeholderTextColor={Colors.placeholder}
@@ -236,7 +234,9 @@ const EditProfileScreen = ({ navigation }) => {
             </Obx>
           </View>
           <Obx>
-            {() => state.errorUserId && <ErrorLabel text={state.errorUserId} />}
+            {() =>
+              state.errorUsername && <ErrorLabel text={state.errorUsername} />
+            }
           </Obx>
         </Box>
         <Box marginHorizontal={16} marginBottom={16}>
@@ -310,7 +310,7 @@ const EditProfileScreen = ({ navigation }) => {
           radius={0}
           spaceBetween
           textColor={Colors.primary}
-          svgIcon={<ChevronRightSvg color={Colors.primary} />}
+          svgIcon={<ChevronRightSvg size={12} color={Colors.primary} />}
         />
         <AppButton
           onPress={() => {
@@ -322,7 +322,7 @@ const EditProfileScreen = ({ navigation }) => {
           radius={0}
           spaceBetween
           textColor={Colors.primary}
-          svgIcon={<ChevronRightSvg color={Colors.primary} />}
+          svgIcon={<ChevronRightSvg size={12} color={Colors.primary} />}
         />
         <Box height={300} />
       </BottomSheetScrollView>

@@ -10,6 +10,7 @@ import {
 import { PageName } from '@/Config'
 import { CreateType, MediaType, mockStories } from '@/Models'
 import { navigate } from '@/Navigators'
+import { createStory } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { memo, useCallback, useEffect, useMemo } from 'react'
@@ -80,10 +81,11 @@ const StoryBar = ({ stories = mockStories, scrollY }) => {
     navigate(PageName.HomeScreen)
     state.setUploading(true)
     state.setUploadingMedias(medias)
-    //TODO create story
-
-    // state.setUploading(false)
-    // state.setUploadingMedias([])
+    createStory(medias, () => {
+      console.log(medias)
+      state.setUploading(false)
+      state.setUploadingMedias([])
+    })
   }
 
   const CreateButton = useMemo(() => {
@@ -215,7 +217,7 @@ const StoryItem = memo(({ story, index, scrollY, onPress }) => {
       <Padding top={7} />
       <Animated.View style={nameStyle}>
         <AppText align="center" color={Colors.white}>
-          {story.posted_by.user_id}
+          {story.posted_by.user_name}
         </AppText>
       </Animated.View>
     </View>

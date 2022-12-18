@@ -30,7 +30,7 @@ const PrivacySetting = () => {
     }
   }, [])
   return (
-    <Container safeAreaColor={Colors.white} style={styles.rootView}>
+    <Container safeAreaColor={Colors.gray} style={styles.rootView}>
       <Box backgroundColor={Colors.white}>
         <AppBar title={t('setting.passcode')} />
       </Box>
