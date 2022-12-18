@@ -33,7 +33,7 @@ const StoryBar = ({ stories = mockStories, scrollY }) => {
   useEffect(() => {}, [])
   const renderStoryItem = useCallback(({ item, index }) => {
     const onPress = () => {
-      navigate(PageName.StoryScreen, { story: item })
+      navigate(PageName.StoryScreen, { storyId: item.story_id })
     }
     return (
       <StoryItem

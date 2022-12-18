@@ -1,11 +1,40 @@
-import { CloseSvg, DotsSvg, StoryGradientBorderSvg } from '@/Assets/Svg'
-import { AppImage, AppText, Container, Obx, Padding, Row } from '@/Components'
-import { mockStories } from '@/Models'
+import {
+  CloseSvg,
+  DotsSvg,
+  ReportSvg,
+  SendSvg,
+  ShareSvg,
+  StoryGradientBorderSvg,
+  TrashBinSvg,
+} from '@/Assets/Svg'
+import {
+  AppBottomSheet,
+  AppImage,
+  AppInput,
+  AppText,
+  Box,
+  Container,
+  KeyboardSpacer,
+  Obx,
+  Padding,
+  Row,
+  ShareBottomSheet,
+} from '@/Components'
+import { ShareType } from '@/Models'
 import { goBack } from '@/Navigators'
-import { Colors, screenHeight, screenWidth, XStyleSheet } from '@/Theme'
+import { diaLogStore, homeStore, userStore } from '@/Stores'
+import { Colors, Layout, XStyleSheet, screenHeight, screenWidth } from '@/Theme'
 import { getHitSlop } from '@/Utils'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { memo, useCallback, useEffect, useRef } from 'react'
+import React, {
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from 'react'
+import { useTranslation } from 'react-i18next'
 import { Pressable, TouchableOpacity, View } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import Animated, {
@@ -13,6 +42,7 @@ import Animated, {
   Extrapolation,
   interpolate,
   runOnJS,
+  useAnimatedKeyboard,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
@@ -20,26 +50,42 @@ import Animated, {
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-const StoryScreen = () => {
+const StoryScreen = ({ route }) => {
+  const { storyId } = route?.params || {}
+  const defaultIndex = homeStore.stories.findIndex(
+    item => item.story_id === storyId,
+  )
+  const optionRef = useRef()
   const listRef = useRef()
+  const pageRefs = useRef([])
+  const { t } = useTranslation()
   const scrollX = useSharedValue(0)
   const state = useLocalObservable(() => ({
-    stories: mockStories,
-    index: 0,
+    index: defaultIndex,
+    selectedStory: null,
+    shareSheetVisible: false,
     setIndex: index => (state.index = index),
     isActive: index => state.index === index,
+    setSelectedStory: story => (state.selectedStory = story),
+    setShareSheetVisible: visible => (state.shareSheetVisible = visible),
   }))
   const renderStoryPageItem = useCallback(({ item, index }) => {
     return (
       <Obx>
         {() => (
           <StoryPage
+            ref={ref => (pageRefs.current[index] = ref)}
             isActive={state.isActive(index)}
             scrollX={scrollX}
             story={item}
             index={index}
+            onOpenOption={() => {
+              pageRefs.current[index]?.pause?.()
+              state.setSelectedStory(item)
+              optionRef.current?.snapTo?.(0)
+            }}
             onNextPage={() => {
-              if (state.index < state.stories.length - 1) {
+              if (state.index < homeStore.stories.length - 1) {
                 listRef.current?.scrollToIndex({ index: index + 1 })
                 state.setIndex(index + 1)
               }
@@ -60,6 +106,10 @@ const StoryScreen = () => {
       scrollX.value = event.contentOffset.x
     },
   })
+  const closeOptionSheet = () => {
+    optionRef.current?.close?.()
+    pageRefs.current[state.index]?.resume?.()
+  }
   const onScrollEnd = event => {
     const index = Math.round(event.nativeEvent.contentOffset.x / screenWidth)
     state.setIndex(index)
@@ -69,33 +119,140 @@ const StoryScreen = () => {
       <Obx>
         {() => (
           <Animated.FlatList
+            initialScrollIndex={defaultIndex}
+            onScrollToIndexFailed={() => {
+              setTimeout(() => {
+                listRef.current?.scrollToIndex({ index: defaultIndex })
+              }, 500)
+            }}
             ref={listRef}
             onScroll={scrollHandler}
             onMomentumScrollEnd={onScrollEnd}
             horizontal
             pagingEnabled
-            data={state.stories.slice()}
+            data={homeStore.stories.slice()}
             renderItem={renderStoryPageItem}
             keyExtractor={item => item.story_id}
             showsHorizontalScrollIndicator={false}
           />
         )}
       </Obx>
+      <AppBottomSheet
+        backgroundStyle={styles.sheetHeader}
+        ref={optionRef}
+        snapPoints={[screenHeight * 0.3]}
+        handleIndicatorStyle={{ backgroundColor: Colors.white50 }}
+        onClose={closeOptionSheet}
+      >
+        <Box
+          topLeftRadius={16}
+          topRightRadius={16}
+          fill
+          backgroundColor={Colors.white}
+        >
+          <Box
+            height={50}
+            center
+            borderBottomWidth={0.5}
+            borderBottomColor={Colors.border}
+          >
+            <AppText fontSize={16} fontWeight={700}>
+              {t('home.story_options')}
+            </AppText>
+            <TouchableOpacity
+              onPress={closeOptionSheet}
+              style={styles.closeBtn}
+            >
+              <CloseSvg />
+            </TouchableOpacity>
+          </Box>
+          <Obx>
+            {() =>
+              !!state.selectedStory && (
+                <>
+                  <Obx>
+                    {() =>
+                      state.selectedStory.posted_by.user_id ===
+                      userStore.userInfo.user_id ? (
+                        <TouchableOpacity
+                          onPress={() => {
+                            closeOptionSheet()
+                            const media =
+                              state.selectedStory.medias[state.index]
+                            diaLogStore.showDiaLog({
+                              title: t('home.delete_story'),
+                              message: t('home.delete_story_confirm'),
+                              showCancelButton: true,
+                              onPress: () =>
+                                homeStore.deleteStory(
+                                  media.story_id,
+                                  media.media_id,
+                                ),
+                            })
+                          }}
+                          style={styles.optionBtn}
+                        >
+                          <TrashBinSvg size={20} />
+                          <Padding left={14} />
+                          <AppText fontSize={16} fontWeight={500}>
+                            {t('home.delete_story')}
+                          </AppText>
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={() => {}}
+                          style={styles.optionBtn}
+                        >
+                          <ReportSvg size={20} />
+                          <Padding left={14} />
+                          <AppText fontSize={16} fontWeight={500}>
+                            {t('home.report_story')}
+                          </AppText>
+                        </TouchableOpacity>
+                      )
+                    }
+                  </Obx>
+                  <TouchableOpacity
+                    onPress={() => {
+                      closeOptionSheet()
+                      state.setShareSheetVisible(true)
+                    }}
+                    style={styles.optionBtn}
+                  >
+                    <ShareSvg size={20} />
+                    <Padding left={14} />
+                    <AppText fontSize={16} fontWeight={500}>
+                      {t('home.share_story')}
+                    </AppText>
+                  </TouchableOpacity>
+                </>
+              )
+            }
+          </Obx>
+        </Box>
+      </AppBottomSheet>
+      <Obx>
+        {() =>
+          state.shareSheetVisible && (
+            <ShareBottomSheet
+              type={ShareType.Story}
+              data={state.selectedStory}
+              onClose={() => state.setShareSheetVisible(false)}
+            />
+          )
+        }
+      </Obx>
     </Container>
   )
 }
 
 export default StoryScreen
-const StoryPage = memo(
-  ({
-    story,
-    scrollX,
-    index,
-    isActive,
-    onNextPage,
-    onPrevPage,
-    onOpenOption,
-  }) => {
+const StoryPage = forwardRef(
+  (
+    { story, scrollX, index, isActive, onNextPage, onPrevPage, onOpenOption },
+    ref,
+  ) => {
+    const { t } = useTranslation()
     const controlAnim = useSharedValue(1)
     const indexAnim = useSharedValue(-1)
     const inputRange = [screenWidth * (index - 1), screenWidth * (index + 1)]
@@ -132,6 +289,10 @@ const StoryPage = memo(
         isFinished => isFinished && runOnJS(callback)(),
       )
     }
+    useImperativeHandle(ref, () => ({
+      pause: () => (indexAnim.value = indexAnim.value),
+      resume: animateIndex,
+    }))
     useEffect(() => {
       if (isActive) {
         animateIndex()
@@ -168,6 +329,18 @@ const StoryPage = memo(
             controlAnim.value,
             [0, 1],
             [-200, 0],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ],
+    }))
+    const bottomStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateY: interpolate(
+            controlAnim.value,
+            [0, 1],
+            [200, 0],
             Extrapolation.CLAMP,
           ),
         },
@@ -219,7 +392,7 @@ const StoryPage = memo(
         animateIndex()
       }
     }, [])
-    const { top } = useSafeAreaInsets()
+    const { top, bottom } = useSafeAreaInsets()
     return (
       <Pressable
         onPress={onPress}
@@ -268,7 +441,7 @@ const StoryPage = memo(
                 </View>
                 <Padding left={12}>
                   <AppText fontWeight={700} color={Colors.white}>
-                    {story.posted_by.user_id}
+                    {story.posted_by.user_name}
                   </AppText>
                   <AppText color={Colors.white50}>4h ago</AppText>
                 </Padding>
@@ -290,6 +463,41 @@ const StoryPage = memo(
               </Row>
             </Row>
           </Animated.View>
+          <View>
+            <Animated.View
+              style={[
+                styles.bottomControl,
+                bottomStyle,
+                {
+                  paddingBottom: bottom || 16,
+                },
+              ]}
+            >
+              <LinearGradient
+                colors={[Colors.transparent, Colors.black50]}
+                style={styles.shadowView}
+              />
+              <Box
+                row
+                align="center"
+                height={50}
+                radius={99}
+                borderWidth={1}
+                borderColor={Colors.white}
+                paddingHorizontal={6}
+              >
+                <AppInput
+                  placeholder={t('message_placeholder')}
+                  placeholderTextColor={Colors.white50}
+                  style={[Layout.fullHeight, Layout.fill]}
+                />
+                <TouchableOpacity style={styles.sendBtn}>
+                  <SendSvg size={16} color={Colors.white} />
+                </TouchableOpacity>
+              </Box>
+            </Animated.View>
+            <Padding />
+          </View>
         </Animated.View>
       </Pressable>
     )
@@ -335,6 +543,14 @@ const styles = XStyleSheet.create({
     top: 0,
     zIndex: 99,
   },
+  bottomControl: {
+    paddingHorizontal: 16,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 99,
+  },
   shadowView: {
     ...XStyleSheet.absoluteFillObject,
     zIndex: -1,
@@ -360,5 +576,31 @@ const styles = XStyleSheet.create({
   indicator: {
     height: 4,
     backgroundColor: Colors.white,
+  },
+  optionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  sheetHeader: {
+    opacity: 0,
+  },
+  closeBtn: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    height: 50,
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sendBtn: {
+    height: 36,
+    width: 36,
+    borderRadius: 18,
+    backgroundColor: Colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })

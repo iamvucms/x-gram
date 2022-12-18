@@ -1,5 +1,5 @@
 import { LinkSvg, SendSvg, ShareSvg, SmsSvg, WeChatSvg } from '@/Assets/Svg'
-import { mockUsers, ShareType } from '@/Models'
+import { mockUsers, Post, ShareType, Story, User } from '@/Models'
 import { AppFonts, Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
 import { isAndroid, isIOS } from '@/Utils'
 import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet'
@@ -12,13 +12,14 @@ import AppBottomSheet from './AppBottomSheet'
 import AppImage from './AppImage'
 import AppText from './AppText'
 import Box from './Box'
-
 interface ShareBottomSheetProps {
-  data: any
+  data: Post | Story
+  type: ShareType
   onClose: () => void
 }
 const ShareBottomSheet = forwardRef(
-  ({ data, onClose }: ShareBottomSheetProps, ref) => {
+  ({ data, onClose, type = ShareType.Post }: ShareBottomSheetProps, ref) => {
+    const isPost: boolean = type === ShareType.Post
     const { t } = useTranslation()
     const state = useLocalObservable(() => ({
       users: mockUsers,
@@ -26,7 +27,7 @@ const ShareBottomSheet = forwardRef(
       loading: true,
       setLoading: (loading: boolean) => (state.loading = loading),
       setMessage: (message: string) => (state.message = message),
-      setUsers: (users: any[]) => (state.users = users),
+      setUsers: (users: User[]) => (state.users = users),
       setSent: (user_id: string) => {
         const u = state.users.find(u => u.user_id === user_id)
         if (u) {
@@ -86,6 +87,7 @@ const ShareBottomSheet = forwardRef(
       Keyboard.dismiss()
       onClose && onClose()
     }, [])
+
     return (
       <AppBottomSheet
         onClose={_onClose}

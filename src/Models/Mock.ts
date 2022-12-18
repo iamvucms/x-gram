@@ -535,6 +535,7 @@ export const mockStories = [
     updated_at: new Date().getTime(),
     medias: [
       {
+        story_id: '1',
         media_id: '1',
         url:
           'https://picsum.photos/' +
@@ -546,6 +547,7 @@ export const mockStories = [
         created_at: new Date().getTime(),
       },
       {
+        story_id: '1',
         media_id: '2',
         url:
           'https://picsum.photos/' +
@@ -557,6 +559,7 @@ export const mockStories = [
         created_at: new Date().getTime(),
       },
       {
+        story_id: '1',
         media_id: '3',
         url:
           'https://picsum.photos/' +
@@ -576,6 +579,7 @@ export const mockStories = [
     updated_at: new Date().getTime(),
     medias: [
       {
+        story_id: '2',
         media_id: '1',
         url:
           'https://picsum.photos/' +
@@ -587,6 +591,7 @@ export const mockStories = [
         created_at: new Date().getTime(),
       },
       {
+        story_id: '2',
         media_id: '2',
         url:
           'https://picsum.photos/' +
@@ -606,6 +611,7 @@ export const mockStories = [
     updated_at: new Date().getTime(),
     medias: [
       {
+        story_id: '3',
         media_id: '1',
         url:
           'https://picsum.photos/' +
@@ -617,6 +623,7 @@ export const mockStories = [
         created_at: new Date().getTime(),
       },
       {
+        story_id: '3',
         media_id: '2',
         url:
           'https://picsum.photos/' +
@@ -636,6 +643,7 @@ export const mockStories = [
     updated_at: new Date().getTime(),
     medias: [
       {
+        story_id: '4',
         media_id: '1',
         url:
           'https://picsum.photos/' +
@@ -647,6 +655,7 @@ export const mockStories = [
         created_at: new Date().getTime(),
       },
       {
+        story_id: '4',
         media_id: '2',
         url:
           'https://picsum.photos/' +
@@ -911,6 +920,7 @@ export type Message = typeof mockMessages[0]
 export type Conversation = typeof mockConversations[0]
 export type User = typeof mockUsers[0]
 export type Comment = typeof mockComments[0]
+export type Story = typeof mockStories[0]
 type PreNotification = typeof mockNotifications[0]
 export type Notification = PreNotification &
   (
