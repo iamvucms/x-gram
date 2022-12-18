@@ -10,7 +10,7 @@ import {
   Padding,
 } from '@/Components'
 import { PageName } from '@/Config'
-import { navigateAndReset } from '@/Navigators'
+import { goBack, navigateAndReset } from '@/Navigators'
 import { userStore } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
 import { useLocalObservable } from 'mobx-react-lite'
@@ -18,15 +18,23 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import ReactNativeBiometrics, { BiometryTypes } from 'react-native-biometrics'
 
-const AuthPassCodeScreen = () => {
+const AuthPassCodeScreen = ({ route }) => {
   const { t } = useTranslation()
+  const { callback, isSetupPasscode } = route?.params || {}
   const state = useLocalObservable(() => ({
     passcode: '',
     passcodeError: '',
     setPasscode: value => (state.passcode = value),
     setPasscodeError: value => (state.passcodeError = value),
   }))
-
+  const onNext = () => {
+    if (callback) {
+      callback(state.passcode)
+      goBack()
+    } else {
+      navigateAndReset([PageName.AuthStack], 0)
+    }
+  }
   const onKeyPress = value => {
     if (state.passcode.length >= 6) {
       return
@@ -34,9 +42,11 @@ const AuthPassCodeScreen = () => {
     state.setPasscodeError('')
     state.setPasscode(state.passcode + value)
     if (state.passcode.length === 6) {
-      if (state.passcode === userStore.passcode) {
+      if (isSetupPasscode) {
+        onNext && onNext()
+      } else if (state.passcode === userStore.passcode) {
         state.setPasscodeError('')
-        navigateAndReset([PageName.AuthStack], 0)
+        onNext()
       } else {
         state.setPasscodeError(t('auth.passcode_error'))
       }
@@ -56,7 +66,7 @@ const AuthPassCodeScreen = () => {
         promptMessage: t('auth.passlock_description'),
       })
       if (success) {
-        navigateAndReset([PageName.AuthStack], 0)
+        onNext()
       }
     }
   }
@@ -88,6 +98,7 @@ const AuthPassCodeScreen = () => {
         onRequestBioMetric={onFingerPrint}
         onPress={onKeyPress}
         onDel={onDel}
+        disabledID={isSetupPasscode}
       />
     </Container>
   )

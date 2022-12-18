@@ -28,6 +28,7 @@ import {
   LanguageSetting,
   AccountSetting,
   PrivacySetting,
+  PassCodeSetting,
 } from '@/Screens'
 import { Colors } from '@/Theme'
 import { NavigationContainer } from '@react-navigation/native'
@@ -136,6 +137,14 @@ const AuthStack = () => {
       />
       <Stack.Screen name={PageName.AccountSetting} component={AccountSetting} />
       <Stack.Screen name={PageName.PrivacySetting} component={PrivacySetting} />
+      <Stack.Screen
+        name={PageName.AuthPassCodeScreen}
+        component={AuthPassCodeScreen}
+      />
+      <Stack.Screen
+        name={PageName.PassCodeSetting}
+        component={PassCodeSetting}
+      />
     </Stack.Navigator>
   )
 }

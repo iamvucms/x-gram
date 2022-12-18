@@ -20,8 +20,8 @@ export default class UserStore {
   userInfo: User = {} as User
   followings: User[] = []
   followers: User[] = []
-  passcode = '123456'
-  passcodeEnabled = true
+  passcode = ''
+  passcodeEnabled = false
   bookmarkPosts: Post[] = []
   blockedUsers: User[] = []
   hiddenCommentIds = {}

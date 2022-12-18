@@ -1,6 +1,8 @@
-import { CheckSvg, ChevronRightSvg, LockSvg } from '@/Assets/Svg'
-import { AppBar, AppText, Box, Container, Obx, Row } from '@/Components'
-import { appStore } from '@/Stores'
+import { ChevronRightSvg, LockSvg } from '@/Assets/Svg'
+import { AppBar, AppText, Box, Container, Row } from '@/Components'
+import { PageName } from '@/Config'
+import { navigate, navigateReplace } from '@/Navigators'
+import { userStore } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
 import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -12,13 +14,22 @@ const PrivacySetting = () => {
       {
         title: t('setting.passcode'),
         icon: <LockSvg size={18} />,
+        onPress: () => {
+          if (userStore.passcodeEnabled) {
+            navigate(PageName.AuthPassCodeScreen, {
+              callback: () => navigateReplace(PageName.PassCodeSetting),
+            })
+          } else {
+            navigate(PageName.PassCodeSetting)
+          }
+        },
       },
     ],
     [t],
   )
   const renderSubSettingItem = useCallback(({ item }) => {
     return (
-      <TouchableOpacity style={styles.subSettingView}>
+      <TouchableOpacity onPress={item.onPress} style={styles.subSettingView}>
         <Row>
           <Box size={44} center>
             {item.icon}

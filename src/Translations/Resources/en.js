@@ -297,5 +297,6 @@ export default {
     passcode_note: 'Passcode will be required to open the app',
     enable_passcode: 'Enable Passcode',
     logout_confirm: 'Are you sure you want to logout?',
+    biometrics_enable: 'Enable Biometrics',
   },
 }

@@ -5,11 +5,17 @@ import React, { memo, useCallback } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import AppText from './AppText'
 interface KeyboardProps {
+  disabledID?: boolean
   onPress: (value: string) => void
   onRequestBioMetric: () => void
   onDel: () => void
 }
-const Keyboard = ({ onPress, onRequestBioMetric, onDel }: KeyboardProps) => {
+const Keyboard = ({
+  disabledID,
+  onPress,
+  onRequestBioMetric,
+  onDel,
+}: KeyboardProps) => {
   const renderKeyboardItem = useCallback(item => {
     const _onPress = () => {
       if (item.value === 'finger_print') {
@@ -20,8 +26,14 @@ const Keyboard = ({ onPress, onRequestBioMetric, onDel }: KeyboardProps) => {
         onPress && onPress(item.value)
       }
     }
+    const isHidden = disabledID && item.value === 'finger_print'
     return (
-      <TouchableOpacity key={item.value} onPress={_onPress} style={styles.cell}>
+      <TouchableOpacity
+        disabled={isHidden}
+        key={item.value}
+        onPress={_onPress}
+        style={[styles.cell, isHidden && { opacity: 0 }]}
+      >
         {item.value === 'finger_print' ? (
           <FingerPrintSvg size={40} />
         ) : item.value === 'backspace' ? (
