@@ -1,16 +1,52 @@
-import { ChevronRightSvg, LockSvg } from '@/Assets/Svg'
-import { AppBar, AppText, Box, Container, Row } from '@/Components'
+import { ChevronRightSvg, GlobalSvg, LockSvg } from '@/Assets/Svg'
+import {
+  AppBar,
+  AppText,
+  Box,
+  Container,
+  Obx,
+  Padding,
+  Row,
+} from '@/Components'
 import { PageName } from '@/Config'
+import { PrivacyType } from '@/Models'
 import { navigate, navigateReplace } from '@/Navigators'
 import { userStore } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
 import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatList, TouchableOpacity } from 'react-native'
+import { FlatList, TouchableOpacity, View } from 'react-native'
 const PrivacySetting = () => {
   const { t } = useTranslation()
   const subSettings = useMemo(
     () => [
+      {
+        title: t('auth.default_privacy'),
+        desc: t('auth.default_privacy_desc'),
+        icon: <GlobalSvg size={18} />,
+        rightComponent: (
+          <Obx>
+            {() => (
+              <AppText fontWeight={600} fontSize={12} color={Colors.primary}>
+                {userStore.defaultPrivacyType === PrivacyType.Public
+                  ? t('home.privacy_public')
+                  : userStore.defaultPrivacyType === PrivacyType.Followers
+                  ? t('home.privacy_followers')
+                  : t('home.privacy_private')}
+              </AppText>
+            )}
+          </Obx>
+        ),
+        onPress: () => {
+          if (userStore.defaultPrivacyType === PrivacyType.Public) {
+            userStore.setDefaultPrivacyType(PrivacyType.Followers)
+          } else if (userStore.defaultPrivacyType === PrivacyType.Followers) {
+            userStore.setDefaultPrivacyType(PrivacyType.Private)
+          } else {
+            userStore.setDefaultPrivacyType(PrivacyType.Public)
+          }
+        },
+      },
       {
         title: t('setting.passcode'),
         icon: <LockSvg size={18} />,
@@ -34,11 +70,26 @@ const PrivacySetting = () => {
           <Box size={44} center>
             {item.icon}
           </Box>
-          <AppText fontSize={16} fontWeight={500}>
-            {item.title}
-          </AppText>
+          <View>
+            <AppText fontSize={16} fontWeight={500}>
+              {item.title}
+            </AppText>
+            {!!item.desc && (
+              <AppText fontSize={10} lineHeight={12} color={Colors.black50}>
+                {item.desc}
+              </AppText>
+            )}
+          </View>
         </Row>
-        <ChevronRightSvg color={Colors.k8E8E8E} size={12} />
+        <Row>
+          {item.rightComponent ? (
+            <>
+              {item.rightComponent}
+              <Padding left={4} />
+            </>
+          ) : null}
+          <ChevronRightSvg color={Colors.k8E8E8E} size={12} />
+        </Row>
       </TouchableOpacity>
     )
   }, [])

@@ -33,14 +33,31 @@ import {
 import { Colors } from '@/Theme'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useEffect } from 'react'
 import BottomTab from './BottomTab'
-import { navigationRef, screenOptions } from './NavigationUtils'
+import {
+  navigate,
+  navigateReplace,
+  navigationRef,
+  screenOptions,
+} from './NavigationUtils'
+import { userStore } from '@/Stores'
 const Stack = createNativeStackNavigator()
 const Application = () => {
+  useEffect(() => {}, [])
   const { NavigationTheme } = useAppTheme()
   return (
-    <NavigationContainer theme={NavigationTheme} ref={navigationRef}>
+    <NavigationContainer
+      theme={NavigationTheme}
+      ref={ref => {
+        navigationRef.current = ref
+        if (userStore.isLogged && userStore.passcodeEnabled) {
+          navigate(PageName.AuthPassCodeScreen, {
+            callback: () => navigateReplace(PageName.HomeTab),
+          })
+        }
+      }}
+    >
       <Stack.Navigator
         initialRouteName={PageName.OnboardingScreen}
         screenOptions={screenOptions}

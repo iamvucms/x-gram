@@ -10,7 +10,7 @@ import {
   Padding,
 } from '@/Components'
 import { PageName } from '@/Config'
-import { goBack, navigateAndReset } from '@/Navigators'
+import { navigateAndReset } from '@/Navigators'
 import { userStore } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
 import { useLocalObservable } from 'mobx-react-lite'
@@ -30,7 +30,6 @@ const AuthPassCodeScreen = ({ route }) => {
   const onNext = () => {
     if (callback) {
       callback(state.passcode)
-      goBack()
     } else {
       navigateAndReset([PageName.AuthStack], 0)
     }
@@ -76,7 +75,11 @@ const AuthPassCodeScreen = ({ route }) => {
       <Box fill center>
         <LockSvg size={50} />
         <Padding top={25} />
-        <AppText fontSize={16}>{t('auth.passlock_title')}</AppText>
+        <AppText fontSize={16}>
+          {t(
+            isSetupPasscode ? 'auth.new_passlock_title' : 'auth.passlock_title',
+          )}
+        </AppText>
         <Padding top={50} />
         <Obx>
           {() => (
@@ -94,12 +97,16 @@ const AuthPassCodeScreen = ({ route }) => {
           }
         </Obx>
       </Box>
-      <Keyboard
-        onRequestBioMetric={onFingerPrint}
-        onPress={onKeyPress}
-        onDel={onDel}
-        disabledID={isSetupPasscode}
-      />
+      <Obx>
+        {() => (
+          <Keyboard
+            onRequestBioMetric={onFingerPrint}
+            onPress={onKeyPress}
+            onDel={onDel}
+            disabledID={isSetupPasscode || !userStore.biometricEnabled}
+          />
+        )}
+      </Obx>
     </Container>
   )
 }

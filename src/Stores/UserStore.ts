@@ -1,4 +1,4 @@
-import { mockPosts, mockUsers, Post, User } from '@/Models'
+import { mockPosts, mockUsers, Post, PrivacyType, User } from '@/Models'
 import {
   blockUser,
   followUser,
@@ -22,6 +22,8 @@ export default class UserStore {
   followers: User[] = []
   passcode = ''
   passcodeEnabled = false
+  biometricEnabled = false
+  defaultPrivacyType = PrivacyType.Public
   bookmarkPosts: Post[] = []
   blockedUsers: User[] = []
   hiddenCommentIds = {}
@@ -248,6 +250,12 @@ export default class UserStore {
   setPasscode(passcode) {
     this.passcode = passcode
     this.passcodeEnabled = true
+  }
+  setBiometricEnabled(enabled) {
+    this.biometricEnabled = enabled
+  }
+  setDefaultPrivacyType(privacy: PrivacyType) {
+    this.defaultPrivacyType = privacy
   }
   disablePasscode() {
     this.passcodeEnabled = false

@@ -14,7 +14,6 @@ import {
   AppText,
   Box,
   Container,
-  KeyboardSpacer,
   Obx,
   Padding,
   Row,
@@ -25,6 +24,7 @@ import { goBack } from '@/Navigators'
 import { diaLogStore, homeStore, userStore } from '@/Stores'
 import { Colors, Layout, XStyleSheet, screenHeight, screenWidth } from '@/Theme'
 import { getHitSlop } from '@/Utils'
+import { useKeyboard } from '@react-native-community/hooks'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, {
   forwardRef,
@@ -35,17 +35,18 @@ import React, {
   useRef,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Pressable, TouchableOpacity, View } from 'react-native'
+import { Pressable, ScrollView, TouchableOpacity, View } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import Animated, {
   Easing,
   Extrapolation,
   interpolate,
   runOnJS,
-  useAnimatedKeyboard,
   useAnimatedScrollHandler,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
+  withSpring,
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -79,6 +80,7 @@ const StoryScreen = ({ route }) => {
             scrollX={scrollX}
             story={item}
             index={index}
+            onReply={() => {}}
             onOpenOption={() => {
               pageRefs.current[index]?.pause?.()
               state.setSelectedStory(item)
@@ -214,7 +216,6 @@ const StoryScreen = ({ route }) => {
                   </Obx>
                   <TouchableOpacity
                     onPress={() => {
-                      closeOptionSheet()
                       state.setShareSheetVisible(true)
                     }}
                     style={styles.optionBtn}
@@ -237,7 +238,10 @@ const StoryScreen = ({ route }) => {
             <ShareBottomSheet
               type={ShareType.Story}
               data={state.selectedStory}
-              onClose={() => state.setShareSheetVisible(false)}
+              onClose={() => {
+                state.setShareSheetVisible(false)
+                closeOptionSheet()
+              }}
             />
           )
         }
@@ -249,7 +253,16 @@ const StoryScreen = ({ route }) => {
 export default StoryScreen
 const StoryPage = forwardRef(
   (
-    { story, scrollX, index, isActive, onNextPage, onPrevPage, onOpenOption },
+    {
+      story,
+      scrollX,
+      index,
+      isActive,
+      onNextPage,
+      onPrevPage,
+      onOpenOption,
+      onReply,
+    },
     ref,
   ) => {
     const { t } = useTranslation()
@@ -258,8 +271,20 @@ const StoryPage = forwardRef(
     const inputRange = [screenWidth * (index - 1), screenWidth * (index + 1)]
     const state = useLocalObservable(() => ({
       index: 0,
+      replyMessage: '',
       setIndex: value => (state.index = value),
+      setReplyMessage: value => (state.replyMessage = value),
     }))
+    const { keyboardHeight, keyboardShown } = useKeyboard()
+    const keyboard = useDerivedValue(
+      () =>
+        !isActive
+          ? 0
+          : (keyboardShown ? withSpring : withTiming)(
+              keyboardShown ? keyboardHeight : 0,
+            ),
+      [keyboardHeight, keyboardShown, isActive],
+    )
     const indicatorWidth =
       (screenWidth - 32 - 5 * (story.medias.length - 1)) / story.medias.length
     const animateIndex = () => {
@@ -346,6 +371,13 @@ const StoryPage = forwardRef(
         },
       ],
     }))
+    const inputContainerStyle = useAnimatedStyle(() => ({
+      transform: [
+        {
+          translateY: -keyboard.value,
+        },
+      ],
+    }))
     const renderIndicatorItem = useCallback((_, indicatorIndex) => {
       return (
         <StoryPageIndicator
@@ -391,6 +423,10 @@ const StoryPage = forwardRef(
         controlAnim.value = withTiming(1)
         animateIndex()
       }
+    }, [])
+    const onReplyPress = useCallback(() => {
+      onReply && onReply(state.replyMessage)
+      state.setReplyMessage('')
     }, [])
     const { top, bottom } = useSafeAreaInsets()
     return (
@@ -463,20 +499,21 @@ const StoryPage = forwardRef(
               </Row>
             </Row>
           </Animated.View>
-          <View>
-            <Animated.View
-              style={[
-                styles.bottomControl,
-                bottomStyle,
-                {
-                  paddingBottom: bottom || 16,
-                },
-              ]}
-            >
-              <LinearGradient
-                colors={[Colors.transparent, Colors.black50]}
-                style={styles.shadowView}
-              />
+
+          <Animated.View
+            style={[
+              styles.bottomControl,
+              bottomStyle,
+              {
+                paddingBottom: bottom || 16,
+              },
+            ]}
+          >
+            <LinearGradient
+              colors={[Colors.transparent, Colors.black50]}
+              style={styles.shadowView}
+            />
+            <Animated.View style={inputContainerStyle}>
               <Box
                 row
                 align="center"
@@ -484,20 +521,32 @@ const StoryPage = forwardRef(
                 radius={99}
                 borderWidth={1}
                 borderColor={Colors.white}
-                paddingHorizontal={6}
+                paddingRight={6}
+                paddingLeft={12}
               >
-                <AppInput
-                  placeholder={t('message_placeholder')}
-                  placeholderTextColor={Colors.white50}
-                  style={[Layout.fullHeight, Layout.fill]}
-                />
-                <TouchableOpacity style={styles.sendBtn}>
+                <Obx>
+                  {() => (
+                    <AppInput
+                      autoCorrect={false}
+                      style={Layout.fill}
+                      fontWeight={500}
+                      color={Colors.white}
+                      placeholder={t('message_placeholder')}
+                      placeholderTextColor={Colors.white50}
+                      value={state.replyMessage}
+                      onChangeText={txt => state.setReplyMessage(txt)}
+                      onSubmitEditing={onReplyPress}
+                    />
+                  )}
+                </Obx>
+
+                <TouchableOpacity onPress={onReplyPress} style={styles.sendBtn}>
                   <SendSvg size={16} color={Colors.white} />
                 </TouchableOpacity>
               </Box>
             </Animated.View>
-            <Padding />
-          </View>
+          </Animated.View>
+          <Padding />
         </Animated.View>
       </Pressable>
     )
@@ -549,7 +598,7 @@ const styles = XStyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 99,
+    zIndex: 9999,
   },
   shadowView: {
     ...XStyleSheet.absoluteFillObject,

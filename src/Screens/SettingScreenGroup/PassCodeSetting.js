@@ -1,4 +1,4 @@
-import { LockSvg } from '@/Assets/Svg'
+import { FingerPrintSvg, LockSvg } from '@/Assets/Svg'
 import {
   AppBar,
   AppSwitch,
@@ -9,7 +9,7 @@ import {
   Row,
 } from '@/Components'
 import { PageName } from '@/Config'
-import { navigatePush } from '@/Navigators'
+import { goBack, navigatePush } from '@/Navigators'
 import { userStore } from '@/Stores'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
 import React, { useCallback } from 'react'
@@ -23,6 +23,7 @@ const PrivacySetting = () => {
         isSetupPasscode: true,
         callback: passcode => {
           userStore.setPasscode(passcode)
+          goBack()
         },
       })
     } else {
@@ -53,6 +54,29 @@ const PrivacySetting = () => {
                 <AppSwitch
                   value={userStore.passcodeEnabled}
                   onValueChange={onEnableChange}
+                />
+              )}
+            </Obx>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              userStore.setBiometricEnabled(!userStore.biometricEnabled)
+            }
+            style={styles.subSettingView}
+          >
+            <Row>
+              <Box size={44} center>
+                <FingerPrintSvg size={18} />
+              </Box>
+              <AppText fontSize={16} fontWeight={500}>
+                {t('setting.biometrics_enable')}
+              </AppText>
+            </Row>
+            <Obx>
+              {() => (
+                <AppSwitch
+                  value={userStore.biometricEnabled}
+                  onValueChange={value => userStore.setBiometricEnabled(value)}
                 />
               )}
             </Obx>
