@@ -1,5 +1,11 @@
 import { generateRandomIntegerInRange } from '@/Utils'
-import { Gender, MessageStatus, NotificationType, PrivacyType } from './Enum'
+import {
+  Gender,
+  MessageStatus,
+  MessageType,
+  NotificationType,
+  PrivacyType,
+} from './Enum'
 export const mockUsers = [
   {
     user_id: 'username01',
@@ -672,11 +678,29 @@ export const mockStories = [
 ]
 export const mockMessages = [
   {
+    message_id: '-1',
+    message: 'Oh haha',
+    status: MessageStatus.READ,
+    created_at: new Date().getTime(),
+    type: MessageType.Story,
+    ref_data: mockStories[0],
+    sent_by: mockUsers[0],
+  },
+  {
+    message_id: '0',
+    message: 'Cool bro',
+    status: MessageStatus.READ,
+    created_at: new Date().getTime(),
+    type: MessageType.Post,
+    ref_data: mockPosts[0],
+    sent_by: mockUsers[1],
+  },
+  {
     message_id: '1',
     message: 'Hello',
     status: MessageStatus.READ,
     created_at: new Date().getTime(),
-    type: 'text',
+    type: MessageType.Text,
     sent_by: mockUsers[0],
   },
   {
@@ -684,7 +708,7 @@ export const mockMessages = [
     message: 'Hi',
     status: MessageStatus.READ,
     created_at: new Date().getTime(),
-    type: 'text',
+    type: MessageType.Text,
     sent_by: mockUsers[1],
   },
   {
@@ -692,7 +716,7 @@ export const mockMessages = [
     message: 'How are you?',
     status: MessageStatus.READ,
     created_at: new Date().getTime(),
-    type: 'text',
+    type: MessageType.Text,
     sent_by: mockUsers[0],
   },
   {
@@ -700,7 +724,7 @@ export const mockMessages = [
     message: 'I am fine',
     status: MessageStatus.READ,
     created_at: new Date().getTime(),
-    type: 'text',
+    type: MessageType.Text,
     sent_by: mockUsers[1],
   },
   {
@@ -708,7 +732,7 @@ export const mockMessages = [
     message: 'What about you?',
     status: MessageStatus.READ,
     created_at: new Date().getTime(),
-    type: 'text',
+    type: MessageType.Text,
     sent_by: mockUsers[0],
   },
   {
@@ -716,7 +740,7 @@ export const mockMessages = [
     message: 'I am also fine',
     status: MessageStatus.READ,
     created_at: new Date().getTime(),
-    type: 'text',
+    type: MessageType.Text,
     sent_by: mockUsers[1],
   },
   {
@@ -724,7 +748,7 @@ export const mockMessages = [
     message: 'https://picsum.photos/2000/3000',
     status: MessageStatus.READ,
     created_at: new Date().getTime(),
-    type: 'image',
+    type: MessageType.Image,
     sent_by: mockUsers[0],
   },
   {
@@ -732,7 +756,7 @@ export const mockMessages = [
     message: '22',
     status: MessageStatus.READ,
     created_at: new Date().getTime(),
-    type: 'sticker',
+    type: MessageType.Sticker,
     sent_by: mockUsers[1],
   },
   {
@@ -740,7 +764,16 @@ export const mockMessages = [
     message: 'https://picsum.photos/2001/3000',
     status: MessageStatus.READ,
     created_at: new Date().getTime(),
-    type: 'image',
+    type: MessageType.Image,
+    sent_by: mockUsers[0],
+  },
+  {
+    message_id: '10',
+    message: 'Cool bro',
+    status: MessageStatus.READ,
+    created_at: new Date().getTime(),
+    type: MessageType.Post,
+    ref_data: mockPosts[0],
     sent_by: mockUsers[0],
   },
 ]

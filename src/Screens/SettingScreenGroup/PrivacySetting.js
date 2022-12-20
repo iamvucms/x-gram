@@ -1,4 +1,11 @@
-import { ChevronRightSvg, GlobalSvg, LockSvg } from '@/Assets/Svg'
+import {
+  ChevronRightSvg,
+  CloseSvg,
+  GlobalSvg,
+  LockSvg,
+  PhoneSvg,
+  UserSvg,
+} from '@/Assets/Svg'
 import {
   AppBar,
   AppText,
@@ -9,7 +16,7 @@ import {
   Row,
 } from '@/Components'
 import { PageName } from '@/Config'
-import { PrivacyType } from '@/Models'
+import { PrivacyShowType, PrivacyType } from '@/Models'
 import { navigate, navigateReplace } from '@/Navigators'
 import { userStore } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
@@ -21,16 +28,16 @@ const PrivacySetting = () => {
   const subSettings = useMemo(
     () => [
       {
-        title: t('auth.default_privacy'),
-        desc: t('auth.default_privacy_desc'),
+        title: t('setting.content_privacy'),
+        desc: t('setting.content_privacy_desc'),
         icon: <GlobalSvg size={18} />,
         rightComponent: (
           <Obx>
             {() => (
               <AppText fontWeight={600} fontSize={12} color={Colors.primary}>
-                {userStore.defaultPrivacyType === PrivacyType.Public
+                {userStore.contentPrivacyType === PrivacyType.Public
                   ? t('home.privacy_public')
-                  : userStore.defaultPrivacyType === PrivacyType.Followers
+                  : userStore.contentPrivacyType === PrivacyType.Followers
                   ? t('home.privacy_followers')
                   : t('home.privacy_private')}
               </AppText>
@@ -38,12 +45,96 @@ const PrivacySetting = () => {
           </Obx>
         ),
         onPress: () => {
-          if (userStore.defaultPrivacyType === PrivacyType.Public) {
-            userStore.setDefaultPrivacyType(PrivacyType.Followers)
-          } else if (userStore.defaultPrivacyType === PrivacyType.Followers) {
-            userStore.setDefaultPrivacyType(PrivacyType.Private)
+          if (userStore.contentPrivacyType === PrivacyType.Public) {
+            userStore.setContentPrivacyType(PrivacyType.Followers)
+          } else if (userStore.contentPrivacyType === PrivacyType.Followers) {
+            userStore.setContentPrivacyType(PrivacyType.Private)
           } else {
-            userStore.setDefaultPrivacyType(PrivacyType.Public)
+            userStore.setContentPrivacyType(PrivacyType.Public)
+          }
+        },
+      },
+      {
+        title: t('setting.phone_number'),
+        desc: t('setting.who_can_see_phone_number'),
+        icon: <PhoneSvg size={18} />,
+        rightComponent: (
+          <Obx>
+            {() => (
+              <AppText fontWeight={600} fontSize={12} color={Colors.primary}>
+                {userStore.phonePrivacyType === PrivacyShowType.Everyone
+                  ? t('setting.everyone')
+                  : userStore.phonePrivacyType === PrivacyShowType.Followers
+                  ? t('home.privacy_followers')
+                  : t('setting.nobody')}
+              </AppText>
+            )}
+          </Obx>
+        ),
+        onPress: () => {
+          if (userStore.phonePrivacyType === PrivacyShowType.Everyone) {
+            userStore.setPhonePrivacyType(PrivacyShowType.Followers)
+          } else if (userStore.phonePrivacyType === PrivacyShowType.Followers) {
+            userStore.setPhonePrivacyType(PrivacyShowType.Private)
+          } else {
+            userStore.setPhonePrivacyType(PrivacyShowType.Everyone)
+          }
+        },
+      },
+      {
+        title: t('setting.profile_photo'),
+        desc: t('setting.who_can_see_profile_photo'),
+        icon: <UserSvg size={22} />,
+        rightComponent: (
+          <Obx>
+            {() => (
+              <AppText fontWeight={600} fontSize={12} color={Colors.primary}>
+                {userStore.profilePhotoPrivacyType === PrivacyShowType.Everyone
+                  ? t('setting.everyone')
+                  : userStore.profilePhotoPrivacyType ===
+                    PrivacyShowType.Followers
+                  ? t('home.privacy_followers')
+                  : t('setting.nobody')}
+              </AppText>
+            )}
+          </Obx>
+        ),
+        onPress: () => {
+          if (userStore.profilePhotoPrivacyType === PrivacyShowType.Everyone) {
+            userStore.setProfilePhotoPrivacyType(PrivacyShowType.Followers)
+          } else if (
+            userStore.profilePhotoPrivacyType === PrivacyShowType.Followers
+          ) {
+            userStore.setProfilePhotoPrivacyType(PrivacyShowType.Private)
+          } else {
+            userStore.setProfilePhotoPrivacyType(PrivacyShowType.Everyone)
+          }
+        },
+      },
+      {
+        title: t('setting.auto_delete'),
+        desc: t('setting.auto_delete_note'),
+        icon: <CloseSvg size={30} />,
+        rightComponent: (
+          <Obx>
+            {() => (
+              <AppText fontWeight={600} fontSize={12} color={Colors.primary}>
+                {userStore.contentPrivacyType === PrivacyType.Public
+                  ? t('home.privacy_public')
+                  : userStore.contentPrivacyType === PrivacyType.Followers
+                  ? t('home.privacy_followers')
+                  : t('home.privacy_private')}
+              </AppText>
+            )}
+          </Obx>
+        ),
+        onPress: () => {
+          if (userStore.contentPrivacyType === PrivacyType.Public) {
+            userStore.setContentPrivacyType(PrivacyType.Followers)
+          } else if (userStore.contentPrivacyType === PrivacyType.Followers) {
+            userStore.setContentPrivacyType(PrivacyType.Private)
+          } else {
+            userStore.setContentPrivacyType(PrivacyType.Public)
           }
         },
       },

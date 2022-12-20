@@ -38,6 +38,8 @@ export enum MessageType {
   Image = 'image',
   Sticker = 'sticker',
   Video = 'video',
+  Story = 'story',
+  Post = 'post',
 }
 export enum NotificationType {
   FOLLOW = 'follow',
@@ -50,6 +52,18 @@ export enum PrivacyType {
   Public = 'public',
   Private = 'private',
   Followers = 'followers',
+}
+export enum PrivacyShowType {
+  Everyone = 'everyone',
+  Followers = 'followers',
+  OnlyMe = 'only_me',
+}
+export enum AutoDeleteType {
+  Never = 'never',
+  OneMonth = 'one_month',
+  TwoMonths = 'two_months',
+  HalfYear = 'half_year',
+  OneYear = 'one_year',
 }
 export enum FilterType {
   Architecture = 'architecture',

@@ -1,11 +1,13 @@
 import {
   CloseSvg,
   DotsSvg,
+  FollowSvg,
   ReportSvg,
   SendSvg,
   ShareSvg,
   StoryGradientBorderSvg,
   TrashBinSvg,
+  UnfollowSvg,
 } from '@/Assets/Svg'
 import {
   AppBottomSheet,
@@ -35,7 +37,7 @@ import React, {
   useRef,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Pressable, ScrollView, TouchableOpacity, View } from 'react-native'
+import { Pressable, TouchableOpacity, View } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import Animated, {
   Easing,
@@ -56,7 +58,6 @@ const StoryScreen = ({ route }) => {
   const defaultIndex = homeStore.stories.findIndex(
     item => item.story_id === storyId,
   )
-  const optionRef = useRef()
   const listRef = useRef()
   const pageRefs = useRef([])
   const { t } = useTranslation()
@@ -65,10 +66,12 @@ const StoryScreen = ({ route }) => {
     index: defaultIndex,
     selectedStory: null,
     shareSheetVisible: false,
+    optionSheetVisible: false,
     setIndex: index => (state.index = index),
     isActive: index => state.index === index,
     setSelectedStory: story => (state.selectedStory = story),
     setShareSheetVisible: visible => (state.shareSheetVisible = visible),
+    setOptionSheetVisible: visible => (state.optionSheetVisible = visible),
   }))
   const renderStoryPageItem = useCallback(({ item, index }) => {
     return (
@@ -84,7 +87,8 @@ const StoryScreen = ({ route }) => {
             onOpenOption={() => {
               pageRefs.current[index]?.pause?.()
               state.setSelectedStory(item)
-              optionRef.current?.snapTo?.(0)
+              // optionRef.current?.snapTo?.(0)
+              state.setOptionSheetVisible(true)
             }}
             onNextPage={() => {
               if (state.index < homeStore.stories.length - 1) {
@@ -109,7 +113,7 @@ const StoryScreen = ({ route }) => {
     },
   })
   const closeOptionSheet = () => {
-    optionRef.current?.close?.()
+    state.setOptionSheetVisible(false)
     pageRefs.current[state.index]?.resume?.()
   }
   const onScrollEnd = event => {
@@ -139,99 +143,150 @@ const StoryScreen = ({ route }) => {
           />
         )}
       </Obx>
-      <AppBottomSheet
-        backgroundStyle={styles.sheetHeader}
-        ref={optionRef}
-        snapPoints={[screenHeight * 0.3]}
-        handleIndicatorStyle={{ backgroundColor: Colors.white50 }}
-        onClose={closeOptionSheet}
-      >
-        <Box
-          topLeftRadius={16}
-          topRightRadius={16}
-          fill
-          backgroundColor={Colors.white}
-        >
-          <Box
-            height={50}
-            center
-            borderBottomWidth={0.5}
-            borderBottomColor={Colors.border}
-          >
-            <AppText fontSize={16} fontWeight={700}>
-              {t('home.story_options')}
-            </AppText>
-            <TouchableOpacity
-              onPress={closeOptionSheet}
-              style={styles.closeBtn}
+      <Obx>
+        {() =>
+          state.optionSheetVisible && (
+            <AppBottomSheet
+              backgroundStyle={styles.sheetHeader}
+              index={0}
+              snapPoints={[screenHeight * 0.3]}
+              handleIndicatorStyle={{ backgroundColor: Colors.white50 }}
+              onClose={closeOptionSheet}
             >
-              <CloseSvg />
-            </TouchableOpacity>
-          </Box>
-          <Obx>
-            {() =>
-              !!state.selectedStory && (
-                <>
-                  <Obx>
-                    {() =>
-                      state.selectedStory.posted_by.user_id ===
-                      userStore.userInfo.user_id ? (
+              <Box
+                topLeftRadius={16}
+                topRightRadius={16}
+                fill
+                backgroundColor={Colors.white}
+              >
+                <Box
+                  height={50}
+                  center
+                  borderBottomWidth={0.5}
+                  borderBottomColor={Colors.border}
+                >
+                  <AppText fontSize={16} fontWeight={700}>
+                    {t('home.story_options')}
+                  </AppText>
+                  <TouchableOpacity
+                    onPress={closeOptionSheet}
+                    style={styles.closeBtn}
+                  >
+                    <CloseSvg />
+                  </TouchableOpacity>
+                </Box>
+                <Obx>
+                  {() =>
+                    !!state.selectedStory && (
+                      <>
+                        <Obx>
+                          {() =>
+                            state.selectedStory.posted_by.user_id ===
+                            userStore.userInfo.user_id ? (
+                              <TouchableOpacity
+                                onPress={() => {
+                                  closeOptionSheet()
+                                  const media =
+                                    state.selectedStory.medias[state.index]
+                                  diaLogStore.showDiaLog({
+                                    title: t('home.delete_story'),
+                                    message: t('home.delete_story_confirm'),
+                                    showCancelButton: true,
+                                    onPress: () =>
+                                      homeStore.deleteStory(
+                                        media.story_id,
+                                        media.media_id,
+                                      ),
+                                  })
+                                }}
+                                style={styles.optionBtn}
+                              >
+                                <TrashBinSvg size={20} />
+                                <Padding left={14} />
+                                <AppText fontSize={16} fontWeight={500}>
+                                  {t('home.delete_story')}
+                                </AppText>
+                              </TouchableOpacity>
+                            ) : (
+                              <>
+                                <Obx>
+                                  {() => {
+                                    const isFollowing = userStore.isFollowing(
+                                      state.selectedStory?.posted_by.user_id,
+                                    )
+                                    return (
+                                      <TouchableOpacity
+                                        onPress={() => {
+                                          if (isFollowing) {
+                                            userStore.unfollowUser(
+                                              state.selectedStory?.posted_by,
+                                            )
+                                          } else {
+                                            userStore.followUser(
+                                              state.selectedStory?.posted_by,
+                                            )
+                                          }
+                                        }}
+                                        style={styles.optionBtn}
+                                      >
+                                        {isFollowing ? (
+                                          <UnfollowSvg size={20} />
+                                        ) : (
+                                          <FollowSvg size={20} />
+                                        )}
+                                        <Padding left={14} />
+                                        <AppText fontSize={16} fontWeight={500}>
+                                          {t(
+                                            isFollowing
+                                              ? 'home.unfollow_so'
+                                              : 'home.follow_so',
+                                            {
+                                              replace: {
+                                                so: state.selectedStory
+                                                  ?.posted_by?.full_name,
+                                              },
+                                            },
+                                          )}
+                                        </AppText>
+                                      </TouchableOpacity>
+                                    )
+                                  }}
+                                </Obx>
+                                <TouchableOpacity
+                                  onPress={() => {}}
+                                  style={styles.optionBtn}
+                                >
+                                  <ReportSvg size={20} />
+                                  <Padding left={14} />
+                                  <AppText fontSize={16} fontWeight={500}>
+                                    {t('home.report_story')}
+                                  </AppText>
+                                </TouchableOpacity>
+                              </>
+                            )
+                          }
+                        </Obx>
                         <TouchableOpacity
                           onPress={() => {
-                            closeOptionSheet()
-                            const media =
-                              state.selectedStory.medias[state.index]
-                            diaLogStore.showDiaLog({
-                              title: t('home.delete_story'),
-                              message: t('home.delete_story_confirm'),
-                              showCancelButton: true,
-                              onPress: () =>
-                                homeStore.deleteStory(
-                                  media.story_id,
-                                  media.media_id,
-                                ),
-                            })
+                            state.setShareSheetVisible(true)
                           }}
                           style={styles.optionBtn}
                         >
-                          <TrashBinSvg size={20} />
+                          <ShareSvg size={20} />
                           <Padding left={14} />
                           <AppText fontSize={16} fontWeight={500}>
-                            {t('home.delete_story')}
+                            {t('home.share_story')}
                           </AppText>
                         </TouchableOpacity>
-                      ) : (
-                        <TouchableOpacity
-                          onPress={() => {}}
-                          style={styles.optionBtn}
-                        >
-                          <ReportSvg size={20} />
-                          <Padding left={14} />
-                          <AppText fontSize={16} fontWeight={500}>
-                            {t('home.report_story')}
-                          </AppText>
-                        </TouchableOpacity>
-                      )
-                    }
-                  </Obx>
-                  <TouchableOpacity
-                    onPress={() => {
-                      state.setShareSheetVisible(true)
-                    }}
-                    style={styles.optionBtn}
-                  >
-                    <ShareSvg size={20} />
-                    <Padding left={14} />
-                    <AppText fontSize={16} fontWeight={500}>
-                      {t('home.share_story')}
-                    </AppText>
-                  </TouchableOpacity>
-                </>
-              )
-            }
-          </Obx>
-        </Box>
-      </AppBottomSheet>
+                      </>
+                    )
+                  }
+                </Obx>
+              </Box>
+            </AppBottomSheet>
+          )
+        }
+      </Obx>
       <Obx>
         {() =>
           state.shareSheetVisible && (
@@ -314,10 +369,14 @@ const StoryPage = forwardRef(
         isFinished => isFinished && runOnJS(callback)(),
       )
     }
-    useImperativeHandle(ref, () => ({
-      pause: () => (indexAnim.value = indexAnim.value),
-      resume: animateIndex,
-    }))
+    useImperativeHandle(
+      ref,
+      () => ({
+        pause: () => (indexAnim.value = indexAnim.value),
+        resume: () => animateIndex(),
+      }),
+      [],
+    )
     useEffect(() => {
       if (isActive) {
         animateIndex()
@@ -527,6 +586,8 @@ const StoryPage = forwardRef(
                 <Obx>
                   {() => (
                     <AppInput
+                      onFocus={() => (indexAnim.value = indexAnim.value)}
+                      onBlur={() => animateIndex()}
                       autoCorrect={false}
                       style={Layout.fill}
                       fontWeight={500}
