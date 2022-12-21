@@ -1,4 +1,12 @@
-import { mockPosts, mockUsers, Post, User } from '@/Models'
+import {
+  AutoDeleteType,
+  mockPosts,
+  mockUsers,
+  Post,
+  PrivacyShowType,
+  PrivacyType,
+  User,
+} from '@/Models'
 import {
   blockUser,
   followUser,
@@ -23,6 +31,11 @@ export default class UserStore {
   followers: User[] = []
   passcode = ''
   passcodeEnabled = false
+  biometricEnabled = false
+  contentPrivacyType = PrivacyType.Public
+  phonePrivacyType = PrivacyShowType.Followers
+  profilePhotoPrivacyType = PrivacyShowType.Everyone
+  autoDeleteType = AutoDeleteType.HalfYear
   bookmarkPosts: Post[] = []
   blockedUsers: User[] = []
   hiddenCommentIds = {}
@@ -256,6 +269,21 @@ export default class UserStore {
   setPasscode(passcode) {
     this.passcode = passcode
     this.passcodeEnabled = true
+  }
+  setBiometricEnabled(enabled) {
+    this.biometricEnabled = enabled
+  }
+  setContentPrivacyType(privacy: PrivacyType) {
+    this.contentPrivacyType = privacy
+  }
+  setPhonePrivacyType(privacy: PrivacyShowType) {
+    this.phonePrivacyType = privacy
+  }
+  setProfilePhotoPrivacyType(privacy: PrivacyShowType) {
+    this.profilePhotoPrivacyType = privacy
+  }
+  setAutoDeleteType(autoDeleteType: AutoDeleteType) {
+    this.autoDeleteType = autoDeleteType
   }
   disablePasscode() {
     this.passcodeEnabled = false

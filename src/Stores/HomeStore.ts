@@ -1,4 +1,4 @@
-import { mockPosts, Post } from '@/Models'
+import { mockPosts, mockStories, Post, Story } from '@/Models'
 import { getPostDetail, getPosts, getStories } from '@/Services/Api'
 import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable, toJS } from 'mobx'
@@ -6,7 +6,7 @@ import { hydrateStore, isHydrated } from 'mobx-persist-store'
 import { userStore } from '.'
 
 export default class HomeStore {
-  stories = []
+  stories: Story[] = []
   posts: Post[] = []
   additionalPosts: Post[] = []
   storyPage = 1
@@ -41,6 +41,7 @@ export default class HomeStore {
       }
       this.storyPage += 1
     } catch (e) {
+      this.stories = mockStories
       console.log({
         fetchStories: e,
       })

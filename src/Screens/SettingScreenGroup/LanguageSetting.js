@@ -35,8 +35,10 @@ const LanguageSetting = () => {
     )
   }, [])
   return (
-    <Container style={styles.rootView}>
-      <AppBar title={t('setting.language')} />
+    <Container style={styles.rootView} safeAreaColor={Colors.white}>
+      <Box backgroundColor={Colors.white}>
+        <AppBar title={t('setting.language')} />
+      </Box>
       <Box fill>
         <Obx>
           {() => (
@@ -55,9 +57,7 @@ const LanguageSetting = () => {
 export default LanguageSetting
 
 const styles = XStyleSheet.create({
-  rootView: {
-    backgroundColor: Colors.white,
-  },
+  rootView: {},
   langBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -65,9 +65,8 @@ const styles = XStyleSheet.create({
     marginHorizontal: 16,
     marginTop: 16,
     padding: 12,
-    borderWidth: 0.5,
-    borderColor: Colors.border,
-    borderRadius: 12,
+    backgroundColor: Colors.white,
+    borderRadius: 6,
   },
   flag: {
     width: 30,

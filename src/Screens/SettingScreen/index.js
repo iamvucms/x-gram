@@ -54,7 +54,6 @@ const SettingScreen = () => {
         fill
         backgroundColor={Colors.background}
         marginTop={-30}
-        radius={30}
         paddingTop={20}
         paddingHorizontal={16}
       >
@@ -135,7 +134,11 @@ const SettingScreen = () => {
             <ChevronRightSvg color={Colors.k8E8E8E} size={12} />
           </Row>
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.8} style={styles.settingBtn}>
+        <TouchableOpacity
+          onPress={() => navigate(PageName.TermConditionSetting)}
+          activeOpacity={0.8}
+          style={styles.settingBtn}
+        >
           <Row>
             <Box size={44} center>
               <PaperSvg size={18} />
@@ -193,7 +196,7 @@ const styles = XStyleSheet.create({
   },
   settingBtn: {
     backgroundColor: Colors.white,
-    borderRadius: 12,
+    borderRadius: 6,
     marginBottom: 16,
     flexDirection: 'row',
     alignItems: 'center',

@@ -48,210 +48,224 @@ const PostOptionBottomSheet = forwardRef(
         snapPoints={[isMyPost ? screenHeight * 0.35 : screenHeight * 0.45]}
         ref={ref}
         backgroundStyle={styles.sheetHeader}
+        handleIndicatorStyle={{ backgroundColor: Colors.white50 }}
       >
         <Box
-          paddingVertical={12}
-          center
-          borderBottomWidth={0.5}
-          borderBottomColor={Colors.border}
-        >
-          <AppText fontSize={16} fontWeight={700}>
-            {t('home.post_options')}
-          </AppText>
-        </Box>
-        <Box
-          topLeftRadius={24}
-          topRightRadius={24}
+          topLeftRadius={16}
+          topRightRadius={16}
           fill
           backgroundColor={Colors.white}
-          overflow="hidden"
         >
-          <Box fill>
-            <Box
-              radius={4}
-              backgroundColor={Colors.white}
-              {...(!isMyPost && {
-                borderBottomColor: Colors.border,
-                borderBottomWidth: 0.5,
-              })}
-            >
-              {isMyPost && (
-                <>
-                  <TouchableOpacity
-                    onPress={() => {
-                      onClose()
-                      setTimeout(() => {
-                        navigate(PageName.EditPostScreen, {
-                          postId: post.post_id,
-                        })
-                      })
-                    }}
-                    style={styles.optionBtn}
-                  >
-                    <EditSvg size={20} />
-                    <Padding left={14} />
-                    <AppText fontSize={16} fontWeight={500}>
-                      {t('home.edit_post')}
-                    </AppText>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      onClose()
-                      diaLogStore.showDiaLog({
-                        title: 'home.delete_post',
-                        message: 'home.undo_note',
-                        dialogIcon: 'pack1_3',
-                        showCancelButton: true,
-                        onPress: () => deletePost(post.post_id),
-                      })
-                    }}
-                    style={styles.optionBtn}
-                  >
-                    <TrashBinSvg size={20} />
-                    <Padding left={14} />
-                    <AppText fontSize={16} fontWeight={500}>
-                      {t('home.delete_post')}
-                    </AppText>
-                  </TouchableOpacity>
-                </>
-              )}
-              {!isMyPost && (
-                <>
-                  <TouchableOpacity
-                    onPress={() => {
-                      ref?.close?.()
-                    }}
-                    style={styles.optionBtn}
-                  >
-                    <ReportSvg size={20} />
-                    <Padding left={14} />
-                    <AppText fontSize={16} fontWeight={500}>
-                      {t('home.report_post')}
-                    </AppText>
-                  </TouchableOpacity>
-                </>
-              )}
-
-              <Obx>
-                {() => {
-                  const isBookMarked = userStore.isBookmarked(post.post_id)
-                  return (
+          <Box
+            height={50}
+            center
+            borderBottomWidth={1}
+            borderBottomColor={Colors.border}
+          >
+            <AppText fontSize={16} fontWeight={700}>
+              {t('home.post_options')}
+            </AppText>
+          </Box>
+          <Box
+            topLeftRadius={24}
+            topRightRadius={24}
+            fill
+            backgroundColor={Colors.white}
+            overflow="hidden"
+          >
+            <Box fill>
+              <Box
+                radius={4}
+                backgroundColor={Colors.white}
+                {...(!isMyPost && {
+                  borderBottomColor: Colors.border,
+                  borderBottomWidth: 0.5,
+                })}
+              >
+                {isMyPost && (
+                  <>
                     <TouchableOpacity
                       onPress={() => {
-                        isBookMarked
-                          ? userStore.removeBookmarkPost(post.post_id)
-                          : userStore.addBookmarkPost(toJS(post))
+                        onClose()
+                        setTimeout(() => {
+                          navigate(PageName.EditPostScreen, {
+                            postId: post.post_id,
+                          })
+                        })
                       }}
                       style={styles.optionBtn}
                     >
-                      {isBookMarked ? (
-                        <BookMarkedSvg size={20} />
-                      ) : (
-                        <BookMarkSvg size={20} />
-                      )}
+                      <EditSvg size={20} />
                       <Padding left={14} />
                       <AppText fontSize={16} fontWeight={500}>
-                        {t(
-                          isBookMarked
-                            ? 'home.unbookmark_post'
-                            : 'home.bookmark_post',
-                        )}
+                        {t('home.edit_post')}
                       </AppText>
                     </TouchableOpacity>
-                  )
-                }}
-              </Obx>
+                    <TouchableOpacity
+                      onPress={() => {
+                        onClose()
+                        diaLogStore.showDiaLog({
+                          title: 'home.delete_post',
+                          message: 'home.undo_note',
+                          dialogIcon: 'pack1_3',
+                          showCancelButton: true,
+                          onPress: () => deletePost(post.post_id),
+                        })
+                      }}
+                      style={styles.optionBtn}
+                    >
+                      <TrashBinSvg size={20} />
+                      <Padding left={14} />
+                      <AppText fontSize={16} fontWeight={500}>
+                        {t('home.delete_post')}
+                      </AppText>
+                    </TouchableOpacity>
+                  </>
+                )}
+                {!isMyPost && (
+                  <>
+                    <TouchableOpacity
+                      onPress={() => {
+                        ref?.close?.()
+                      }}
+                      style={styles.optionBtn}
+                    >
+                      <ReportSvg size={20} />
+                      <Padding left={14} />
+                      <AppText fontSize={16} fontWeight={500}>
+                        {t('home.report_post')}
+                      </AppText>
+                    </TouchableOpacity>
+                  </>
+                )}
 
-              <TouchableOpacity
-                onPress={() => {
-                  onClose()
-                  Clipboard.setString('...')
-                }}
-                style={styles.optionBtn}
-              >
-                <LinkSvg size={20} />
-                <Padding left={14} />
-                <AppText fontSize={16} fontWeight={500}>
-                  {t('home.copy_link')}
-                </AppText>
-              </TouchableOpacity>
-            </Box>
-            {!isMyPost && (
-              <Box radius={4} marginBottom={16} backgroundColor={Colors.white}>
-                <TouchableOpacity
-                  onPress={() => {
-                    onClose()
-                    setTimeout(() => {
-                      navigateToProfile(post.posted_by.user_id)
-                    })
-                  }}
-                  style={styles.optionBtn}
-                >
-                  <ProfileSvg size={20} />
-                  <Padding left={14} />
-                  <AppText fontSize={16} fontWeight={500}>
-                    {t('conversations.view_profile')}
-                  </AppText>
-                </TouchableOpacity>
                 <Obx>
                   {() => {
-                    const isFollowing = userStore.isFollowing(
-                      post?.posted_by.user_id,
-                    )
+                    const isBookMarked = userStore.isBookmarked(post.post_id)
                     return (
                       <TouchableOpacity
                         onPress={() => {
-                          if (isFollowing) {
-                            userStore.unfollowUser(post?.posted_by)
-                          } else {
-                            userStore.followUser(post?.posted_by)
-                          }
+                          isBookMarked
+                            ? userStore.removeBookmarkPost(post.post_id)
+                            : userStore.addBookmarkPost(toJS(post))
                         }}
                         style={styles.optionBtn}
                       >
-                        {isFollowing ? (
-                          <UnfollowSvg size={20} />
+                        {isBookMarked ? (
+                          <BookMarkedSvg size={20} />
                         ) : (
-                          <FollowSvg size={20} />
+                          <BookMarkSvg size={20} />
                         )}
                         <Padding left={14} />
                         <AppText fontSize={16} fontWeight={500}>
                           {t(
-                            isFollowing ? 'home.unfollow_so' : 'home.follow_so',
-                            {
-                              replace: { so: post?.posted_by?.full_name },
-                            },
+                            isBookMarked
+                              ? 'home.unbookmark_post'
+                              : 'home.bookmark_post',
                           )}
                         </AppText>
                       </TouchableOpacity>
                     )
                   }}
                 </Obx>
+
                 <TouchableOpacity
                   onPress={() => {
                     onClose()
-                    diaLogStore.showDiaLog({
-                      title: t('home.block_so', {
-                        so: post?.posted_by?.full_name,
-                      }),
-                      message: t('account.confirm_block'),
-                      dialogIcon: 'pack1_3',
-                      showCancelButton: true,
-                      onPress: () => userStore.blockUser(post.posted_by),
-                    })
+                    Clipboard.setString('...')
                   }}
                   style={styles.optionBtn}
                 >
-                  <BlockSvg size={20} />
+                  <LinkSvg size={20} />
                   <Padding left={14} />
                   <AppText fontSize={16} fontWeight={500}>
-                    {t('home.block_so', {
-                      replace: { so: post?.posted_by?.full_name },
-                    })}
+                    {t('home.copy_link')}
                   </AppText>
                 </TouchableOpacity>
               </Box>
-            )}
+              {!isMyPost && (
+                <Box
+                  radius={4}
+                  marginBottom={16}
+                  backgroundColor={Colors.white}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      onClose()
+                      setTimeout(() => {
+                        navigateToProfile(post.posted_by.user_id)
+                      })
+                    }}
+                    style={styles.optionBtn}
+                  >
+                    <ProfileSvg size={20} />
+                    <Padding left={14} />
+                    <AppText fontSize={16} fontWeight={500}>
+                      {t('conversations.view_profile')}
+                    </AppText>
+                  </TouchableOpacity>
+                  <Obx>
+                    {() => {
+                      const isFollowing = userStore.isFollowing(
+                        post?.posted_by.user_id,
+                      )
+                      return (
+                        <TouchableOpacity
+                          onPress={() => {
+                            if (isFollowing) {
+                              userStore.unfollowUser(post?.posted_by)
+                            } else {
+                              userStore.followUser(post?.posted_by)
+                            }
+                          }}
+                          style={styles.optionBtn}
+                        >
+                          {isFollowing ? (
+                            <UnfollowSvg size={20} />
+                          ) : (
+                            <FollowSvg size={20} />
+                          )}
+                          <Padding left={14} />
+                          <AppText fontSize={16} fontWeight={500}>
+                            {t(
+                              isFollowing
+                                ? 'home.unfollow_so'
+                                : 'home.follow_so',
+                              {
+                                replace: { so: post?.posted_by?.full_name },
+                              },
+                            )}
+                          </AppText>
+                        </TouchableOpacity>
+                      )
+                    }}
+                  </Obx>
+                  <TouchableOpacity
+                    onPress={() => {
+                      onClose()
+                      diaLogStore.showDiaLog({
+                        title: t('home.block_so', {
+                          so: post?.posted_by?.full_name,
+                        }),
+                        message: t('account.confirm_block'),
+                        dialogIcon: 'pack1_3',
+                        showCancelButton: true,
+                        onPress: () => userStore.blockUser(post.posted_by),
+                      })
+                    }}
+                    style={styles.optionBtn}
+                  >
+                    <BlockSvg size={20} />
+                    <Padding left={14} />
+                    <AppText fontSize={16} fontWeight={500}>
+                      {t('home.block_so', {
+                        replace: { so: post?.posted_by?.full_name },
+                      })}
+                    </AppText>
+                  </TouchableOpacity>
+                </Box>
+              )}
+            </Box>
           </Box>
         </Box>
         {isIOS && <KeyboardSpacer />}
@@ -281,9 +295,6 @@ const styles = XStyleSheet.create({
     paddingVertical: 12,
   },
   sheetHeader: {
-    borderWidth: 0.5,
-    borderColor: Colors.border,
-    borderBottomWidth: 0,
-    marginHorizontal: -0.5,
+    opacity: 0,
   },
 })

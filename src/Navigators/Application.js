@@ -29,6 +29,10 @@ import {
   AccountSetting,
   PrivacySetting,
   PassCodeSetting,
+  TermConditionSetting,
+  AccountInformationSetting,
+  BasicInformationSetting,
+  ChangePasswordSetting,
 } from '@/Screens'
 import { Colors } from '@/Theme'
 import { NavigationContainer } from '@react-navigation/native'
@@ -36,7 +40,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React, { forwardRef, useEffect } from 'react'
 import BottomTab from './BottomTab'
 import {
+  navigate,
   navigateAndReset,
+  navigateReplace,
   navigationRef,
   screenOptions,
 } from './NavigationUtils'
@@ -44,6 +50,7 @@ import { appStore, userStore } from '@/Stores'
 import { autorun } from 'mobx'
 const Stack = createNativeStackNavigator()
 const Application = () => {
+  useEffect(() => {}, [])
   const { NavigationTheme } = useAppTheme()
   useEffect(() => {
     const dispose = autorun(() => {
@@ -75,7 +82,17 @@ const Application = () => {
     }
   }, [])
   return (
-    <NavigationContainer theme={NavigationTheme} ref={navigationRef}>
+    <NavigationContainer
+      theme={NavigationTheme}
+      ref={ref => {
+        navigationRef.current = ref
+        if (userStore.isLogged && userStore.passcodeEnabled) {
+          navigate(PageName.AuthPassCodeScreen, {
+            callback: () => navigateReplace(PageName.HomeTab),
+          })
+        }
+      }}
+    >
       <Stack.Navigator
         initialRouteName={PageName.OnboardingScreen}
         screenOptions={screenOptions}
@@ -173,12 +190,28 @@ const AuthStack = () => {
       <Stack.Screen name={PageName.AccountSetting} component={AccountSetting} />
       <Stack.Screen name={PageName.PrivacySetting} component={PrivacySetting} />
       <Stack.Screen
+        name={PageName.TermConditionSetting}
+        component={TermConditionSetting}
+      />
+      <Stack.Screen
         name={PageName.AuthPassCodeScreen}
         component={AuthPassCodeScreen}
       />
       <Stack.Screen
         name={PageName.PassCodeSetting}
         component={PassCodeSetting}
+      />
+      <Stack.Screen
+        name={PageName.AccountInformationSetting}
+        component={AccountInformationSetting}
+      />
+      <Stack.Screen
+        name={PageName.BasicInformationSetting}
+        component={BasicInformationSetting}
+      />
+      <Stack.Screen
+        name={PageName.ChangePasswordSetting}
+        component={ChangePasswordSetting}
       />
     </Stack.Navigator>
   )

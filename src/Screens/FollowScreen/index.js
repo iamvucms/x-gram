@@ -185,7 +185,7 @@ const FollowScreen = ({ route }) => {
     ],
   }))
   return (
-    <Container safeAreaColor={Colors.gray}>
+    <Container style={styles.rootView} safeAreaColor={Colors.white}>
       <AppBar title={t('follow.title')} />
       <Box fill>
         <Box
@@ -297,6 +297,9 @@ const FollowScreen = ({ route }) => {
 export default FollowScreen
 
 const styles = XStyleSheet.create({
+  rootView: {
+    backgroundColor: Colors.white,
+  },
   tabBtn: {
     flex: 1,
     height: 40,

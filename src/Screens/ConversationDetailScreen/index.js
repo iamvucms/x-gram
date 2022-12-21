@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {
   ChevronRightSvg,
   CloseSvg,
@@ -5,6 +6,7 @@ import {
   EyeOffSvg,
   InforSvg,
   ReportSvg,
+  StoryGradientBorderSvg,
 } from '@/Assets/Svg'
 import {
   AppBottomSheet,
@@ -15,6 +17,7 @@ import {
   MessageInput,
   Obx,
   Padding,
+  PostItem,
   Row,
 } from '@/Components'
 import { PageName } from '@/Config'
@@ -24,6 +27,8 @@ import { goBack, navigate } from '@/Navigators'
 import { chatStore, userStore } from '@/Stores'
 import {
   Colors,
+  moderateScale,
+  ResponsiveHeight,
   ResponsiveWidth,
   screenHeight,
   screenWidth,
@@ -346,6 +351,9 @@ const MessageItem = memo(({ message, onOpenOption }) => {
   const isSticker = message.type === MessageType.Sticker
   const isImage = message.type === MessageType.Image
   const isText = message.type === MessageType.Text
+  const isPost = message.type === MessageType.Post
+  const isStory = message.type === MessageType.Story
+  console.log({ isPost })
   useEffect(() => {
     const dispose = autorun(() => {
       if (
@@ -483,6 +491,146 @@ const MessageItem = memo(({ message, onOpenOption }) => {
                     )}
                   </Obx>
                 )}
+                {(isPost || isStory) && (
+                  <Obx>
+                    {() => (
+                      <Box marginLeft={16} width={150}>
+                        <Box
+                          backgroundColor={isUser ? null : Colors.gray}
+                          topLeftRadius={16}
+                          topRightRadius={16}
+                          padding={8}
+                          row
+                          align="center"
+                          overflow="hidden"
+                          style={[
+                            isStory && {
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              zIndex: 99,
+                            },
+                          ]}
+                        >
+                          <Obx>
+                            {() =>
+                              isUser &&
+                              !isStory && (
+                                <LinearGradient
+                                  colors={chatStore.themeColors}
+                                  style={styles.msgBackground}
+                                />
+                              )
+                            }
+                          </Obx>
+                          <Box center marginRight={8}>
+                            <FastImage
+                              source={{
+                                uri: message.ref_data.posted_by.avatar_url,
+                              }}
+                              style={[
+                                styles.previewPostAvatar,
+                                isStory && {
+                                  position: 'absolute',
+                                },
+                              ]}
+                            />
+                            {isStory && <StoryGradientBorderSvg size={40} />}
+                          </Box>
+                          <View>
+                            <AppText
+                              color={
+                                isUser &&
+                                chatStore.themeColors.every(
+                                  c => c === Colors.white,
+                                )
+                                  ? Colors.black
+                                  : Colors.white
+                              }
+                              fontWeight={600}
+                              fontSize={12}
+                            >
+                              {message.ref_data.posted_by.full_name}
+                            </AppText>
+                            <AppText
+                              color={
+                                isUser &&
+                                chatStore.themeColors.every(
+                                  c => c === Colors.white,
+                                )
+                                  ? Colors.black50
+                                  : Colors.white50
+                              }
+                              fontSize={10}
+                            >
+                              {moment(message.ref_data.created_at).fromNow()}
+                            </AppText>
+                          </View>
+                        </Box>
+                        <FastImage
+                          source={{
+                            uri: message.ref_data.medias[0].url,
+                          }}
+                          style={[
+                            styles.previewMedia,
+                            isStory && {
+                              height: ResponsiveHeight(200),
+                              borderRadius: moderateScale(16),
+                            },
+                          ]}
+                        />
+                        <Obx>
+                          {() => (
+                            <Box
+                              marginTop={-12}
+                              opacity={
+                                message.status === MessageStatus.SENDING ||
+                                message.status === MessageStatus.ERROR
+                                  ? 0.5
+                                  : 1
+                              }
+                              alignSelf="flex-end"
+                              marginRight={8}
+                              padding={6}
+                              radius={16}
+                              maxWidth={134}
+                              minWidth={40}
+                              center
+                              borderColor={Colors.white}
+                              borderWidth={2}
+                              overflow="hidden"
+                              backgroundColor={isUser ? null : Colors.gray}
+                            >
+                              <AppText
+                                color={
+                                  isUser &&
+                                  chatStore.themeColors.every(
+                                    c => c === Colors.white,
+                                  )
+                                    ? Colors.black
+                                    : Colors.white
+                                }
+                              >
+                                {message.message}
+                              </AppText>
+                              <Obx>
+                                {() =>
+                                  isUser && (
+                                    <LinearGradient
+                                      colors={chatStore.themeColors}
+                                      style={styles.msgBackground}
+                                    />
+                                  )
+                                }
+                              </Obx>
+                            </Box>
+                          )}
+                        </Obx>
+                      </Box>
+                    )}
+                  </Obx>
+                )}
               </Row>
               <Animated.View
                 style={[
@@ -597,5 +745,22 @@ const styles = XStyleSheet.create({
   backgroundImg: {
     ...XStyleSheet.absoluteFillObject,
     zIndex: -1,
+  },
+  previewPostAvatar: {
+    height: 30,
+    width: 30,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  previewMedia: {
+    height: 180,
+    width: 150,
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+  },
+  refMsgView: {
+    position: 'absolute',
+    top: '95%',
+    left: 0,
   },
 })
