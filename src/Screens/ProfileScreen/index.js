@@ -322,7 +322,7 @@ const ProfileScreen = () => {
                     <AppText
                       color={Colors.primary}
                       fontWeight={600}
-                      fontSize={10}
+                      fontSize={12}
                     >
                       {web}
                     </AppText>

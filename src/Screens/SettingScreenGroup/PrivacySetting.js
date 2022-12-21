@@ -16,7 +16,7 @@ import {
   Row,
 } from '@/Components'
 import { PageName } from '@/Config'
-import { PrivacyShowType, PrivacyType } from '@/Models'
+import { AutoDeleteType, PrivacyShowType, PrivacyType } from '@/Models'
 import { navigate, navigateReplace } from '@/Navigators'
 import { userStore } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
@@ -111,33 +111,7 @@ const PrivacySetting = () => {
           }
         },
       },
-      {
-        title: t('setting.auto_delete'),
-        desc: t('setting.auto_delete_note'),
-        icon: <CloseSvg size={30} />,
-        rightComponent: (
-          <Obx>
-            {() => (
-              <AppText fontWeight={600} fontSize={12} color={Colors.primary}>
-                {userStore.contentPrivacyType === PrivacyType.Public
-                  ? t('home.privacy_public')
-                  : userStore.contentPrivacyType === PrivacyType.Followers
-                  ? t('home.privacy_followers')
-                  : t('home.privacy_private')}
-              </AppText>
-            )}
-          </Obx>
-        ),
-        onPress: () => {
-          if (userStore.contentPrivacyType === PrivacyType.Public) {
-            userStore.setContentPrivacyType(PrivacyType.Followers)
-          } else if (userStore.contentPrivacyType === PrivacyType.Followers) {
-            userStore.setContentPrivacyType(PrivacyType.Private)
-          } else {
-            userStore.setContentPrivacyType(PrivacyType.Public)
-          }
-        },
-      },
+
       {
         title: t('setting.passcode'),
         icon: <LockSvg size={18} />,
@@ -148,6 +122,41 @@ const PrivacySetting = () => {
             })
           } else {
             navigate(PageName.PassCodeSetting)
+          }
+        },
+      },
+      {
+        title: t('setting.auto_delete'),
+        desc: t('setting.auto_delete_note'),
+        icon: <CloseSvg size={30} />,
+        rightComponent: (
+          <Obx>
+            {() => (
+              <AppText fontWeight={600} fontSize={12} color={Colors.error}>
+                {userStore.autoDeleteType === AutoDeleteType.OneMonth
+                  ? t('setting.one_month')
+                  : userStore.autoDeleteType === AutoDeleteType.ThreeMonths
+                  ? t('setting.three_months')
+                  : userStore.autoDeleteType === AutoDeleteType.HalfYear
+                  ? t('setting.six_months')
+                  : userStore.autoDeleteType === AutoDeleteType.OneYear
+                  ? t('setting.one_year')
+                  : t('setting.never')}
+              </AppText>
+            )}
+          </Obx>
+        ),
+        onPress: () => {
+          if (userStore.autoDeleteType === AutoDeleteType.Never) {
+            userStore.setAutoDeleteType(AutoDeleteType.OneMonth)
+          } else if (userStore.autoDeleteType === AutoDeleteType.OneMonth) {
+            userStore.setAutoDeleteType(AutoDeleteType.ThreeMonths)
+          } else if (userStore.autoDeleteType === AutoDeleteType.ThreeMonths) {
+            userStore.setAutoDeleteType(AutoDeleteType.HalfYear)
+          } else if (userStore.autoDeleteType === AutoDeleteType.HalfYear) {
+            userStore.setAutoDeleteType(AutoDeleteType.OneYear)
+          } else {
+            userStore.setAutoDeleteType(AutoDeleteType.Never)
           }
         },
       },
@@ -206,7 +215,7 @@ const styles = XStyleSheet.create({
   rootView: {},
   subSettingView: {
     backgroundColor: Colors.white,
-    borderRadius: 12,
+    borderRadius: 6,
     marginBottom: 16,
     flexDirection: 'row',
     alignItems: 'center',

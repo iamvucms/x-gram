@@ -61,7 +61,7 @@ export enum PrivacyShowType {
 export enum AutoDeleteType {
   Never = 'never',
   OneMonth = 'one_month',
-  TwoMonths = 'two_months',
+  ThreeMonths = 'three_months',
   HalfYear = 'half_year',
   OneYear = 'one_year',
 }
@@ -79,4 +79,11 @@ export enum PeopleFilterType {
   All = 'all',
   Following = 'following',
   Followers = 'followers',
+}
+export enum FeedBackLevel {
+  VeryBad = 'very_bad',
+  Bad = 'bad',
+  Normal = 'normal',
+  Good = 'good',
+  VeryGood = 'very_good',
 }

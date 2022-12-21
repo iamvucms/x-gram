@@ -39,4 +39,8 @@ export const PageName = {
   PrivacySetting: 'PrivacySetting',
   LanguageSetting: 'LanguageSetting',
   PassCodeSetting: 'PassCodeSetting',
+  TermConditionSetting: 'TermConditionSetting',
+  AccountInformationSetting: 'AccountInformationSetting',
+  BasicInformationSetting: 'BasicInformationSetting',
+  ChangePasswordSetting: 'ChangePasswordSetting',
 }
