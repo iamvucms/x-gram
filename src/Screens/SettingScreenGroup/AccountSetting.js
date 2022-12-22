@@ -1,9 +1,7 @@
 import { ChevronRightSvg, GlobalSvg, InfoCircleSvg } from '@/Assets/Svg'
 import { AppBar, AppText, Box, Container, Padding, Row } from '@/Components'
 import { PageName } from '@/Config'
-import { PrivacyType } from '@/Models'
 import { navigate } from '@/Navigators'
-import { userStore } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
 import React, { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,21 +14,13 @@ const AccountSetting = () => {
         title: t('setting.account_info'),
         desc: t('setting.account_info_desc'),
         icon: <InfoCircleSvg size={18} />,
-        onPress: () => navigate(PageName.PersonalInformationScreen),
+        onPress: () => navigate(PageName.AccountInformationSetting),
       },
       {
         title: t('setting.basic_info'),
         desc: t('setting.basic_info_desc'),
         icon: <GlobalSvg size={18} />,
-        onPress: () => {
-          if (userStore.contentPrivacyType === PrivacyType.Public) {
-            userStore.setContentPrivacyType(PrivacyType.Followers)
-          } else if (userStore.contentPrivacyType === PrivacyType.Followers) {
-            userStore.setContentPrivacyType(PrivacyType.Private)
-          } else {
-            userStore.setContentPrivacyType(PrivacyType.Public)
-          }
-        },
+        onPress: () => navigate(PageName.BasicInformationSetting),
       },
     ],
     [t],

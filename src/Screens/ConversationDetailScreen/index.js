@@ -14,27 +14,27 @@ import {
   AppText,
   Box,
   Container,
+  KeyboardSpacer,
   MessageInput,
   Obx,
   Padding,
-  PostItem,
   Row,
 } from '@/Components'
 import { PageName } from '@/Config'
 import { useAppTheme } from '@/Hooks'
-import { getBackgrounds, MessageStatus, MessageType } from '@/Models'
+import { MessageStatus, MessageType, getBackgrounds } from '@/Models'
 import { goBack, navigate } from '@/Navigators'
 import { chatStore, userStore } from '@/Stores'
 import {
   Colors,
-  moderateScale,
   ResponsiveHeight,
   ResponsiveWidth,
+  XStyleSheet,
+  moderateScale,
   screenHeight,
   screenWidth,
-  XStyleSheet,
 } from '@/Theme'
-import { getHitSlop } from '@/Utils'
+import { getHitSlop, isIOS } from '@/Utils'
 import Clipboard from '@react-native-clipboard/clipboard'
 import { autorun, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
@@ -197,9 +197,7 @@ const ConversationDetailScreen = () => {
         topLeftRadius={24}
         topRightRadius={24}
         marginTop={-24}
-        borderColor={Colors.border}
-        borderWidth={0.5}
-        marginHorizontal={-0.5}
+        marginHorizontal={0.5}
         overflow="hidden"
       >
         <Obx>
@@ -233,6 +231,7 @@ const ConversationDetailScreen = () => {
           onSendPress={onSendPress}
           placeholder={t('message_placeholder')}
         />
+        {isIOS && <KeyboardSpacer />}
       </Box>
       <AppBottomSheet
         backgroundStyle={styles.sheetHeader}
@@ -353,7 +352,6 @@ const MessageItem = memo(({ message, onOpenOption }) => {
   const isText = message.type === MessageType.Text
   const isPost = message.type === MessageType.Post
   const isStory = message.type === MessageType.Story
-  console.log({ isPost })
   useEffect(() => {
     const dispose = autorun(() => {
       if (

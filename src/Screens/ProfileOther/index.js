@@ -7,7 +7,6 @@ import {
   CommentSvg,
   CopySvg,
   DotsSvg,
-  FollowSvg,
   GenderSvg,
   GridSvg,
   InforSvg,
@@ -16,7 +15,6 @@ import {
   PhoneSvg,
   ReportSvg,
   ShareSvg,
-  UnfollowSvg,
   VideoSvg,
 } from '@/Assets/Svg'
 import {
@@ -42,7 +40,7 @@ import {
   navigateToConversationDetail,
 } from '@/Navigators'
 import { diaLogStore, profileStore, userStore } from '@/Stores'
-import { Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
+import { Colors, Layout, XStyleSheet, screenHeight } from '@/Theme'
 import { formatAmount } from '@/Utils'
 import Clipboard from '@react-native-clipboard/clipboard'
 import { BlurView } from '@react-native-community/blur'
@@ -53,7 +51,6 @@ import { useTranslation } from 'react-i18next'
 import { Image, Share, TouchableOpacity, View } from 'react-native'
 import InAppBrowser from 'react-native-inappbrowser-reborn'
 import Animated, {
-  FadeIn,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
@@ -182,7 +179,6 @@ const ProfileOther = () => {
               {() => (
                 <Box
                   style={styles.avatarContainer}
-                  overflow="hidden"
                   radius={99}
                   center
                   marginTop={-50}
@@ -194,15 +190,6 @@ const ProfileOther = () => {
                     }}
                     lightbox
                   />
-                  <Obx>
-                    {() =>
-                      state.updatingAvatar && (
-                        <View style={styles.uploadingView}>
-                          <LoadingIndicator size={16} color={Colors.white} />
-                        </View>
-                      )
-                    }
-                  </Obx>
                 </Box>
               )}
             </Obx>
@@ -846,7 +833,7 @@ const styles = XStyleSheet.create({
     shadowColor: Colors.primary,
     shadowOffset: {
       width: 0,
-      height: 8,
+      height: 2,
     },
     shadowOpacity: 0.5,
     shadowRadius: 4.65,
@@ -866,7 +853,7 @@ const styles = XStyleSheet.create({
     shadowColor: Colors.primary,
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 2,
     },
     shadowOpacity: 0.5,
     shadowRadius: 4.65,
