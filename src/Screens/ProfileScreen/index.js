@@ -33,7 +33,7 @@ import { flowResult } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Image, TouchableOpacity, View } from 'react-native'
+import { Image, TouchableOpacity, View, Keyboard } from 'react-native'
 import InAppBrowser from 'react-native-inappbrowser-reborn'
 import Animated, {
   interpolate,
@@ -511,6 +511,7 @@ const ProfileScreen = () => {
         snapPoints={[screenHeight * 0.8, screenHeight - top]}
         ref={editSheetRef}
         index={-1}
+        onClose={() => Keyboard.dismiss()}
       >
         <EditProfileNavigator ref={editNavigatorRef} />
       </AppBottomSheet>

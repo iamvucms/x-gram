@@ -8,6 +8,7 @@ import {
   Box,
   Container,
   ErrorLabel,
+  KeyboardSpacer,
   LoadingIndicator,
   Obx,
   Padding,
@@ -19,6 +20,7 @@ import { navigate } from '@/Navigators'
 import { searchUsers } from '@/Services/Api'
 import { createPost, userStore } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
+import { isIOS } from '@/Utils'
 import { autorun, flowResult, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useEffect } from 'react'
@@ -113,7 +115,7 @@ const CreatePost = ({ route }) => {
               padding={12}
               radius={6}
               height={90}
-              backgroundColor={Colors.primary25}
+              backgroundColor={Colors.primary10}
             >
               <Obx>
                 {() => (
@@ -210,6 +212,7 @@ const CreatePost = ({ route }) => {
             />
           )}
         </Obx>
+        {isIOS && <KeyboardSpacer topSpacing={16 - bottom} />}
       </Box>
       <Obx>{() => state.creating && <LoadingIndicator overlay />}</Obx>
     </Container>

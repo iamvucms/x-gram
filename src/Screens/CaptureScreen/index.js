@@ -44,12 +44,14 @@ const RecordState = {
 }
 const CaptureScreen = ({ route }) => {
   const { type, editable, editorProps, disableVideo } = route.params || {}
+
   const { Images } = useAppTheme()
   const { t } = useTranslation()
   const cameraRef = useRef()
   const devices = useCameraDevices()
   const zoom = useSharedValue(1)
   const switchAnim = useSharedValue(type === 'photo' ? 0 : 1)
+
   const state = useLocalObservable(() => ({
     flash: false,
     setFlash: value => (state.flash = value),
@@ -66,17 +68,21 @@ const CaptureScreen = ({ route }) => {
   }))
   useEffect(() => {
     const init = async () => {
-      const cameraPermission = await Camera.requestCameraPermission()
-      if (cameraPermission !== 'authorized') {
-        diaLogStore.showDiaLog({
-          title: t('capture.camera_permission_title'),
-          message: t('capture.camera_permission_description'),
-          dialogIcon: Images.pack1_3,
-          buttonText: t('capture.go_to_settings'),
-          onPress: () => {
-            Linking.openSettings()
-          },
-        })
+      try {
+        const cameraPermission = await Camera.requestCameraPermission()
+        if (cameraPermission !== 'authorized') {
+          diaLogStore.showDiaLog({
+            title: t('capture.camera_permission_title'),
+            message: t('capture.camera_permission_description'),
+            dialogIcon: Images.pack1_3,
+            buttonText: t('capture.go_to_settings'),
+            onPress: () => {
+              Linking.openSettings()
+            },
+          })
+        }
+      } catch (e) {
+        console.log(e)
       }
     }
     init()

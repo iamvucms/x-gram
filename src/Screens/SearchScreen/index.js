@@ -13,6 +13,7 @@ import {
   AppText,
   Box,
   Container,
+  KeyboardSpacer,
   LoadingIndicator,
   Obx,
   Padding,
@@ -37,6 +38,7 @@ import {
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
+import { isIOS } from '@/Utils'
 import { MasonryFlashList } from '@shopify/flash-list'
 import { autorun, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
@@ -521,6 +523,7 @@ const SearchScreen = () => {
                   )}
                 </Obx>
               </ScrollView>
+              {isIOS && <KeyboardSpacer />}
             </Box>
           )
         }
