@@ -37,6 +37,7 @@ import {
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
+import { getMediaUri } from '@/Utils'
 import { MasonryFlashList } from '@shopify/flash-list'
 import { autorun, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
@@ -264,7 +265,7 @@ const SearchScreen = () => {
           <AppImage
             style={styles.userAvatar}
             source={{
-              uri: item.avatar_url,
+              uri: getMediaUri(item.avatar_url),
             }}
           />
           <Box fill paddingLeft={12}>
@@ -576,14 +577,14 @@ export const GridItem = memo(({ item, index }) => {
           muted
           renderToHardwareTextureAndroid
           source={{
-            uri: item.medias[0].url,
+            uri: getMediaUri(item.medias[0].url),
           }}
           style={mediaStyle}
         />
       ) : (
         <AppImage
           source={{
-            uri: item.medias[0].url,
+            uri: getMediaUri(item.medias[0].url),
           }}
           containerStyle={mediaStyle}
         />

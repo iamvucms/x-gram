@@ -19,7 +19,7 @@ import {
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
-import { isIOS } from '@/Utils'
+import { getMediaUri, isIOS } from '@/Utils'
 import { autorun, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback, useEffect, useRef } from 'react'
@@ -104,7 +104,7 @@ const FollowScreen = ({ route }) => {
         <AppImage
           disabled
           source={{
-            uri: item.avatar_url,
+            uri: getMediaUri(item.avatar_url),
           }}
           style={styles.avatar}
         />
@@ -145,7 +145,7 @@ const FollowScreen = ({ route }) => {
         <AppImage
           disabled
           source={{
-            uri: item.avatar_url,
+            uri: getMediaUri(item.avatar_url),
           }}
           style={styles.avatar}
         />

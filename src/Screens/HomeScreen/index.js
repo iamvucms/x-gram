@@ -10,7 +10,7 @@ import {
 import { PageName } from '@/Config'
 import { ShareType } from '@/Models'
 import { navigate } from '@/Navigators'
-import { homeStore, initData } from '@/Stores'
+import { chatStore, homeStore, initData } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
 import { useFocusEffect } from '@react-navigation/native'
 import { useLocalObservable } from 'mobx-react-lite'
@@ -20,6 +20,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated'
 import { HomeMenu, StoryBar } from './HomeScreenComponents'
+import { autorun } from 'mobx'
 
 const SheetType = {
   COMMENT: 'COMMENT',
@@ -42,6 +43,10 @@ const HomeScreen = () => {
   }))
   useEffect(() => {
     initData()
+    const dispose = autorun(() => {
+      console.log('homeStore.posts', chatStore.onlineUsers)
+    })
+    return () => dispose()
   }, [])
   useFocusEffect(
     useCallback(() => {

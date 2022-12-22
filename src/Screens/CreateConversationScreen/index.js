@@ -16,7 +16,7 @@ import { mockUsers } from '@/Models'
 import { goBack, navigateReplace } from '@/Navigators'
 import { chatStore, userStore } from '@/Stores'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
-import { isIOS } from '@/Utils'
+import { getMediaUri, isIOS } from '@/Utils'
 import { autorun, flowResult, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback, useEffect } from 'react'
@@ -97,7 +97,7 @@ const CreateConversationScreen = ({ route }) => {
       <TouchableOpacity onPress={onPress} style={styles.userBtn}>
         <AppImage
           source={{
-            uri: item.avatar_url,
+            uri: getMediaUri(item.avatar_url),
           }}
           containerStyle={styles.avatar}
         />
@@ -190,7 +190,7 @@ const CreateConversationScreen = ({ route }) => {
               <Box marginLeft={12} marginRight={8}>
                 <AppImage
                   source={{
-                    uri: state.receiver.avatar_url,
+                    uri: getMediaUri(state.receiver.avatar_url),
                   }}
                   containerStyle={styles.receiverAvatar}
                 />

@@ -12,6 +12,7 @@ import { CreateType, MediaType, mockStories } from '@/Models'
 import { navigate } from '@/Navigators'
 import { createStory } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
+import { getMediaUri } from '@/Utils'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { memo, useCallback, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -211,7 +212,7 @@ const StoryItem = memo(({ story, index, scrollY, onPress }) => {
           blurHashEnabled={false}
           onPress={onPress}
           containerStyle={styles.avatarImg}
-          source={{ uri: story.posted_by.avatar_url }}
+          source={{ uri: getMediaUri(story.posted_by.avatar_url) }}
         />
       </Animated.View>
       <Padding top={7} />

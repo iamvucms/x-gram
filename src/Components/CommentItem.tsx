@@ -12,6 +12,7 @@ import AppImage from './AppImage'
 import AppText from './AppText'
 import Box from './Box'
 import Padding from './Padding'
+import { getMediaUri } from '@/Utils'
 interface CommentItemProps {
   comment: any
   insideBottomSheet?: boolean
@@ -63,7 +64,7 @@ const CommentItem = ({
             <AppImage
               blurHashEnabled={false}
               source={{
-                uri: comment.commented_by.avatar_url,
+                uri: getMediaUri(comment.commented_by.avatar_url),
               }}
               containerStyle={styles.avatarView}
             />

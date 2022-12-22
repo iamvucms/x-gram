@@ -51,14 +51,26 @@ export default class ChatStore {
         timeout: 10000,
       })
       this.socket.on('connect', () => {
-        console.log('connected')
+        this.socket.emit('onConnection', {
+          id: userStore.userInfo.user_id,
+        })
         resolve(true)
+      })
+      this.socket.on('getUserOnline', onlineUids => {
+        const obj = {}
+        for (const id of onlineUids) {
+          obj[id] = true
+        }
+        this.setOnlineUsers(obj)
+      })
+      this.socket.on('userDisconnected', uid => {
+        this.removeOnlineUser(uid)
+      })
+      this.socket.on('userConnected', uid => {
+        this.addOnlineUser(uid)
       })
       this.socket.on('disconnect', () => {
         console.log('disconnected')
-      })
-      this.socket.on('onlineUsers', onlineUsers => {
-        this.setOnlineUsers(onlineUsers)
       })
       this.socket.on('newMessage', ({ message, conversation_id }) => {
         this.addMessage(conversation_id, message)
@@ -202,7 +214,7 @@ export default class ChatStore {
         status: MessageStatus.SENDING,
       },
       user,
-    })
+    } as any)
   }
   deleteUnSentMessages(msgId) {
     this.messages = this.messages.filter(item => item.message_id !== msgId)
@@ -241,6 +253,12 @@ export default class ChatStore {
   }
   setOnlineUsers(onlineUsers) {
     this.onlineUsers = onlineUsers
+  }
+  addOnlineUser(userId) {
+    this.onlineUsers[userId] = true
+  }
+  removeOnlineUser(userId) {
+    delete this.onlineUsers[userId]
   }
   resetOnlineUsers() {
     this.onlineUsers = {}

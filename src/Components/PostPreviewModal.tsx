@@ -20,6 +20,7 @@ import AppText from './AppText'
 import Box from './Box'
 import Padding from './Padding'
 import Position from './Position'
+import { getMediaUri } from '@/Utils'
 interface PostPreviewModalProps {
   x: number
   y: number
@@ -84,7 +85,7 @@ const PostPreviewModal = ({
                 <FastImage
                   style={styles.imageView}
                   source={{
-                    uri: post?.medias?.[0]?.url,
+                    uri: getMediaUri(post?.medias?.[0]?.url),
                   }}
                 />
                 <Position left={16} right={16} top={16} zIndex={10}>
@@ -94,7 +95,7 @@ const PostPreviewModal = ({
                       <AppImage
                         containerStyle={styles.avatarImg}
                         source={{
-                          uri: post?.posted_by?.avatar_url,
+                          uri: getMediaUri(post?.posted_by?.avatar_url),
                         }}
                       />
                     </View>

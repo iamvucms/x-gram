@@ -4,7 +4,7 @@ import Endpoint from '../Endpoint'
 export const uploadImage = (uri, mimeType) => {
   const data = new FormData()
   data.append('medias', {
-    uri,
+    uri: uri.startsWith('file://') ? uri : `file://${uri}`,
     name: uri.split('/').pop(),
     type: mimeType,
   })

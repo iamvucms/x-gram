@@ -34,7 +34,7 @@ import {
   screenHeight,
   screenWidth,
 } from '@/Theme'
-import { getHitSlop, isIOS } from '@/Utils'
+import { getHitSlop, getMediaUri, isIOS } from '@/Utils'
 import Clipboard from '@react-native-clipboard/clipboard'
 import { autorun, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
@@ -122,7 +122,7 @@ const ConversationDetailScreen = () => {
           <View>
             <AppImage
               containerStyle={styles.userAvatar}
-              source={{ uri: conversation?.user?.avatar_url }}
+              source={{ uri: getMediaUri(conversation?.user?.avatar_url) }}
             />
             <Obx>
               {() => (
@@ -415,7 +415,7 @@ const MessageItem = memo(({ message, onOpenOption }) => {
                 {!isUser && (
                   <AppImage
                     source={{
-                      uri: message.sent_by.avatar_url,
+                      uri: getMediaUri(message.sent_by.avatar_url),
                     }}
                     containerStyle={styles.msgUserAvatar}
                   />
@@ -525,7 +525,9 @@ const MessageItem = memo(({ message, onOpenOption }) => {
                           <Box center marginRight={8}>
                             <FastImage
                               source={{
-                                uri: message.ref_data.posted_by.avatar_url,
+                                uri: getMediaUri(
+                                  message.ref_data.posted_by.avatar_url,
+                                ),
                               }}
                               style={[
                                 styles.previewPostAvatar,
@@ -568,7 +570,7 @@ const MessageItem = memo(({ message, onOpenOption }) => {
                         </Box>
                         <FastImage
                           source={{
-                            uri: message.ref_data.medias[0].url,
+                            uri: getMediaUri(message.ref_data.medias[0].url),
                           }}
                           style={[
                             styles.previewMedia,

@@ -24,6 +24,7 @@ import {
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
+import { getMediaUri } from '@/Utils'
 import { FlashList } from '@shopify/flash-list'
 import { observer } from 'mobx-react-lite'
 import moment from 'moment'
@@ -219,7 +220,7 @@ const ConversationItem = observer(({ conversation, onRemove = () => {} }) => {
           <View style={styles.avatarView}>
             <AppImage
               containerStyle={styles.avatarImg}
-              source={{ uri: conversation.user.avatar_url }}
+              source={{ uri: getMediaUri(conversation.user.avatar_url) }}
             />
             <Obx>
               {() => (

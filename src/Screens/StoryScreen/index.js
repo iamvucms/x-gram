@@ -25,7 +25,7 @@ import { goBack } from '@/Navigators'
 import { ShareType } from '@/Models'
 import { diaLogStore, homeStore, userStore } from '@/Stores'
 import { Colors, Layout, XStyleSheet, screenHeight, screenWidth } from '@/Theme'
-import { getHitSlop } from '@/Utils'
+import { getHitSlop, getMediaUri } from '@/Utils'
 import { useKeyboard } from '@react-native-community/hooks'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, {
@@ -501,7 +501,7 @@ const StoryPage = forwardRef(
                 disabled
                 style={styles.storyImage}
                 source={{
-                  uri: story.medias[state.index].url,
+                  uri: getMediaUri(story.medias[state.index].url),
                 }}
               />
             )}
@@ -530,7 +530,7 @@ const StoryPage = forwardRef(
                   <AppImage
                     containerStyle={styles.avatarImg}
                     source={{
-                      uri: story.posted_by.avatar_url,
+                      uri: getMediaUri(story.posted_by.avatar_url),
                     }}
                   />
                 </View>

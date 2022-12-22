@@ -23,7 +23,7 @@ import {
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
-import { formatAmount } from '@/Utils'
+import { formatAmount, getMediaUri } from '@/Utils'
 import { autorun } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import moment from 'moment'
@@ -128,7 +128,7 @@ const PostItem = ({
                 {() => (
                   <Video
                     source={{
-                      uri: post.medias[state.imageIndex].url,
+                      uri: getMediaUri(post.medias[state.imageIndex].url),
                     }}
                     style={styles.imageContainer}
                     resizeMode="cover"
@@ -147,7 +147,7 @@ const PostItem = ({
                 onPress={onImagePress}
                 onLongPress={onOptionPress}
                 source={{
-                  uri: post.medias[state.imageIndex].url,
+                  uri: getMediaUri(post.medias[state.imageIndex].url),
                 }}
                 containerStyle={styles.imageContainer}
               />
@@ -178,7 +178,7 @@ const PostItem = ({
               <AppImage
                 containerStyle={styles.avatarImg}
                 source={{
-                  uri: post.posted_by.avatar_url,
+                  uri: getMediaUri(post.posted_by.avatar_url),
                 }}
               />
             </View>

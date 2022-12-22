@@ -20,6 +20,7 @@ import { navigate } from '@/Navigators'
 import { searchUsers } from '@/Services/Api'
 import { createPost, userStore } from '@/Stores'
 import { Colors, XStyleSheet, screenHeight } from '@/Theme'
+import { getMediaUri } from '@/Utils'
 import { autorun, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useEffect, useRef } from 'react'
@@ -179,7 +180,7 @@ const CreatePost = ({ route }) => {
                       >
                         <AppImage
                           source={{
-                            uri: user.avatar_url,
+                            uri: getMediaUri(user.avatar_url),
                           }}
                           containerStyle={styles.avatar}
                         />

@@ -7,6 +7,7 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import React, { useCallback, useMemo } from 'react'
 import { TouchableOpacity, View } from 'react-native'
 import { AppImage, CreateButton, Obx } from '.'
+import { getMediaUri } from '@/Utils'
 
 const BottomTabBar = ({ state }: BottomTabBarProps) => {
   const tabBars = useMemo(
@@ -42,7 +43,7 @@ const BottomTabBar = ({ state }: BottomTabBarProps) => {
                 {...restProps}
                 containerStyle={[styles.avatar, { borderColor: color }]}
                 source={{
-                  uri: userStore?.userInfo?.avatar_url,
+                  uri: getMediaUri(userStore?.userInfo?.avatar_url),
                 }}
               />
             )}

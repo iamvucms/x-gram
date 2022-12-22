@@ -18,6 +18,7 @@ import { notiStore } from '@/Stores'
 import { AppFonts, Colors, ResponsiveHeight, XStyleSheet } from '@/Theme'
 import {
   getHitSlop,
+  getMediaUri,
   getNotificationText,
   groupNotificationByDate,
   processNavigationNotification,
@@ -141,7 +142,9 @@ const NotificationScreen = () => {
                   <Box paddingVertical={12}>
                     <AppImage
                       source={{
-                        uri: state.selectedNotification.user.avatar_url,
+                        uri: getMediaUri(
+                          state.selectedNotification.user.avatar_url,
+                        ),
                       }}
                       containerStyle={[styles.avatar, styles.previewNotiAvatar]}
                     />
@@ -262,7 +265,7 @@ const NotificationItem = memo(({ item, onLongPress, onPress }) => {
           <AppImage
             disabled
             source={{
-              uri: item?.user?.avatar_url,
+              uri: getMediaUri(item?.user?.avatar_url),
             }}
             containerStyle={styles.avatar}
           />

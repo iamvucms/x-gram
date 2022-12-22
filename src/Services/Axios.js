@@ -1,10 +1,8 @@
-import { Config } from '@/Config'
 import { userStore } from '@/Stores'
 import { generateHeader } from '@/Utils'
 import axios from 'axios'
 
 const API = axios.create({
-  baseURL: Config.BASE_URL,
   timeout: 10000,
 })
 

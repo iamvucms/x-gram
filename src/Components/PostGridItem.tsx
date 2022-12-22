@@ -6,6 +6,7 @@ import {
   screenWidth,
   XStyleSheet,
 } from '@/Theme'
+import { getMediaUri } from '@/Utils'
 import React, { memo, useCallback, useRef } from 'react'
 import { Pressable, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
@@ -57,7 +58,7 @@ const PostGridItem = ({
       <Animated.View style={Layout.fill} entering={FadeIn}>
         <FastImage
           source={{
-            uri: post?.medias?.[0]?.url,
+            uri: getMediaUri(post?.medias?.[0]?.url),
           }}
           style={Layout.fill}
         />

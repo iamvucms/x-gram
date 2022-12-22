@@ -26,7 +26,7 @@ import { navigate } from '@/Navigators'
 import { EditProfileNavigator } from '@/Navigators/Application'
 import { userStore } from '@/Stores'
 import { Colors, Layout, XStyleSheet, screenHeight } from '@/Theme'
-import { formatAmount } from '@/Utils'
+import { formatAmount, getMediaUri } from '@/Utils'
 import { BlurView } from '@react-native-community/blur'
 import { createNavigationContainerRef } from '@react-navigation/native'
 import { flowResult } from 'mobx'
@@ -212,7 +212,7 @@ const ProfileScreen = () => {
                   <AppImage
                     containerStyle={styles.avatar}
                     source={{
-                      uri: userStore.userInfo.avatar_url,
+                      uri: getMediaUri(userStore.userInfo.avatar_url),
                     }}
                     lightbox
                   />

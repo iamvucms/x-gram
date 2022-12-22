@@ -18,6 +18,7 @@ import { goBack } from '@/Navigators'
 import { searchUsers } from '@/Services/Api'
 import { findPostById, updatePostRequest } from '@/Stores'
 import { Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
+import { getMediaUri } from '@/Utils'
 import { autorun, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback, useEffect, useRef } from 'react'
@@ -122,7 +123,7 @@ const EditPostScreen = ({ route }) => {
           <Row row align="center">
             <AppImage
               source={{
-                uri: post.posted_by.avatar_url,
+                uri: getMediaUri(post.posted_by.avatar_url),
               }}
               containerStyle={styles.avatar}
             />
@@ -194,7 +195,7 @@ const EditPostScreen = ({ route }) => {
                       >
                         <AppImage
                           source={{
-                            uri: user.avatar_url,
+                            uri: getMediaUri(user.avatar_url),
                           }}
                           containerStyle={styles.mentionAvatar}
                         />

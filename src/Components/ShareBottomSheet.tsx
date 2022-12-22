@@ -1,7 +1,7 @@
 import { LinkSvg, SendSvg, ShareSvg, SmsSvg, WeChatSvg } from '@/Assets/Svg'
 import { mockUsers, Post, ShareType, Story, User } from '@/Models'
 import { AppFonts, Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
-import { isAndroid, isIOS } from '@/Utils'
+import { getMediaUri, isAndroid, isIOS } from '@/Utils'
 import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { forwardRef, memo, useCallback, useEffect } from 'react'
@@ -53,7 +53,7 @@ const ShareBottomSheet = forwardRef(
         <Box paddingVertical={8} paddingHorizontal={16} row align="center">
           <AppImage
             source={{
-              uri: item.avatar_url,
+              uri: getMediaUri(item.avatar_url),
             }}
             containerStyle={styles.avatarImg}
           />
@@ -99,7 +99,7 @@ const ShareBottomSheet = forwardRef(
         <View style={Layout.fill}>
           <View style={styles.messageView}>
             <AppImage
-              source={{ uri: data.medias[0].url }}
+              source={{ uri: getMediaUri(data.medias[0].url) }}
               containerStyle={styles.referralImage}
             />
             <Obx>
