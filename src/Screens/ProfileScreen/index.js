@@ -1,7 +1,6 @@
 import {
   BookMarkSvg,
   CameraSvg,
-  DotsSvg,
   EditSvg,
   GridSvg,
   LinkSvg,
@@ -26,7 +25,7 @@ import { useAppTheme } from '@/Hooks'
 import { navigate } from '@/Navigators'
 import { EditProfileNavigator } from '@/Navigators/Application'
 import { userStore } from '@/Stores'
-import { Colors, Layout, screenHeight, screenWidth, XStyleSheet } from '@/Theme'
+import { Colors, Layout, XStyleSheet, screenHeight } from '@/Theme'
 import { formatAmount } from '@/Utils'
 import { BlurView } from '@react-native-community/blur'
 import { createNavigationContainerRef } from '@react-navigation/native'
@@ -206,7 +205,6 @@ const ProfileScreen = () => {
               {() => (
                 <Box
                   style={styles.avatarContainer}
-                  overflow="hidden"
                   radius={99}
                   center
                   marginTop={-50}
@@ -577,8 +575,9 @@ const styles = XStyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
-    bottom: 15,
+    bottom: 0,
     right: 0,
+    zIndex: 99,
   },
   optionBtn: {
     flex: 1,

@@ -74,7 +74,7 @@ export const navigateToProfile = userId => {
 }
 export const navigateToConversationDetail = user => {
   const conversation = chatStore.getConversationByUserId(user.user_id)
-  if (!conversation) {
+  if (conversation) {
     chatStore.fetchMessages(conversation.conversation_id)
     navigate(PageName.ConversationDetailScreen)
   } else {

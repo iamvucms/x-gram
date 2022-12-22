@@ -56,7 +56,7 @@ const NotificationScreen = () => {
           </AppText>
         </Box>
         <LinearGradient
-          colors={[Colors.white, Colors.transparent]}
+          colors={[Colors.white, Colors.white006]}
           style={styles.sectionAura}
         />
       </View>
