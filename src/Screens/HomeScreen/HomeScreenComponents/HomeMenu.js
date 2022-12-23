@@ -24,7 +24,7 @@ const HomeMenu = () => {
       <Box
         row
         align="center"
-        padding={3}
+        paddingVertical={3}
         backgroundColor={Colors.white006}
         radius={999}
       >

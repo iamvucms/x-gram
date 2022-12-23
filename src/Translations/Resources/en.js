@@ -157,6 +157,7 @@ export default {
     dragHereToRemove: 'Drag here to remove',
   },
   profile: {
+    view_cover: 'View Cover',
     follow: 'Follow',
     following: 'Following',
     followers: 'Followers',

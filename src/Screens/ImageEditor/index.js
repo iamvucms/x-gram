@@ -41,7 +41,7 @@ import {
 } from '@/Theme'
 import { getHitSlop, isIOS } from '@/Utils'
 import { useLocalObservable } from 'mobx-react-lite'
-import React, { Fragment, memo, useCallback, useRef } from 'react'
+import React, { Fragment, memo, useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Image, ImageBackground, TouchableOpacity, View } from 'react-native'
 import {
@@ -209,6 +209,7 @@ const ImageEditor = ({ route }) => {
     }
     state.setProcessing(false)
   }, [])
+  const { bottom } = useSafeAreaInsets()
   return (
     <Container disableTop style={styles.rootView}>
       <Obx>
@@ -302,14 +303,32 @@ const ImageEditor = ({ route }) => {
           sheetRef.current?.close?.()
         }}
       />
-      <Animated.View style={[styles.trashBar, trashBarStyle]}>
-        <Animated.View style={[styles.trashBarBg, trashBgStyle]} />
+      <Animated.View
+        style={[
+          styles.trashBar,
+          {
+            height: ResponsiveHeight(50) + bottom / 2,
+          },
+          trashBarStyle,
+        ]}
+      >
+        <Animated.View
+          style={[
+            styles.trashBarBg,
+            {
+              height: ResponsiveHeight(50) + bottom / 2,
+            },
+            trashBgStyle,
+          ]}
+        />
         <TrashBinSvg color={Colors.white} />
         <AppText color={Colors.white} fontSize={10}>
           {t('imageEditor.dragHereToRemove')}
         </AppText>
       </Animated.View>
-      <Obx>{() => state.processing && <LoadingIndicator overlay />}</Obx>
+      <Obx>
+        {() => <LoadingIndicator overlayVisible={state.processing} overlay />}
+      </Obx>
     </Container>
   )
 }
@@ -481,7 +500,7 @@ const AnimatedImage = memo(({ image, drawable, onDrew }) => {
       </Obx>
     )
   }, [])
-
+  const { bottom } = useSafeAreaInsets()
   return (
     <Box fill>
       <PanGestureHandler onGestureEvent={drawHandler}>
@@ -513,11 +532,13 @@ const AnimatedImage = memo(({ image, drawable, onDrew }) => {
                   onPress={() => {
                     state.popPath()
                   }}
+                  style={styles.drawControlBtn}
                   backgroundColor={Colors.black50}
                   text={t('undo')}
                 />
                 <AppButton
                   onPress={() => onDrew && onDrew()}
+                  style={styles.drawControlBtn}
                   backgroundColor={Colors.black50}
                   text={t('done')}
                 />
@@ -558,7 +579,7 @@ const AnimatedImage = memo(({ image, drawable, onDrew }) => {
             entering={FadeInDown}
             style={[styles.bottomDrawControlView, drawColorViewStyle]}
           >
-            <Box height={44}>
+            <Box height={44 + bottom / 2}>
               <FlatList
                 data={DrawColors}
                 horizontal
@@ -670,11 +691,20 @@ const StickerLayer = memo(({ stickers = [], trashAnim, trashY }) => {
 
   return stickers.map(renderStickerItem)
 })
-const activeStickerTrashY = screenHeight / 2 - (screenWidth / 4) * 0.4 - 50
+
 const Sticker = memo(({ sticker, trashY, trashAnim }) => {
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
   const zIndex = useSharedValue(sticker.zIndex)
+  const { bottom } = useSafeAreaInsets()
+  const activeStickerTrashY = useMemo(
+    () =>
+      screenHeight / 2 -
+      (screenWidth / 4) * 0.4 -
+      ResponsiveHeight(50) -
+      bottom / 2,
+    [bottom],
+  )
   const panHandler = useAnimatedGestureHandler({
     onStart: (_, ctx) => {
       ctx.startX = translateX.value
@@ -891,7 +921,7 @@ const TextLayer = memo(({ texts, trashY, trashAnim }) => {
   )
   return texts.map(renderTextItem)
 })
-const activeTextTrashY = screenHeight / 2 - ResponsiveHeight(20) - 50
+
 const XText = memo(
   ({
     type,
@@ -904,6 +934,11 @@ const XText = memo(
     trashY,
     trashAnim,
   }) => {
+    const { bottom } = useSafeAreaInsets()
+    const activeTextTrashY = useMemo(
+      () => screenHeight / 2 - ResponsiveHeight(70) - bottom / 2,
+      [bottom],
+    )
     const translateX = useSharedValue(0)
     const translateY = useSharedValue(0)
     const zIndex = useSharedValue(zIndexProp)
@@ -935,7 +970,7 @@ const XText = memo(
       },
       onEnd: () => {
         trashY.value = withTiming(0)
-        if (trashAnim.value === 1) {
+        if (translateY.value >= activeTextTrashY) {
           zIndex.value = -99
           trashAnim.value = withTiming(0)
         }
@@ -1096,7 +1131,6 @@ const styles = XStyleSheet.create({
     backgroundColor: Colors.black50,
   },
   trashBar: {
-    height: 50,
     backgroundColor: Colors.black50,
     position: 'absolute',
     bottom: 0,
@@ -1160,6 +1194,7 @@ const styles = XStyleSheet.create({
     bottom: 16,
     right: 16,
     zIndex: 99,
+    height: 40,
   },
   headerDrawControlView: {
     position: 'absolute',
@@ -1174,5 +1209,8 @@ const styles = XStyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 101,
+  },
+  drawControlBtn: {
+    height: 40,
   },
 })

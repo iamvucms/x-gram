@@ -18,6 +18,7 @@ import {
   Obx,
   Padding,
   PostItem,
+  PostOptionBottomSheet,
   ShareBottomSheet,
 } from '@/Components'
 import { MessageType, ShareType } from '@/Models'
@@ -44,6 +45,7 @@ const PostDetailScreen = ({ route }) => {
   const { postId, commentId } = route.params
   const { t } = useTranslation()
   const optionSheetRef = useRef()
+  const postOptionRef = useRef()
   const listRef = useRef()
   const state = useLocalObservable(() => ({
     post: null,
@@ -122,6 +124,7 @@ const PostDetailScreen = ({ route }) => {
           ) : (
             <Fragment>
               <PostItem
+                onOptionPress={() => postOptionRef.current?.snapTo?.(0)}
                 onCommentPress={() => {
                   listRef.current?.scrollToIndex?.({ index: 0, animated: true })
                 }}
@@ -199,6 +202,7 @@ const PostDetailScreen = ({ route }) => {
         backgroundStyle={styles.sheetHeader}
         ref={optionSheetRef}
         snapPoints={[screenHeight * 0.5]}
+        handleIndicatorStyle={{ backgroundColor: Colors.white50 }}
       >
         <Box
           fill
@@ -343,6 +347,18 @@ const PostDetailScreen = ({ route }) => {
           )
         }
       </Obx>
+      <Obx>
+        {() =>
+          !!state.post && (
+            <PostOptionBottomSheet
+              ref={postOptionRef}
+              post={state.post}
+              index={-1}
+              onClose={() => postOptionRef?.current?.close?.()}
+            />
+          )
+        }
+      </Obx>
     </Container>
   )
 }
@@ -365,9 +381,6 @@ const styles = XStyleSheet.create({
     paddingVertical: 12,
   },
   sheetHeader: {
-    borderWidth: 0.5,
-    borderColor: Colors.border,
-    borderBottomWidth: 0,
-    marginHorizontal: -0.5,
+    opacity: 0,
   },
 })

@@ -141,6 +141,7 @@ const AuthStack = () => {
       <Stack.Screen
         options={{
           animation: 'slide_from_bottom',
+          gestureDirection: 'vertical',
         }}
         name={PageName.StoryScreen}
         component={StoryScreen}

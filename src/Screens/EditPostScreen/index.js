@@ -313,7 +313,9 @@ const EditPostScreen = ({ route }) => {
           </View>
         </TouchableOpacity>
       </AppBottomSheet>
-      <Obx>{() => state.updating && <LoadingIndicator overlay />}</Obx>
+      <Obx>
+        {() => <LoadingIndicator overlayVisible={state.updating} overlay />}
+      </Obx>
     </Container>
   )
 }

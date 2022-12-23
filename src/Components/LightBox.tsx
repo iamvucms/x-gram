@@ -1,5 +1,5 @@
 import { CloseSvg } from '@/Assets/Svg'
-import { Colors, Layout, screenHeight, screenWidth, XStyleSheet } from '@/Theme'
+import { Colors, Layout, XStyleSheet, screenHeight, screenWidth } from '@/Theme'
 import { getHitSlop } from '@/Utils'
 import React, { memo, useEffect } from 'react'
 import {
@@ -16,14 +16,16 @@ import {
   PinchGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler'
 import Animated, {
+  Extrapolate,
   FadeInRight,
+  ZoomIn,
+  interpolate,
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withDelay,
   withTiming,
-  ZoomIn,
 } from 'react-native-reanimated'
 import AppImage from './AppImage'
 interface LightBoxProps {
@@ -36,6 +38,7 @@ const LightBox = ({ visible, source, onRequestClose }: LightBoxProps) => {
   const focalX = useSharedValue(0)
   const focalY = useSharedValue(0)
   const translateY = useSharedValue(0)
+  const rotate = useSharedValue(0)
   const onClose = () => {
     translateY.value = withTiming(screenHeight, {}, isFinished => {
       if (isFinished) {
@@ -59,6 +62,7 @@ const LightBox = ({ visible, source, onRequestClose }: LightBoxProps) => {
           return
         }
         scale.value = event.scale
+
         focalX.value = event.focalX - screenWidth / 2
         focalY.value = event.focalY - screenHeight / 2
       },
@@ -71,12 +75,22 @@ const LightBox = ({ visible, source, onRequestClose }: LightBoxProps) => {
   const panHandler = useAnimatedGestureHandler({
     onActive: event => {
       translateY.value = event.translationY
+      const ratio = Math.abs(event.x - screenWidth / 2) / (screenWidth / 2)
+      const nextDeg =
+        (event.x > screenWidth / 2
+          ? event.translationY / 5
+          : -event.translationY / 5) * ratio
+      if (nextDeg > 90 || nextDeg < -90) {
+        return
+      }
+      rotate.value = nextDeg
     },
     onEnd: event => {
       if (event.translationY > screenHeight / 3) {
         runOnJS(onClose)()
       } else {
         translateY.value = withTiming(0)
+        rotate.value = withTiming(0)
       }
     },
   })
@@ -91,7 +105,29 @@ const LightBox = ({ visible, source, onRequestClose }: LightBoxProps) => {
       {
         translateY: translateY.value,
       },
+      {
+        rotateZ: `${interpolate(
+          rotate.value,
+          [-90, 90],
+          [-90, 90],
+          Extrapolate.CLAMP,
+        )}deg`,
+      },
+      {
+        scale: interpolate(
+          translateY.value,
+          [0, screenHeight],
+          [1, 0],
+          Extrapolate.CLAMP,
+        ),
+      },
     ],
+    opacity: interpolate(
+      translateY.value,
+      [0, screenHeight],
+      [1, 0],
+      Extrapolate.CLAMP,
+    ),
   }))
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: 1 - translateY.value / screenHeight,

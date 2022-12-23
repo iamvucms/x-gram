@@ -328,6 +328,9 @@ const CreatePost = ({ route }) => {
         </TouchableOpacity>
       </AppBottomSheet>
       <Obx>{() => state.creating && <LoadingIndicator overlay />}</Obx>
+      <Obx>
+        {() => <LoadingIndicator overlayVisible={state.creating} overlay />}
+      </Obx>
     </Container>
   )
 }

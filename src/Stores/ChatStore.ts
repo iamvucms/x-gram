@@ -29,8 +29,8 @@ export default class ChatStore {
   messagePage = 1
   conversationId = null
   socket = null
-  themeColorIdx = 0
-  themeBackgroundIdx = -1
+  themeColorIdxes: { [key: string]: number } = {}
+  themeBackgroundIdxes: { [key: string]: number } = {}
   constructor() {
     makeAutoObservable(this)
     makePersistExcept(this, 'ChatStore', [
@@ -272,10 +272,16 @@ export default class ChatStore {
     this.messagePage = 1
   }
   setThemeColorIndex(index) {
-    this.themeColorIdx = index
+    this.themeColorIdxes[this.conversationId] = index
   }
   setThemeBackgroundIndex(index) {
-    this.themeBackgroundIdx = index
+    this.themeBackgroundIdxes[this.conversationId] = index
+  }
+  get themeColorIdx() {
+    return this.themeColorIdxes[this.conversationId] || 0
+  }
+  get themeBackgroundIdx() {
+    return this.themeBackgroundIdxes[this.conversationId] || -1
   }
   get unreadConversationCount() {
     return this.conversations.filter(

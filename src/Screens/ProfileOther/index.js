@@ -7,6 +7,7 @@ import {
   CommentSvg,
   CopySvg,
   DotsSvg,
+  EyeOnSvg,
   GenderSvg,
   GridSvg,
   InforSvg,
@@ -23,7 +24,6 @@ import {
   AppText,
   Box,
   Container,
-  LoadingIndicator,
   Obx,
   Padding,
   Position,
@@ -69,6 +69,7 @@ const ProfileOther = () => {
   const scrollY = useSharedValue(0)
   const headerButtonAnim = useSharedValue(0)
   const optionSheetRef = useRef(null)
+  const coverRef = useRef(null)
   const state = useLocalObservable(() => ({
     tabType: TabType.Post,
     previewPost: null,
@@ -540,6 +541,9 @@ const ProfileOther = () => {
           <Obx>
             {() => (
               <AppImage
+                lightbox
+                disabled
+                ref={coverRef}
                 source={{
                   uri: profileStore.profileInfo.cover_url,
                 }}
@@ -607,7 +611,7 @@ const ProfileOther = () => {
           />
         )}
       </Obx>
-      <AppBottomSheet ref={optionSheetRef} snapPoints={[screenHeight * 0.4]}>
+      <AppBottomSheet ref={optionSheetRef} snapPoints={[screenHeight * 0.35]}>
         <Box
           paddingVertical={12}
           center
@@ -619,6 +623,19 @@ const ProfileOther = () => {
           </AppText>
         </Box>
         <Box fill>
+          <TouchableOpacity
+            onPress={() => {
+              coverRef.current?.openLightbox?.()
+              optionSheetRef.current?.close?.()
+            }}
+            style={styles.optionBtn}
+          >
+            <EyeOnSvg size={20} />
+            <Padding left={14} />
+            <AppText fontSize={16} fontWeight={500}>
+              {t('profile.view_cover')}
+            </AppText>
+          </TouchableOpacity>
           <Obx>
             {() => {
               const isMuted = userStore.isMutedUserNotification(
