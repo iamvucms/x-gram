@@ -6,7 +6,8 @@ import { Colors, Layout, XStyleSheet } from '@/Theme'
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import React, { useCallback, useMemo } from 'react'
 import { TouchableOpacity, View } from 'react-native'
-import { AppImage, CreateButton } from '.'
+import { AppImage, CreateButton, Padding } from '.'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const BottomTabBar = ({ state }: BottomTabBarProps) => {
   const tabBars = useMemo(
@@ -71,16 +72,28 @@ const BottomTabBar = ({ state }: BottomTabBarProps) => {
               />
             </TouchableOpacity>
           ) : (
-            <CreateButton />
+            <Padding horizontal={16}>
+              <CreateButton />
+            </Padding>
           )}
         </React.Fragment>
       )
     },
     [state.index],
   )
+  const { bottom } = useSafeAreaInsets()
   return (
     <View style={styles.rootView}>
-      <View style={styles.tabBarView}>{tabBars.map(renderTabItem)}</View>
+      <View
+        style={[
+          styles.tabBarView,
+          {
+            height: 80 + (bottom > 0 ? 10 : 0),
+          },
+        ]}
+      >
+        {tabBars.map(renderTabItem)}
+      </View>
     </View>
   )
 }

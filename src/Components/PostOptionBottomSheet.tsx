@@ -1,25 +1,23 @@
 import {
+  BlockSvg,
+  BookMarkSvg,
+  BookMarkedSvg,
   EditSvg,
-  EyeOnSvg,
+  FollowSvg,
   LinkSvg,
   ProfileSvg,
-  RemoveSvg,
   ReportSvg,
-  BookMarkSvg,
-  BlockSvg,
-  FollowSvg,
-  UnfollowSvg,
   TrashBinSvg,
-  BookMarkedSvg,
+  UnfollowSvg,
 } from '@/Assets/Svg'
 import { PageName } from '@/Config'
 import { Post } from '@/Models'
 import { navigate, navigateToProfile } from '@/Navigators'
 import { deletePost, diaLogStore, userStore } from '@/Stores'
-import { Colors, screenHeight, XStyleSheet } from '@/Theme'
+import { Colors, XStyleSheet, screenHeight } from '@/Theme'
 import { isIOS } from '@/Utils'
 import Clipboard from '@react-native-clipboard/clipboard'
-import { flowResult, toJS } from 'mobx'
+import { toJS } from 'mobx'
 import React, { forwardRef, memo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Keyboard, TouchableOpacity } from 'react-native'

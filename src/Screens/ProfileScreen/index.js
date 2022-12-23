@@ -238,10 +238,10 @@ const ProfileScreen = () => {
         </Box>
         <Box marginTop={0} center>
           <AppText fontWeight={700} fontSize={20}>
-            {userStore.userInfo.full_name}
+            <Obx>{() => userStore.userInfo.full_name}</Obx>
           </AppText>
           <AppText fontWeight={600} color={Colors.placeholder} fontSize={12}>
-            @{userStore.userInfo.user_id}
+            @<Obx>{() => userStore.userInfo.user_id}</Obx>
           </AppText>
           <Padding top={8} />
           <AppText
@@ -250,7 +250,7 @@ const ProfileScreen = () => {
             fontWeight={600}
             lineHeight={20}
           >
-            {userStore.userInfo.bio}
+            <Obx>{() => userStore.userInfo.bio}</Obx>
           </AppText>
           <Box
             marginVertical={16}
@@ -261,7 +261,7 @@ const ProfileScreen = () => {
           >
             <TouchableOpacity style={styles.profileNumberBtn}>
               <AppText fontSize={16} fontWeight={800} color={Colors.blueblack}>
-                {formatAmount(userStore.posts.length)}
+                <Obx>{() => formatAmount(userStore.posts.length)}</Obx>
               </AppText>
               <AppText fontWeight={600} fontSize={12} color={Colors.black50}>
                 {t('search.posts')}
@@ -278,7 +278,7 @@ const ProfileScreen = () => {
               style={styles.profileNumberBtn}
             >
               <AppText fontSize={16} fontWeight={800} color={Colors.blueblack}>
-                {formatAmount(userStore.followings.length)}
+                <Obx>{() => formatAmount(userStore.followings.length)}</Obx>
               </AppText>
               <AppText fontWeight={600} fontSize={12} color={Colors.black50}>
                 {t('profile.followings')}
@@ -299,7 +299,7 @@ const ProfileScreen = () => {
               style={styles.profileNumberBtn}
             >
               <AppText fontSize={16} fontWeight={800} color={Colors.blueblack}>
-                {formatAmount(userStore.followers.length)}
+                <Obx>{() => formatAmount(userStore.followers.length)}</Obx>
               </AppText>
               <AppText fontWeight={600} fontSize={12} color={Colors.black50}>
                 {t('profile.followers')}

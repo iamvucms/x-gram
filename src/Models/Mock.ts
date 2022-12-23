@@ -268,7 +268,7 @@ export const mockComments = [
     comment_id: '9',
     created_at: new Date().getTime(),
     commented_by: mockUsers[7],
-    comment: 'https://picsum.photos/200/300',
+    comment: 'https://picsum.photos/800/800',
     is_image: true,
   },
 ]

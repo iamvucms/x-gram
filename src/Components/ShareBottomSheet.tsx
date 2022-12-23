@@ -94,9 +94,16 @@ const ShareBottomSheet = forwardRef(
         onClose={_onClose}
         index={0}
         snapPoints={[screenHeight - 100]}
+        backgroundStyle={{ opacity: 0 }}
+        handleIndicatorStyle={{ backgroundColor: Colors.white50 }}
         ref={ref}
       >
-        <View style={Layout.fill}>
+        <Box
+          topLeftRadius={16}
+          topRightRadius={16}
+          fill
+          backgroundColor={Colors.white}
+        >
           <View style={styles.messageView}>
             <AppImage
               source={{ uri: data.medias[0].url }}
@@ -153,7 +160,6 @@ const ShareBottomSheet = forwardRef(
                 <ShareSvg />
               </Box>
               <AppText align="center" color={Colors.black75} fontWeight={700}>
-                {' '}
                 {t('home.share_to')}
               </AppText>
             </TouchableOpacity>
@@ -177,7 +183,6 @@ const ShareBottomSheet = forwardRef(
                 <LinkSvg />
               </Box>
               <AppText align="center" color={Colors.black75} fontWeight={700}>
-                {' '}
                 {t('home.copy_link')}
               </AppText>
             </TouchableOpacity>
@@ -192,7 +197,6 @@ const ShareBottomSheet = forwardRef(
                 <WeChatSvg size={34} />
               </Box>
               <AppText align="center" color={Colors.black75} fontWeight={700}>
-                {' '}
                 {t('home.we_chat')}
               </AppText>
             </TouchableOpacity>
@@ -207,12 +211,11 @@ const ShareBottomSheet = forwardRef(
                 <SmsSvg />
               </Box>
               <AppText align="center" color={Colors.black75} fontWeight={700}>
-                {' '}
                 {t('home.sms')}
               </AppText>
             </TouchableOpacity>
           </View>
-        </View>
+        </Box>
         {isIOS && <KeyboardSpacer />}
       </AppBottomSheet>
     )
@@ -246,7 +249,6 @@ const styles = XStyleSheet.create({
   },
   messageView: {
     flexDirection: 'row',
-    alignItems: 'center',
     paddingVertical: 10,
     borderBottomColor: Colors.border,
     borderBottomWidth: 0.5,

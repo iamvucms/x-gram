@@ -123,13 +123,13 @@ const CreateConversationScreen = ({ route }) => {
       const conversation = chatStore.getConversationByUserId(
         state.receiver.user_id,
       )
+      state.setSending(false)
       if (conversation) {
         chatStore.fetchMessages(conversation.conversation_id)
         navigateReplace(PageName.ConversationDetailScreen)
       } else {
         console.log("Can't create conversation")
       }
-      state.setSending(false)
     }
   }, [])
   return (
@@ -224,13 +224,16 @@ const CreateConversationScreen = ({ route }) => {
               renderItem={renderUserItem}
               renderSectionHeader={renderSectionHeader}
               showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
             />
           )
         }
       </Obx>
       <MessageInput allowStickers onSendPress={onSendPress} />
       {isIOS && <KeyboardSpacer />}
-      <Obx>{() => state.sending && <LoadingIndicator overlay />}</Obx>
+      <Obx>
+        {() => <LoadingIndicator overlayVisible={state.sending} overlay />}
+      </Obx>
     </Container>
   )
 }

@@ -234,7 +234,7 @@ const SearchScreen = () => {
                   color={
                     state.type === item.type ? Colors.white : Colors.placeholder
                   }
-                  size={14}
+                  size={16}
                 />
               )}
             </Obx>
@@ -245,7 +245,7 @@ const SearchScreen = () => {
         <Obx>
           {() => (
             <AppText
-              fontSize={12}
+              lineHeight={18}
               fontWeight={600}
               color={
                 state.type === item.type ? Colors.white : Colors.placeholder
@@ -575,6 +575,7 @@ export const GridItem = memo(({ item, index }) => {
         />
       ) : (
         <AppImage
+          disabled
           source={{
             uri: item.medias[0].url,
           }}

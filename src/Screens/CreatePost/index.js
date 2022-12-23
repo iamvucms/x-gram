@@ -214,7 +214,9 @@ const CreatePost = ({ route }) => {
         </Obx>
         {isIOS && <KeyboardSpacer topSpacing={16 - bottom} />}
       </Box>
-      <Obx>{() => state.creating && <LoadingIndicator overlay />}</Obx>
+      <Obx>
+        {() => <LoadingIndicator overlayVisible={state.creating} overlay />}
+      </Obx>
     </Container>
   )
 }

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {
   BellOffSvg,
   DoubleCheckSvg,
@@ -119,11 +120,17 @@ const NotificationScreen = () => {
         </Obx>
       </Box>
       <AppBottomSheet
-        backgroundStyle={styles.sheetHeader}
+        backgroundStyle={{ opacity: 0 }}
+        handleIndicatorStyle={{ backgroundColor: Colors.white50 }}
         ref={sheetRef}
         snapPoints={[ResponsiveHeight(360)]}
       >
-        <Box fill>
+        <Box
+          fill
+          topLeftRadius={16}
+          topRightRadius={16}
+          backgroundColor={Colors.white}
+        >
           <Box
             paddingVertical={16}
             center
@@ -322,12 +329,6 @@ const styles = XStyleSheet.create({
   },
   notiViewUnseen: {
     backgroundColor: Colors.primary25,
-  },
-  sheetHeader: {
-    borderWidth: 0.5,
-    borderColor: Colors.border,
-    borderBottomWidth: 0,
-    marginHorizontal: -0.5,
   },
   previewNotiAvatar: {
     alignSelf: 'center',

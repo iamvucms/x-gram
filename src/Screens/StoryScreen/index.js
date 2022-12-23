@@ -16,6 +16,7 @@ import {
   AppText,
   Box,
   Container,
+  KeyboardSpacer,
   Obx,
   Padding,
   Row,
@@ -25,7 +26,7 @@ import { ShareType } from '@/Models'
 import { goBack } from '@/Navigators'
 import { diaLogStore, homeStore, userStore } from '@/Stores'
 import { Colors, Layout, XStyleSheet, screenHeight, screenWidth } from '@/Theme'
-import { getHitSlop } from '@/Utils'
+import { getHitSlop, isIOS } from '@/Utils'
 import { useKeyboard } from '@react-native-community/hooks'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, {
@@ -52,7 +53,6 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-
 const StoryScreen = ({ route }) => {
   const { storyId } = route?.params || {}
   const defaultIndex = homeStore.stories.findIndex(
@@ -572,7 +572,7 @@ const StoryPage = forwardRef(
               colors={[Colors.transparent, Colors.black50]}
               style={styles.shadowView}
             />
-            <Animated.View style={inputContainerStyle}>
+            <Animated.View style={!isIOS && inputContainerStyle}>
               <Box
                 row
                 align="center"
@@ -589,7 +589,7 @@ const StoryPage = forwardRef(
                       onFocus={() => (indexAnim.value = indexAnim.value)}
                       onBlur={() => animateIndex()}
                       autoCorrect={false}
-                      style={Layout.fill}
+                      style={[Layout.fill, Layout.fullHeight]}
                       fontWeight={500}
                       color={Colors.white}
                       placeholder={t('message_placeholder')}
@@ -605,6 +605,7 @@ const StoryPage = forwardRef(
                   <SendSvg size={16} color={Colors.white} />
                 </TouchableOpacity>
               </Box>
+              {isIOS && <KeyboardSpacer topSpacing={16 - bottom} />}
             </Animated.View>
           </Animated.View>
           <Padding />

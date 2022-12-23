@@ -328,7 +328,9 @@ const EditProfileScreen = ({ navigation }) => {
         />
         <Box height={300} />
       </BottomSheetScrollView>
-      <Obx>{() => state.updating && <LoadingIndicator overlay />}</Obx>
+      <Obx>
+        {() => <LoadingIndicator overlayVisible={state.updating} overlay />}
+      </Obx>
     </Container>
   )
 }

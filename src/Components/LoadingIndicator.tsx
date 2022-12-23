@@ -1,9 +1,10 @@
 import { Colors, XStyleSheet } from '@/Theme'
 import React, { memo } from 'react'
-import { ActivityIndicator, Modal, Pressable, Text, View } from 'react-native'
+import { ActivityIndicator, Modal, Pressable, View } from 'react-native'
 import Spinkit, { SpinnerType } from 'react-native-spinkit'
 
 interface LoadingIndicatorProps {
+  overlayVisible?: boolean
   type?: 'default' | SpinnerType
   color?: string
   size?: number
@@ -13,6 +14,7 @@ interface LoadingIndicatorProps {
   backdropPressToClose?: boolean
 }
 const LoadingIndicator = ({
+  overlayVisible,
   type = '9CubeGrid',
   color = Colors.primary,
   size = 20,
@@ -34,7 +36,7 @@ const LoadingIndicator = ({
     <Container
       statusBarTranslucent
       onRequestClose={onRequestClose}
-      visible={true}
+      visible={overlayVisible}
       transparent
     >
       <Pressable

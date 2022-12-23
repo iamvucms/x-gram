@@ -266,7 +266,7 @@ const PostItem = ({
                 </Obx>
                 <Padding top={4} />
                 <AppText fontWeight={700} color={Colors.white}>
-                  <Obx>{() => formatAmount(post.reactions.length)}</Obx>
+                  <Obx>{() => formatAmount(post.reactions.length) as any}</Obx>
                 </AppText>
               </Animated.View>
             </TouchableOpacity>
