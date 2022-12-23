@@ -9,6 +9,7 @@ import {
   Box,
   Container,
   ErrorLabel,
+  KeyboardSpacer,
   LoadingIndicator,
   Obx,
   Padding,
@@ -20,7 +21,7 @@ import { navigate } from '@/Navigators'
 import { searchUsers } from '@/Services/Api'
 import { createPost, userStore } from '@/Stores'
 import { Colors, XStyleSheet, screenHeight } from '@/Theme'
-import { getMediaUri } from '@/Utils'
+import { getMediaUri, isIOS } from '@/Utils'
 import { autorun, toJS } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useEffect, useRef } from 'react'
@@ -133,7 +134,7 @@ const CreatePost = ({ route }) => {
               padding={12}
               radius={8}
               height={90}
-              backgroundColor={Colors.primary25}
+              backgroundColor={Colors.primary10}
             >
               <Obx>
                 {() => (
@@ -223,6 +224,7 @@ const CreatePost = ({ route }) => {
             />
           )}
         </Obx>
+        {isIOS && <KeyboardSpacer topSpacing={16 - bottom} />}
       </Box>
       <AppBottomSheet ref={privacySheetRef} snapPoints={[screenHeight * 0.3]}>
         <TouchableOpacity

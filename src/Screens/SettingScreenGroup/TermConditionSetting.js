@@ -57,7 +57,7 @@ const TermConditionSetting = () => {
                 isSelected && { borderColor: Colors.primary },
               ]}
             >
-              <AppText lineHeight={28} fontSize={24}>
+              <AppText lineHeight={30} fontSize={24}>
                 {item}
               </AppText>
             </TouchableOpacity>
