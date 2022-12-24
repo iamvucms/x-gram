@@ -1,6 +1,8 @@
 import { Colors, XStyleSheet } from '@/Theme'
+import { Portal } from '@gorhom/portal'
 import React, { memo } from 'react'
 import { ActivityIndicator, Modal, Pressable, View } from 'react-native'
+import Animated, { FadeIn } from 'react-native-reanimated'
 import Spinkit, { SpinnerType } from 'react-native-spinkit'
 
 interface LoadingIndicatorProps {
@@ -31,26 +33,30 @@ const LoadingIndicator = ({
         return <Spinkit type={type} size={size} color={color} />
     }
   }
-  const Container = overlay ? Modal : View
+  const Container = overlay ? Portal : View
   return (
-    <Container
-      statusBarTranslucent
-      onRequestClose={onRequestClose}
-      visible={overlayVisible}
-      transparent
-    >
-      <Pressable
-        disabled={!backdropPressToClose}
-        onPress={onRequestClose}
-        style={[
-          overlay && {
-            ...styles.overlayView,
-            backgroundColor: overlayColor,
-          },
-        ]}
-      >
-        {renderLoadingIndicator()}
-      </Pressable>
+    <Container>
+      {overlay
+        ? overlayVisible && (
+            <Animated.View
+              entering={FadeIn}
+              style={XStyleSheet.absoluteFillObject}
+            >
+              <Pressable
+                disabled={!backdropPressToClose}
+                onPress={onRequestClose}
+                style={[
+                  overlay && {
+                    ...styles.overlayView,
+                    backgroundColor: overlayColor,
+                  },
+                ]}
+              >
+                {renderLoadingIndicator()}
+              </Pressable>
+            </Animated.View>
+          )
+        : renderLoadingIndicator()}
     </Container>
   )
 }

@@ -128,7 +128,9 @@ const PostItem = ({
                 {() => (
                   <Video
                     source={{
-                      uri: getMediaUri(post.medias[state.imageIndex].url),
+                      uri: preview
+                        ? post.medias[state.imageIndex].url
+                        : getMediaUri(post.medias[state.imageIndex].url),
                     }}
                     style={styles.imageContainer}
                     resizeMode="cover"
@@ -147,7 +149,9 @@ const PostItem = ({
                 onPress={onImagePress}
                 onLongPress={onOptionPress}
                 source={{
-                  uri: getMediaUri(post.medias[state.imageIndex].url),
+                  uri: preview
+                    ? post.medias[state.imageIndex].url
+                    : getMediaUri(post.medias[state.imageIndex].url),
                 }}
                 containerStyle={styles.imageContainer}
               />

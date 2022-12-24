@@ -90,8 +90,9 @@ const RegisterScreen = () => {
   }, [])
 
   const onEmailChange = useCallback(value => {
-    state.setEmail(value)
-    state.setErrorEmail(validateEmail(value))
+    const email = value.toLowerCase()
+    state.setEmail(email)
+    state.setErrorEmail(validateEmail(email))
   }, [])
 
   const onPasswordChange = useCallback(value => {
@@ -133,7 +134,6 @@ const RegisterScreen = () => {
 
   return (
     <Container
-      disableTop
       disableBottom
       statusBarProps={{
         barStyle: 'dark-content',
@@ -214,7 +214,7 @@ const RegisterScreen = () => {
                   onChangeText={onChangeUsername}
                   style={styles.input}
                   placeholderTextColor={Colors.placeholder}
-                  placeholder={t('auth.username_placeholder')}
+                  placeholder={t('auth.user_name_placeholder')}
                 />
               )}
             </Obx>

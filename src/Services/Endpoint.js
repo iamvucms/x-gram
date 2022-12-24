@@ -52,7 +52,7 @@ export default () => {
     unFollowUser: id => `${apiUrl}/users/unfollow/${id}`,
     removeFollower: id => `${apiUrl}/users/removefollower/${id}`,
     //chat
-    getConversations: `${apiUrl}/conversations`,
+    getConversations: page => `${apiUrl}/conversations?page=${page}`,
     getMessages: id => `${apiUrl}/conversations/${id}/messages`,
     getMediaMessages: id => `${apiUrl}/conversations/${id}/media-messages`,
     createConversation: `${apiUrl}/conversations`,

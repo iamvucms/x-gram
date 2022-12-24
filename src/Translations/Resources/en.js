@@ -99,11 +99,10 @@ export default {
     phone_start_with: 'Phone number must start with 0',
     phone_special_characters:
       'Phone number must not contain special characters',
-    errorRequireUserName: 'Username is required',
-    errorRequireUserNameMin6: 'Username must be at least 6 characters',
-    errorRequireUserNameMax30: 'Username must be at most 30 characters',
-    errorRequireUserNameNotContainSpecial:
-      'Username must not contain special characters',
+    user_name_empty: 'Username is required',
+    user_name_min_length: 'Username must be at least 6 characters',
+    user_name_max_length: 'Username must be at most 30 characters',
+    user_name_format_error: 'Username must not contain special characters',
   },
   home: {
     create_story: 'Create Story',

@@ -14,6 +14,7 @@ import {
 import { PageName } from '@/Config'
 import { mockUsers } from '@/Models'
 import { goBack, navigateReplace } from '@/Navigators'
+import { searchUsers } from '@/Services/Api'
 import { chatStore, userStore } from '@/Stores'
 import { Colors, Layout, XStyleSheet } from '@/Theme'
 import { getMediaUri, isIOS } from '@/Utils'
@@ -28,8 +29,8 @@ const CreateConversationScreen = ({ route }) => {
   const { user } = route.params || {}
   const { t } = useTranslation()
   const state = useLocalObservable(() => ({
-    recommendUsers: mockUsers,
-    results: mockUsers,
+    recommendUsers: [],
+    results: [],
     search: '',
     loading: true,
     receiver: user,
@@ -55,18 +56,42 @@ const CreateConversationScreen = ({ route }) => {
   }))
   useEffect(() => {
     const dipose = autorun(() => {
-      state.setRecommentUsers(
-        toJS(chatStore.conversations)
-          .map(c => c.user)
-          .concat(toJS(userStore.following || []))
-          .concat(toJS(userStore.followers || [])),
-      )
+      const users = toJS(chatStore.conversations)
+        .map(c => c.user)
+        .concat(toJS(userStore.following || []))
+        .concat(toJS(userStore.followers || []))
+      const obj = {}
+      const recommendedUsers = []
+      users.map(u => {
+        if (!obj[u.user_id]) {
+          obj[u.user_id] = true
+          recommendedUsers.push(u)
+        }
+      })
+      state.setRecommentUsers(recommendedUsers)
+    })
+    const disposeSearching = autorun(async () => {
+      const q = state.search.toLowerCase()
+      const recommendUsers = toJS(state.recommendUsers)
+      const response = await searchUsers(q)
+      if (response.status === 'OK') {
+        const results = []
+        const obj = {}
+        recommendUsers.map(u => (obj[u.user_id] = true))
+        response.data.map(u => {
+          if (!obj[u.user_id]) {
+            results.push(u)
+          }
+        })
+        state.setResults(results)
+      }
     })
     const to = setTimeout(() => {
       state.setLoading(false)
     }, 1000)
     return () => {
       dipose()
+      disposeSearching()
       clearTimeout(to)
     }
   }, [])
@@ -78,7 +103,7 @@ const CreateConversationScreen = ({ route }) => {
         backgroundColor={Colors.white}
       >
         <AppText fontWeight={700} fontSize={16}>
-          {section.title} ({section.data.length})
+          {section.title}
         </AppText>
       </Box>
     )
@@ -86,7 +111,7 @@ const CreateConversationScreen = ({ route }) => {
   const renderUserItem = useCallback(({ item }) => {
     const onPress = () => {
       const conversation = chatStore.getConversationByUserId(item.user_id)
-      if (!conversation) {
+      if (conversation) {
         chatStore.fetchMessages(conversation.conversation_id, false)
         navigateReplace(PageName.ConversationDetailScreen)
       } else {
@@ -103,23 +128,20 @@ const CreateConversationScreen = ({ route }) => {
         />
         <View>
           <AppText fontWeight={700}>{item.full_name}</AppText>
-          <AppText color={Colors.black50}>@{item.user_id}</AppText>
+          <AppText color={Colors.black50}>@{item.user_name}</AppText>
         </View>
       </TouchableOpacity>
     )
   }, [])
   const onSendPress = useCallback(async (message, messageType) => {
     if (state.receiver) {
-      state.setSending(true)
       const msg = {
         message,
-        created_at: new Date().getTime(),
         type: messageType,
         sent_by: toJS(userStore.userInfo),
       }
-      await flowResult(
-        chatStore.createNewConversation(state.receiver.user_id, msg),
-      )
+      state.setSending(true)
+      await flowResult(chatStore.sendNewMessage(state.receiver.user_id, msg))
       const conversation = chatStore.getConversationByUserId(
         state.receiver.user_id,
       )
@@ -264,6 +286,7 @@ const styles = XStyleSheet.create({
     borderRadius: 20,
     marginRight: 12,
     overflow: 'hidden',
+    backgroundColor: Colors.gray,
   },
   userBtn: {
     flexDirection: 'row',

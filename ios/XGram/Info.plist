@@ -1,81 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
-	<key>CFBundleDisplayName</key>
-	<string>XGram</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>1</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSExceptionDomains</key>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>en</string>
+		<key>CFBundleDisplayName</key>
+		<string>XGram</string>
+		<key>CFBundleExecutable</key>
+		<string>$(EXECUTABLE_NAME)</string>
+		<key>CFBundleIdentifier</key>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>$(PRODUCT_NAME)</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>1.0</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>CFBundleVersion</key>
+		<string>1</string>
+		<key>CodePushDeploymentKey</key>
+		<string>$(CodePushDeploymentKey)</string>
+		<key>LSRequiresIPhoneOS</key>
+		<true />
+		<key>NSAppTransportSecurity</key>
 		<dict>
-			<key>localhost</key>
+			<key>NSExceptionDomains</key>
 			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
+				<key>localhost</key>
+				<dict>
+					<key>NSExceptionAllowsInsecureHTTPLoads</key>
+					<true />
+				</dict>
 			</dict>
 		</dict>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+				</array>
+			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.98937963622-339i0sj635urk8r70jvefmj0qvud0nb3</string>
+				</array>
+			</dict>
+		</array>
+		<key>NSCameraUsageDescription</key>
+		<string>XGram needs access to your Camera.</string>
+		<key>NSFaceIDUsageDescription</key>
+		<string> To use Face ID for login </string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string></string>
+		<key>NSMicrophoneUsageDescription</key>
+		<string>XGram needs access to your Microphone.</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>Allow XGram to save photos to your library</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Allow XGram to access your photos</string>
+		<key>UIAppFonts</key>
+		<array>
+			<string>Lato-Black.ttf</string>
+			<string>Lato-Bold.ttf</string>
+			<string>Lato-Hairline.ttf</string>
+			<string>Lato-Heavy.ttf</string>
+			<string>Lato-Light.ttf</string>
+			<string>Lato-Medium.ttf</string>
+			<string>Lato-Regular.ttf</string>
+			<string>Lato-Semibold.ttf</string>
+			<string>Lato-Thin.ttf</string>
+		</array>
+		<key>UILaunchStoryboardName</key>
+		<string>LaunchScreen</string>
+		<key>UIRequiredDeviceCapabilities</key>
+		<array>
+			<string>armv7</string>
+		</array>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+			<string>UIInterfaceOrientationPortrait</string>
+			<string>UIInterfaceOrientationLandscapeLeft</string>
+			<string>UIInterfaceOrientationLandscapeRight</string>
+		</array>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
+		<false />
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow XGram to access your photos</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Allow XGram to save photos to your library</string>
-	<key>NSFaceIDUsageDescription</key>
-	<string>
-		To use Face ID for login
-	</string>
-	<key>NSCameraUsageDescription</key>
-	<string>XGram needs access to your Camera.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>XGram needs access to your Microphone.</string>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>armv7</string>
-	</array>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
-	<key>CodePushDeploymentKey</key>
-	<string>$(CodePushDeploymentKey)</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Lato-Black.ttf</string>
-		<string>Lato-Bold.ttf</string>
-		<string>Lato-Hairline.ttf</string>
-		<string>Lato-Heavy.ttf</string>
-		<string>Lato-Light.ttf</string>
-		<string>Lato-Medium.ttf</string>
-		<string>Lato-Regular.ttf</string>
-		<string>Lato-Semibold.ttf</string>
-		<string>Lato-Thin.ttf</string>
-	</array>
-</dict>
 </plist>

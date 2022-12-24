@@ -53,6 +53,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import moment from 'moment'
 const StoryScreen = ({ route }) => {
   const { storyId } = route?.params || {}
   const defaultIndex = homeStore.stories.findIndex(
@@ -538,7 +539,13 @@ const StoryPage = forwardRef(
                   <AppText fontWeight={700} color={Colors.white}>
                     {story.posted_by.user_name}
                   </AppText>
-                  <AppText color={Colors.white50}>4h ago</AppText>
+                  <AppText color={Colors.white50}>
+                    <Obx>
+                      {() =>
+                        moment(story.medias[state.index].created_at).fromNow()
+                      }
+                    </Obx>
+                  </AppText>
                 </Padding>
               </Row>
               <Row>

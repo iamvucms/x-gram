@@ -75,7 +75,6 @@ const ConversationDetailScreen = () => {
   const onSendPress = useCallback((message, messageType, retryId) => {
     const msg = {
       message,
-      created_at: new Date().getTime(),
       type: messageType,
       sent_by: toJS(userStore.userInfo),
     }
@@ -428,7 +427,7 @@ const MessageItem = memo(({ message, onOpenOption }) => {
                 )}
                 {isImage && (
                   <AppImage
-                    source={{ uri: message.message }}
+                    source={{ uri: getMediaUri(message.message) }}
                     containerStyle={styles.msgImage}
                     lightbox
                   />

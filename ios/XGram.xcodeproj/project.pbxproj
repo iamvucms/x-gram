@@ -20,6 +20,7 @@
 		7699B88040F8A987B510C191 /* libPods-XGram-XGramTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-XGram-XGramTests.a */; };
 		79B78E32AEA8439EB7E266ED /* Lato-Semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 59C8B9ED0B0D4AC89C01F874 /* Lato-Semibold.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8DB5FE5B295730CB0099A5E8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8DB5FE5A295730CB0099A5E8 /* GoogleService-Info.plist */; };
 		91178F7E90814AFE8456ED19 /* Lato-Heavy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 78B50F044468473EA89CD9D4 /* Lato-Heavy.ttf */; };
 		D0A00BF70962408EA77DDC4C /* Lato-Hairline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3BB0558340BD4675801AD8ED /* Lato-Hairline.ttf */; };
 		FF2A1FDF56F4461383598F7C /* Lato-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 596510B8551D41FEBEAAE02E /* Lato-Thin.ttf */; };
@@ -59,6 +60,7 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = XGram/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-XGram-XGramTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XGram-XGramTests.release.xcconfig"; path = "Target Support Files/Pods-XGram-XGramTests/Pods-XGram-XGramTests.release.xcconfig"; sourceTree = "<group>"; };
 		8D1ED9959205422DBA01FEBC /* Lato-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Medium.ttf"; path = "../src/Assets/Fonts/Lato-Medium.ttf"; sourceTree = "<group>"; };
+		8DB5FE5A295730CB0099A5E8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "XGram/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ABD6D09A0609478CB5B8D6F8 /* Lato-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Regular.ttf"; path = "../src/Assets/Fonts/Lato-Regular.ttf"; sourceTree = "<group>"; };
 		C87435FA4BB849C7A5F5850C /* Lato-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Black.ttf"; path = "../src/Assets/Fonts/Lato-Black.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
@@ -104,6 +106,7 @@
 		13B07FAE1A68108700A75B9A /* XGram */ = {
 			isa = PBXGroup;
 			children = (
+				8DB5FE5A295730CB0099A5E8 /* GoogleService-Info.plist */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -282,6 +285,7 @@
 				29D30563F3314CB08E9EE3D3 /* Lato-Black.ttf in Resources */,
 				71EC04E0AD274FB08A20C131 /* Lato-Bold.ttf in Resources */,
 				D0A00BF70962408EA77DDC4C /* Lato-Hairline.ttf in Resources */,
+				8DB5FE5B295730CB0099A5E8 /* GoogleService-Info.plist in Resources */,
 				91178F7E90814AFE8456ED19 /* Lato-Heavy.ttf in Resources */,
 				0DB4BBE9A4014AD88CBCA8FB /* Lato-Light.ttf in Resources */,
 				2B4D3E04B80C41C4990191B9 /* Lato-Medium.ttf in Resources */,
@@ -542,7 +546,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.xgram;
 				PRODUCT_NAME = XGram;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -568,7 +572,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.xgram;
 				PRODUCT_NAME = XGram;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

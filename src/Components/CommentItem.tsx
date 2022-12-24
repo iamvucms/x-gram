@@ -53,7 +53,7 @@ const CommentItem = ({
             }
           }}
           onLongPress={onShowOptions}
-          style={userStore.isHiddenComment(comment.comment_id) ? opacity20 : {}}
+          style={[userStore.isHiddenComment(comment.comment_id) && opacity20]}
         >
           <Box
             backgroundColor={highlight ? Colors.primary25 : Colors.white}
@@ -95,7 +95,7 @@ const CommentItem = ({
                       }
                       containerStyle={styles.image}
                       source={{
-                        uri: comment.comment,
+                        uri: getMediaUri(comment.comment),
                       }}
                     />
                     <Padding top={3} />
@@ -149,5 +149,6 @@ const styles = XStyleSheet.create({
     height: 200,
     borderRadius: 16,
     overflow: 'hidden',
+    backgroundColor: Colors.gray,
   },
 })

@@ -67,6 +67,7 @@ export const getImageMimeType = (uri: string) => {
   return 'image/jpeg'
 }
 
-export const getMediaUri = (path: string) => {
-  return path.startsWith('http') ? path : `${Config.API_URL}${path}`
+export const getMediaUri = (path: string = '') => {
+  const isFullUri = path.startsWith('http') || path.startsWith('file')
+  return isFullUri ? path : `${Config.API_URL}${path}`
 }

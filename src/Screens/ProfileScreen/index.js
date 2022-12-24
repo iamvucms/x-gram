@@ -436,7 +436,7 @@ const ProfileScreen = () => {
             {() => (
               <AppImage
                 source={{
-                  uri: userStore.userInfo.cover_url,
+                  uri: getMediaUri(userStore.userInfo.cover_url),
                 }}
                 resizeMode="cover"
                 containerStyle={styles.coverPhoto}

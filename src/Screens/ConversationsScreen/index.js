@@ -15,6 +15,7 @@ import {
   Row,
 } from '@/Components'
 import { PageName } from '@/Config'
+import { MessageType } from '@/Models'
 import { goBack, navigate } from '@/Navigators'
 import { chatStore, userStore } from '@/Stores'
 import {
@@ -125,7 +126,7 @@ const ConversationItem = observer(({ conversation, onRemove = () => {} }) => {
   const isUserSentLastMessage =
     conversation.last_message.sent_by.user_id === userStore.userInfo?.user_id
   const displayMessage = useMemo(() => {
-    if (conversation.last_message.is_image) {
+    if (conversation.last_message.type === MessageType.Image) {
       if (isUserSentLastMessage) {
         return t('conversations.you_sent_photo')
       } else {
@@ -134,7 +135,7 @@ const ConversationItem = observer(({ conversation, onRemove = () => {} }) => {
           conversation.user.full_name,
         )
       }
-    } else if (conversation.last_message.is_sticker) {
+    } else if (conversation.last_message.type === MessageType.Sticker) {
       if (isUserSentLastMessage) {
         return t('conversations.you_sent_sticker')
       } else {

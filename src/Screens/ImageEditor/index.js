@@ -203,11 +203,12 @@ const ImageEditor = ({ route }) => {
           await new Promise(resolve => setTimeout(resolve, 300))
         }
       }
+      state.setProcessing(false)
       onNext && onNext(processMedias)
     } catch (e) {
       console.log(e)
+      state.setProcessing(false)
     }
-    state.setProcessing(false)
   }, [])
   const { bottom } = useSafeAreaInsets()
   return (

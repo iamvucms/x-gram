@@ -1,5 +1,5 @@
 import { LinkSvg, SendSvg, ShareSvg, SmsSvg, WeChatSvg } from '@/Assets/Svg'
-import { mockUsers, Post, ShareType, Story, User } from '@/Models'
+import { MessageType, mockUsers, Post, ShareType, Story, User } from '@/Models'
 import { AppFonts, Colors, Layout, screenHeight, XStyleSheet } from '@/Theme'
 import { getMediaUri, isAndroid, isIOS } from '@/Utils'
 import { BottomSheetFlatList, TouchableOpacity } from '@gorhom/bottom-sheet'
@@ -13,6 +13,8 @@ import AppImage from './AppImage'
 import AppText from './AppText'
 import Box from './Box'
 import Clipboard from '@react-native-clipboard/clipboard'
+import { toJS } from 'mobx'
+import { chatStore } from '@/Stores'
 interface ShareBottomSheetProps {
   data: Post & Story
   type: ShareType
@@ -23,7 +25,7 @@ const ShareBottomSheet = forwardRef(
     const isPost: boolean = type === ShareType.Post
     const { t } = useTranslation()
     const state = useLocalObservable(() => ({
-      users: mockUsers,
+      users: [],
       message: '',
       loading: true,
       setLoading: (loading: boolean) => (state.loading = loading),
@@ -46,8 +48,13 @@ const ShareBottomSheet = forwardRef(
 
     const renderUserItem = useCallback(({ item, index }) => {
       const onSendPress = () => {
-        //api call
         state.setSent(item.user_id)
+        const msg = {
+          message: toJS(state.message),
+          type: type === ShareType.Post ? MessageType.Post : MessageType.Story,
+          ref_id: type === ShareType.Post ? data.post_id : data.story_id,
+        }
+        chatStore.sendNewMessage(item.user_id, msg)
       }
       return (
         <Box paddingVertical={8} paddingHorizontal={16} row align="center">

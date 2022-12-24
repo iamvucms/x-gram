@@ -62,7 +62,8 @@ const LoginScreen = () => {
   }))
 
   const onEmailChange = useCallback(value => {
-    state.setEmail(value)
+    const email = value.toLowerCase()
+    state.setEmail(email)
     // state.setErrorEmail(validateEmail(value))
     state.setErrorEmail('')
   }, [])
@@ -79,6 +80,7 @@ const LoginScreen = () => {
       email: state.email,
       password: state.password,
     })
+    state.setLogining(false)
     if (response?.status === 'OK') {
       userStore.setUserInfo(response.data.user)
       userStore.setCookie(response.data.cookie)
@@ -86,16 +88,15 @@ const LoginScreen = () => {
     } else {
       diaLogStore.showErrorDiaLog()
     }
-    state.setLogining(false)
   }, [])
 
   const onLoginWithGooglePress = useCallback(async () => {
     try {
-      if (isAndroid) {
-        GoogleSignin.configure({
-          scopes: ['profile', 'email'],
-        })
-      }
+      GoogleSignin.configure({
+        scopes: ['profile', 'email'],
+        iosClientId:
+          '98937963622-339i0sj635urk8r70jvefmj0qvud0nb3.apps.googleusercontent.com',
+      })
       const response = await GoogleSignin.signIn()
       const token = await GoogleSignin.getTokens()
       const user = {
@@ -110,7 +111,6 @@ const LoginScreen = () => {
 
   return (
     <Container
-      disableTop
       disableBottom
       statusBarProps={{
         barStyle: 'dark-content',

@@ -5,18 +5,21 @@ import {
   mockConversations,
   mockMessages,
   Conversation,
+  Message,
+  MessageType,
 } from '@/Models'
 import {
   deleteConversation,
   getConversations,
   getMessages,
   createConversation,
+  uploadImage,
 } from '@/Services/Api'
 import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
 import { io } from 'socket.io-client'
-import { userStore } from '.'
+import { diaLogStore, userStore } from '.'
 export default class ChatStore {
   conversations: Conversation[] = []
   messages = []
@@ -123,30 +126,27 @@ export default class ChatStore {
     }
     this[loadMore ? 'loadingMoreMessages' : 'loadingMessages'] = false
   }
-  *createNewConversation(userId, message) {
+  *createConversation(userId) {
     try {
-      const response = yield createConversation(userId, message)
+      const response = yield createConversation(userId)
       if (response.status === 'OK') {
         this.conversations = [response.data, ...this.conversations]
+        return response.data
       }
     } catch (e) {
-      const fakeConversation = {
-        ...mockConversations[0],
-        last_message: {
-          ...message,
-          message_id: Math.random(),
-          status: MessageStatus.SENT,
-        },
-        user: { ...mockConversations[0].user, user_id: userId },
-        conversation_id: Math.random(),
-      }
-      this.conversations = [fakeConversation as any, ...this.conversations]
+      diaLogStore.showErrorDiaLog({
+        message: e,
+      })
       console.log({
         createNewConversation: e,
       })
     }
   }
-  *sendMessage(conversationId, message, retryId) {
+  *sendMessage(
+    conversationId: string,
+    message: Partial<Message>,
+    retryId?: string,
+  ) {
     if (!this.socket) {
       // yield this.initSocket()
     }
@@ -163,14 +163,22 @@ export default class ChatStore {
           status: MessageStatus.SENDING,
         })
       }
-      setTimeout(() => {
-        this.updateMessage(msgId, { status: MessageStatus.ERROR })
-      }, 1000)
+      //upload image
+      if (message.type === MessageType.Image) {
+        const response = yield uploadImage(message.message)
+        if (response.status === 'OK') {
+          message.message = response.data[0].url
+        } else {
+          this.updateMessage(msgId, { status: MessageStatus.ERROR })
+          return
+        }
+      }
       this.socket.emit(
         'sendMessage',
         {
-          conversation_id: conversationId,
-          message,
+          ...message,
+          sent_by: userStore.userInfo.user_id,
+          sent_to: this.getConversationById(conversationId).user.user_id,
         },
         response => {
           if (response?.status === 'OK') {
@@ -178,6 +186,7 @@ export default class ChatStore {
               ...response?.data,
               status: MessageStatus.SENT,
             })
+            this.updateLastMessage(conversationId, response.data)
           } else {
             this.updateMessage(msgId, {
               status: MessageStatus.ERROR,
@@ -188,6 +197,24 @@ export default class ChatStore {
     } catch (e) {
       this.updateMessage(msgId, { status: MessageStatus.ERROR })
       console.log({ sendMessage: e })
+    }
+  }
+  *sendNewMessage(userId: string, message: Partial<Message>) {
+    try {
+      const conversation = this.conversations.find(
+        x => x.user.user_id === userId,
+      )
+      console.log({ conversation })
+      if (conversation) {
+        this.sendMessage(conversation.conversation_id, message)
+      } else {
+        const newConversation = yield this.createConversation(userId)
+        if (newConversation) {
+          this.sendMessage(newConversation.conversation_id, message)
+        }
+      }
+    } catch (e) {
+      console.log({ sendReferralMessage: e })
     }
   }
   *deleleConversation(conversationId) {
@@ -235,10 +262,7 @@ export default class ChatStore {
   }
   updateLastMessage(conversationId, message) {
     const conversation = this.getConversationById(conversationId)
-    if (
-      conversation &&
-      conversation.last_message.message_id === message.message_id
-    ) {
+    if (conversation) {
       conversation.last_message = { ...conversation.last_message, ...message }
     }
   }
