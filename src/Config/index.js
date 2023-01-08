@@ -18,10 +18,10 @@ export const StgConfig = {
   SOCKET_URL: '',
 }
 export const DevConfig = {
-  API_URL: 'https://2c16-2001-ee0-4b42-cc00-c544-15ab-c027-634a.ap.ngrok.io',
-  BASE_URL: 'https://2c16-2001-ee0-4b42-cc00-c544-15ab-c027-634a.ap.ngrok.io',
-  BASE_API: 'https://2c16-2001-ee0-4b42-cc00-c544-15ab-c027-634a.ap.ngrok.io',
-  SOCKET_URL: 'https://2c16-2001-ee0-4b42-cc00-c544-15ab-c027-634a.ap.ngrok.io',
+  API_URL: 'http://localhost:3000',
+  BASE_URL: 'http://localhost:3000',
+  BASE_API: 'http://localhost:3000',
+  SOCKET_URL: 'http://localhost:3000',
 }
 export const ProdConfig = {
   API_URL: '',

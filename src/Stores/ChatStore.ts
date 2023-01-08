@@ -19,10 +19,10 @@ import { makePersistExcept } from '@/Utils'
 import { makeAutoObservable } from 'mobx'
 import { hydrateStore, isHydrated } from 'mobx-persist-store'
 import { io } from 'socket.io-client'
-import { diaLogStore, userStore } from '.'
+import { chatStore, diaLogStore, userStore } from '.'
 export default class ChatStore {
   conversations: Conversation[] = []
-  messages = []
+  messages: Message[] = []
   onlineUsers = {}
   loadingConversations = false
   loadingMoreConversations = false
@@ -75,9 +75,12 @@ export default class ChatStore {
       this.socket.on('disconnect', () => {
         console.log('disconnected')
       })
-      this.socket.on('newMessage', ({ message, conversation_id }) => {
-        this.addMessage(conversation_id, message)
+      this.socket.on('newMessage', message => {
+        this.addMessage(message.conversation_id, message)
         this.updateLastMessage(message.conversation_id, message)
+      })
+      this.socket.on('seenMessage', message => {
+        this.updateMessage(message.message_id, message)
       })
       this.socket.on(
         'messageStatus',
@@ -199,6 +202,23 @@ export default class ChatStore {
       console.log({ sendMessage: e })
     }
   }
+  *markMessageAsSeen(messageId) {
+    try {
+      this.socket.emit(
+        'seenMessage',
+        {
+          message_id: messageId,
+        },
+        response => {
+          if (response?.status === 'OK') {
+            this.updateMessage(messageId, response?.data)
+          }
+        },
+      )
+    } catch (e) {
+      console.log({ markMessageAsSeen: e })
+    }
+  }
   *sendNewMessage(userId: string, message: Partial<Message>) {
     try {
       const conversation = this.conversations.find(
@@ -271,6 +291,16 @@ export default class ChatStore {
     if (index !== -1) {
       this.messages[index] = {
         ...this.messages[index],
+        ...message,
+      }
+    }
+    //update last message
+    const lastMessageIndex = this.conversations.findIndex(
+      item => item.last_message.message_id === messageId,
+    )
+    if (lastMessageIndex !== -1) {
+      this.conversations[lastMessageIndex].last_message = {
+        ...this.conversations[lastMessageIndex].last_message,
         ...message,
       }
     }

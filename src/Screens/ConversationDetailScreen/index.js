@@ -66,7 +66,22 @@ const ConversationDetailScreen = () => {
     [Images],
   )
   useEffect(() => {
-    // return () => chatStore.resetMessages()
+    const dispose = autorun(() => {
+      if (chatStore.messages.length) {
+        const lastMessage = chatStore.messages[0]
+        if (
+          lastMessage.conversation_id === conversation.conversation_id &&
+          lastMessage.sent_by.user_id !== userStore.userInfo.user_id &&
+          lastMessage.status === MessageStatus.SENT
+        ) {
+          chatStore.markMessageAsSeen(lastMessage.message_id)
+        }
+      }
+    })
+    return () => {
+      chatStore.resetMessages()
+      dispose()
+    }
   }, [])
   const onBackPress = () => {
     goBack()

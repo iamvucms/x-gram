@@ -12,6 +12,7 @@ import React, {
   useRef,
 } from 'react'
 import {
+  Keyboard,
   TextInput,
   TextInputProps,
   TouchableOpacity,
@@ -57,6 +58,7 @@ const MessageInput = forwardRef(
       }
     }, [edittingMessage])
     const onImagePickerPress = useCallback(async () => {
+      Keyboard.dismiss()
       const response = await launchImageLibrary({
         mediaType: 'photo',
       })
@@ -97,7 +99,10 @@ const MessageInput = forwardRef(
               <>
                 <Padding left={8} />
                 <TouchableOpacity
-                  onPress={() => stickerRef.current?.snapTo?.(0)}
+                  onPress={() => {
+                    stickerRef.current?.snapTo?.(0)
+                    Keyboard.dismiss()
+                  }}
                   hitSlop={getHitSlop(10)}
                   style={styles.photoBtn}
                 >

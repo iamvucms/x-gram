@@ -65,6 +65,7 @@ const NotificationScreen = () => {
     )
   }, [])
   const renderNotiItem = useCallback(({ item }) => {
+    console.log(item)
     const onPress = () => {
       processNavigationNotification(item)
       notiStore.addSeenId(item.notification_id)

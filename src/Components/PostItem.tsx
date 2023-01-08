@@ -123,7 +123,7 @@ const PostItem = ({
       <View style={styles.rootView}>
         <Obx>
           {() =>
-            post.medias[state.imageIndex].is_video ? (
+            post?.medias?.[state.imageIndex]?.is_video ? (
               <Obx>
                 {() => (
                   <Video
