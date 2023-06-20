@@ -8,7 +8,7 @@ import { name as appName } from './app.json'
 import './src/Translations/i18n'
 import 'react-native-gesture-handler'
 import { configure } from 'mobx'
-LogBox.ignoreLogs(['Require cycle:'])
+LogBox.ignoreLogs([/.*/])
 AppRegistry.registerComponent(appName, () => App)
 configure({
   useProxies: 'always',

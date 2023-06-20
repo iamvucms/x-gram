@@ -67,7 +67,10 @@ const LoginScreen = () => {
     state.setErrorPassword(validatePassword(value))
   }, [])
 
-  const onLoginPress = useCallback(() => {}, [])
+  const onLoginPress = useCallback(() => {
+    //Todo: Login
+    navigate(PageName.AuthStack)
+  }, [])
 
   const onLoginWithGooglePress = useCallback(async () => {
     try {
@@ -295,7 +298,7 @@ const styles = XStyleSheet.create({
     position: 'absolute',
     zIndex: 99,
     right: 26,
-    top: StatusBar.currentHeight + (isAndroid ? 10 : 0),
+    top: isAndroid ? StatusBar.currentHeight + 10 : 54,
   },
   blurView: {
     ...XStyleSheet.absoluteFillObject,
