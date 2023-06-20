@@ -427,7 +427,6 @@ const ProfileScreen = () => {
     )
   }, [])
   const { top } = useSafeAreaInsets()
-  console.log(userStore.following)
   return (
     <Container disableTop style={styles.rootView}>
       <Position top={0} left={0} right={0} zIndex={-1}>

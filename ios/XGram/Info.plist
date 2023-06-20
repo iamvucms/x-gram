@@ -26,17 +26,17 @@
 		<string>$(IOSCodePushDeploymentKey)</string>
 		<key>LSRequiresIPhoneOS</key>
 		<true />
-		<key>NSAppTransportSecurity</key>
+		<!-- <key>NSAppTransportSecurity</key>
 		<dict>
 			<key>NSExceptionDomains</key>
 			<dict>
-				<key>localhost</key>
+		<key>localhost</key>
 				<dict>
 					<key>NSExceptionAllowsInsecureHTTPLoads</key>
 					<true />
-				</dict>
-			</dict>
 		</dict>
+			</dict>
+		</dict> -->
 		<key>CFBundleURLTypes</key>
 		<array>
 			<dict>
@@ -56,6 +56,11 @@
 				</array>
 			</dict>
 		</array>
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoads</key>
+			<true />
+		</dict>
 		<key>NSCameraUsageDescription</key>
 		<string>XGram needs access to your Camera.</string>
 		<key>NSFaceIDUsageDescription</key>

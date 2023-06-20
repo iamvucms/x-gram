@@ -1,6 +1,4 @@
 import {
-  BookMarkedSvg,
-  BookMarkSvg,
   CommentSvg,
   DotsSvg,
   FullScreenSvg,
@@ -17,11 +15,11 @@ import { isReactedPost, reactRequest, userStore } from '@/Stores'
 import {
   Colors,
   Layout,
-  moderateScale,
   ResponsiveHeight,
   ResponsiveWidth,
-  screenWidth,
   XStyleSheet,
+  moderateScale,
+  screenWidth,
 } from '@/Theme'
 import { formatAmount, getMediaUri } from '@/Utils'
 import { autorun } from 'mobx'
@@ -33,9 +31,9 @@ import { Pressable, TouchableOpacity, View } from 'react-native'
 import FastImage from 'react-native-fast-image'
 import Animated, {
   BounceIn,
+  SharedValue,
   interpolate,
   interpolateColor,
-  SharedValue,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -251,32 +249,38 @@ const PostItem = ({
                 )}
               </Obx>
             </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() =>
-                reactRequest(post.post_id, isReactedPost(post.post_id))
-              }
-              style={[styles.reactBtn]}
-            >
-              <Animated.View
-                style={[Layout.fill, Layout.center, reactButtonStyle]}
-              >
-                <Obx>
-                  {() => (
-                    <Animated.View
-                      key={`${isReactedPost(post.post_id)}`}
-                      entering={BounceIn}
-                    >
-                      <HeartSvg color={Colors.white} />
-                    </Animated.View>
-                  )}
-                </Obx>
-                <Padding top={4} />
-                <AppText fontWeight={700} color={Colors.white}>
-                  <Obx>{() => formatAmount(post.reactions.length) as any}</Obx>
-                </AppText>
-              </Animated.View>
-            </TouchableOpacity>
+            <Obx>
+              {() => (
+                <TouchableOpacity
+                  activeOpacity={0.8}
+                  onPress={() =>
+                    reactRequest(post.post_id, isReactedPost(post.post_id))
+                  }
+                  style={[styles.reactBtn]}
+                >
+                  <Animated.View
+                    style={[Layout.fill, Layout.center, reactButtonStyle]}
+                  >
+                    <Obx>
+                      {() => (
+                        <Animated.View
+                          key={`${isReactedPost(post.post_id)}`}
+                          entering={BounceIn}
+                        >
+                          <HeartSvg color={Colors.white} />
+                        </Animated.View>
+                      )}
+                    </Obx>
+                    <Padding top={4} />
+                    <AppText fontWeight={700} color={Colors.white}>
+                      <Obx>
+                        {() => formatAmount(post.reactions.length) as any}
+                      </Obx>
+                    </AppText>
+                  </Animated.View>
+                </TouchableOpacity>
+              )}
+            </Obx>
           </View>
         )}
       </View>
@@ -312,7 +316,7 @@ const PostItem = ({
         <TouchableOpacity onPress={onCommentPress} style={styles.commentBar}>
           <AppImage
             source={{
-              uri: 'https://picsum.photos/500/500',
+              uri: getMediaUri(userStore.userInfo.avatar_url),
             }}
             containerStyle={styles.profileImg}
           />

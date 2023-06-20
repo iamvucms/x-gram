@@ -240,7 +240,7 @@ export const createPost = async (message, medias, privacy, onDone) => {
     const tags = []
     const uploadedMedias = await Promise.all(
       medias.map(async m => {
-        const isVideo = m.uri.includes('video')
+        const isVideo = m.mimeType.includes('video')
         const response = isVideo
           ? await uploadVideo(m.uri, m.mimeType)
           : await uploadImage(m.uri, m.mimeType)

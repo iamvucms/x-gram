@@ -33,11 +33,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const CreatePost = ({ route }) => {
   const { medias } = route?.params
+
   const processedMedias = medias.map(m => ({ ...m, url: m.uri }))
   const { t } = useTranslation()
   const privacySheetRef = useRef()
   const state = useLocalObservable(() => ({
-    message: '',
+    message:
+      'Hello this is my photo. How do you feel about this. Drop a comment and don’t forget to send me a like. Thanks!',
     mentionList: [],
     creating: false,
     privacy: PrivacyType.Public,

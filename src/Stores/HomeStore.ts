@@ -60,8 +60,8 @@ export default class HomeStore {
           this.posts = response.data
         } else {
           this.posts = [...this.posts, ...response.data]
+          this.postPage += 1
         }
-        this.postPage += 1
       }
     } catch (e) {
       // this.posts = mockPosts

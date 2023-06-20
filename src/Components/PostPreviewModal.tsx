@@ -21,6 +21,7 @@ import Box from './Box'
 import Padding from './Padding'
 import Position from './Position'
 import { getMediaUri } from '@/Utils'
+import moment from 'moment'
 interface PostPreviewModalProps {
   x: number
   y: number
@@ -107,11 +108,11 @@ const PostPreviewModal = ({
                         lineHeight={23}
                         fontWeight={400}
                       >
-                        {post?.posted_by?.user_id}
+                        {post?.posted_by?.user_name}
                       </AppText>
                       <Padding top={3} />
                       <AppText fontSize={12} color={Colors.white75}>
-                        1 hour ago
+                        {moment(post?.created_at).fromNow()}
                       </AppText>
                     </View>
                   </Box>

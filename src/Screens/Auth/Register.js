@@ -117,6 +117,7 @@ const RegisterScreen = () => {
   const onRegisterPress = useCallback(async () => {
     const avatarMimeType = getImageMimeType(state.avatar.uri)
     const upload = await uploadImage(state.avatar.uri, avatarMimeType)
+    console.log(upload)
     const response = await register({
       email: state.email,
       full_name: state.fullname,

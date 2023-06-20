@@ -13,6 +13,7 @@ import { navigate } from '@/Navigators'
 import { chatStore, homeStore, initData } from '@/Stores'
 import { Colors, XStyleSheet } from '@/Theme'
 import { useFocusEffect } from '@react-navigation/native'
+import { autorun } from 'mobx'
 import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback, useEffect } from 'react'
 import Animated, {
@@ -20,7 +21,6 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated'
 import { HomeMenu, StoryBar } from './HomeScreenComponents'
-import { autorun } from 'mobx'
 
 const SheetType = {
   COMMENT: 'COMMENT',
@@ -32,8 +32,12 @@ const SheetType = {
 const HomeScreen = () => {
   const scrollY = useSharedValue(0)
   const state = useLocalObservable(() => ({
+    refreshing: false,
     selectedPost: null,
     sheetType: SheetType.NONE,
+    setRefreshing(value) {
+      this.refreshing = value
+    },
     setType(type) {
       this.sheetType = type
     },
@@ -90,7 +94,6 @@ const HomeScreen = () => {
       />
     )
   }, [])
-
   return (
     <Container
       safeAreaColor={Colors.k222222}
@@ -102,7 +105,6 @@ const HomeScreen = () => {
         {() => (
           <Animated.FlatList
             initialNumToRender={2}
-            bounces={false}
             ListHeaderComponent={
               <Obx>
                 {() => (
@@ -113,6 +115,7 @@ const HomeScreen = () => {
                 )}
               </Obx>
             }
+            bounces={false}
             scrollEventThrottle={16}
             onScroll={scrollHandler}
             data={homeStore.posts.slice()}

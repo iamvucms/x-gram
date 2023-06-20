@@ -439,7 +439,7 @@ const ProfileOther = () => {
                   </Box>
                   <Obx>
                     {() =>
-                      profileStore.profileInfo.websites.length && (
+                      !!profileStore.profileInfo.websites.length && (
                         <>
                           <AppText fontSize={16} fontWeight={700}>
                             {t('profile.other_links')}

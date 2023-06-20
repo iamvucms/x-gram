@@ -13,8 +13,8 @@ import AppImage from './AppImage'
 import AppText from './AppText'
 import Box from './Box'
 import Clipboard from '@react-native-clipboard/clipboard'
-import { toJS } from 'mobx'
-import { chatStore } from '@/Stores'
+import { autorun, toJS } from 'mobx'
+import { chatStore, userStore } from '@/Stores'
 interface ShareBottomSheetProps {
   data: Post & Story
   type: ShareType
@@ -40,10 +40,28 @@ const ShareBottomSheet = forwardRef(
     }))
 
     useEffect(() => {
+      const dispose = autorun(() => {
+        const users = toJS(chatStore.conversations)
+          .map(c => c.user)
+          .concat(toJS(userStore.following || []))
+          .concat(toJS(userStore.followers || []))
+        const obj = {}
+        const recommendedUsers = []
+        users.map(u => {
+          if (!obj[u.user_id]) {
+            obj[u.user_id] = true
+            recommendedUsers.push(u)
+          }
+        })
+        state.setUsers(recommendedUsers)
+      })
       const to = setTimeout(() => {
         state.setLoading(false)
       }, 1000)
-      return () => clearTimeout(to)
+      return () => {
+        clearTimeout(to)
+        dispose()
+      }
     }, [])
 
     const renderUserItem = useCallback(({ item, index }) => {
@@ -67,7 +85,7 @@ const ShareBottomSheet = forwardRef(
           <Padding style={Layout.fill} left={12}>
             <AppText fontWeight={700}>{item.full_name}</AppText>
             <Padding top={2} />
-            <AppText color={Colors.black50}>{item.user_id}</AppText>
+            <AppText color={Colors.black50}>{item.user_name}</AppText>
           </Padding>
           <Obx>
             {() => (

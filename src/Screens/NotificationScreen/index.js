@@ -29,16 +29,23 @@ import { useLocalObservable } from 'mobx-react-lite'
 import moment from 'moment'
 import React, { memo, useCallback, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SectionList, TouchableOpacity, View } from 'react-native'
+import {
+  RefreshControl,
+  SectionList,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 
 const NotificationScreen = () => {
   const { t } = useTranslation()
   const sheetRef = useRef()
   const state = useLocalObservable(() => ({
+    refreshing: false,
     selectedNotification: null,
     setSelectedNotification: notification =>
       (state.selectedNotification = notification),
+    setRefreshing: value => (state.refreshing = value),
   }))
   useFocusEffect(
     useCallback(() => {
@@ -65,7 +72,6 @@ const NotificationScreen = () => {
     )
   }, [])
   const renderNotiItem = useCallback(({ item }) => {
-    console.log(item)
     const onPress = () => {
       processNavigationNotification(item)
       notiStore.addSeenId(item.notification_id)
@@ -108,6 +114,21 @@ const NotificationScreen = () => {
             }))
             return (
               <SectionList
+                refreshControl={
+                  <Obx>
+                    {() => (
+                      <RefreshControl
+                        progressBackgroundColor={Colors.primary}
+                        refreshing={state.refreshing}
+                        onRefresh={async () => {
+                          state.setRefreshing(true)
+                          await notiStore.fetchNotifcations()
+                          state.setRefreshing(false)
+                        }}
+                      />
+                    )}
+                  </Obx>
+                }
                 initialNumToRender={5}
                 showsVerticalScrollIndicator={false}
                 sections={sections}

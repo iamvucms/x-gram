@@ -741,6 +741,7 @@ const styles = XStyleSheet.create({
     borderRadius: 8,
     overflow: 'hidden',
     marginLeft: 16,
+    backgroundColor: Colors.gray,
   },
   msgTime: {
     alignSelf: 'flex-end',

@@ -54,6 +54,7 @@
     "react-native-code-push": "^7.0.5",
     "react-native-collapsible": "^1.6.0",
     "react-native-config": "1.4.6",
+    "react-native-convert-ph-asset": "^1.0.3",
     "react-native-device-info": "^10.0.2",
     "react-native-dropdown-picker": "^5.4.2",
     "react-native-fast-image": "^8.6.1",

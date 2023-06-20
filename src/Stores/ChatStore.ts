@@ -70,6 +70,7 @@ export default class ChatStore {
         this.removeOnlineUser(uid)
       })
       this.socket.on('userConnected', uid => {
+        console.log({ uid })
         this.addOnlineUser(uid)
       })
       this.socket.on('disconnect', () => {

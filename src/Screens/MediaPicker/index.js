@@ -12,6 +12,7 @@ import { useLocalObservable } from 'mobx-react-lite'
 import React, { useCallback, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Image, PermissionsAndroid, TouchableOpacity, View } from 'react-native'
+import RNConvertPhAsset from 'react-native-convert-ph-asset'
 
 const MediaPicker = ({ route }) => {
   const {
@@ -93,12 +94,27 @@ const MediaPicker = ({ route }) => {
     if (!state.allowNext) {
       return
     }
-    const files = toJS(state.selectedMedias).map(media => ({
-      ...media,
-      uri: media.image.uri,
-      mimeType: media.mimeType,
-    }))
-    if (editable) {
+    const files = await Promise.all(
+      toJS(state.selectedMedias).map(async media => {
+        let uri = media.image.uri
+        // const isPh = media.image.uri.startsWith('ph')
+        // if (isPh) {
+        //   const ph = await RNConvertPhAsset.convertVideoFromUrl({
+        //     url: uri,
+        //     convertTo: 'mpeg4',
+        //     quality: 'medium',
+        //   })
+        //   uri = ph.path
+        // }
+        return {
+          ...media,
+          uri: uri,
+          mimeType: media.mimeType,
+          is_video: media.type.includes('video'),
+        }
+      }),
+    )
+    if (editable && isPickingPhoto) {
       navigate(PageName.ImageEditor, {
         medias: files,
         ...editorProps,
